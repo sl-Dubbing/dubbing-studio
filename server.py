@@ -4,7 +4,6 @@ import edge_tts
 import asyncio
 import os
 import uuid
-import tempfile
 
 app = Flask(__name__)
 CORS(app)
@@ -43,7 +42,6 @@ def dub():
         filename = f"dub_{uuid.uuid4().hex}.mp3"
         filepath = f"/tmp/{filename}"
         
-        # Generate audio
         communicate = edge_tts.Communicate(text, voice)
         asyncio.run(communicate.save(filepath))
         
