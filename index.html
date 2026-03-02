@@ -11,30 +11,9 @@
 <title>ALHASHMI للدبلجة والترجمة</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#1a0533 0%,#0a0a1a 50%,#001233 100%);color:#e0e0ff;min-height:100vh;overflow-x:hidden}
-
-/* ✅ الخلفية - لون + صورة شفافة 60% */
-.bg{
-  position:fixed;
-  inset:0;
-  z-index:0;
-  background:linear-gradient(135deg, #1a0533 0%, #0a0a1a 50%, #001233 100%);
-  background-size: cover;
-  background-position: center;
-}
-
-.bg::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  background-image: url('background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.6;
-  z-index:1;
-}
-
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a0a1a;color:#e0e0ff;min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:0;background:linear-gradient(135deg, #1a0533 0%, #0a0a1a 50%, #001233 100%);background-size:cover;background-position:center;background-attachment:fixed;overflow:hidden}
+.bg::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background-image:url('background.png');background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed;opacity:0.6;z-index:1}
 .wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr;gap:24px}
 @media(min-width:1200px){.wrap{grid-template-columns:1fr 1fr 1fr;align-items:start}}
 header{text-align:center;margin-bottom:32px;grid-column:1/-1}
@@ -173,59 +152,32 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
     <svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
   </button>
   <div class="lang-dropdown" id="langDropdown" role="menu">
-    <div class="lang-option active" onclick="setLang('ar')" data-lang="ar" role="menuitem">
-      <span class="lang-flag">🇸🇦</span>
-      <span class="lang-name">العربية</span>
-    </div>
-    <div class="lang-option" onclick="setLang('en')" data-lang="en" role="menuitem">
-      <span class="lang-flag">🇺🇸</span>
-      <span class="lang-name">English</span>
-    </div>
-    <div class="lang-option" onclick="setLang('ru')" data-lang="ru" role="menuitem">
-      <span class="lang-flag">🇷🇺</span>
-      <span class="lang-name">Русский</span>
-    </div>
-    <div class="lang-option" onclick="setLang('tr')" data-lang="tr" role="menuitem">
-      <span class="lang-flag">🇹🇷</span>
-      <span class="lang-name">Türkçe</span>
-    </div>
-    <div class="lang-option" onclick="setLang('fr')" data-lang="fr" role="menuitem">
-      <span class="lang-flag">🇫🇷</span>
-      <span class="lang-name">Français</span>
-    </div>
-    <div class="lang-option" onclick="setLang('de')" data-lang="de" role="menuitem">
-      <span class="lang-flag">🇩🇪</span>
-      <span class="lang-name">Deutsch</span>
-    </div>
-    <div class="lang-option" onclick="setLang('es')" data-lang="es" role="menuitem">
-      <span class="lang-flag">🇪🇸</span>
-      <span class="lang-name">Español</span>
-    </div>
+    <div class="lang-option active" onclick="setLang('ar')" data-lang="ar" role="menuitem"><span class="lang-flag">🇸🇦</span><span class="lang-name">العربية</span></div>
+    <div class="lang-option" onclick="setLang('en')" data-lang="en" role="menuitem"><span class="lang-flag">🇺🇸</span><span class="lang-name">English</span></div>
+    <div class="lang-option" onclick="setLang('ru')" data-lang="ru" role="menuitem"><span class="lang-flag">🇷🇺</span><span class="lang-name">Русский</span></div>
+    <div class="lang-option" onclick="setLang('tr')" data-lang="tr" role="menuitem"><span class="lang-flag">🇹🇷</span><span class="lang-name">Türkçe</span></div>
+    <div class="lang-option" onclick="setLang('fr')" data-lang="fr" role="menuitem"><span class="lang-flag">🇫🇷</span><span class="lang-name">Français</span></div>
+    <div class="lang-option" onclick="setLang('de')" data-lang="de" role="menuitem"><span class="lang-flag">🇩🇪</span><span class="lang-name">Deutsch</span></div>
+    <div class="lang-option" onclick="setLang('es')" data-lang="es" role="menuitem"><span class="lang-flag">🇪🇸</span><span class="lang-name">Español</span></div>
   </div>
 </div>
 
 <header>
   <div class="logo-container">
     <div class="logo-img">
-      <img src="logo.gif" alt="ALHASHMI Logo" id="siteLogo" loading="lazy">
+      <img src="logo.png" alt="ALHASHMI Logo" id="siteLogo" loading="lazy" onerror="this.style.display='none'">
     </div>
     <div>
       <h1>ALHASHMI</h1>
       <p class="subtitle" data-i18n="subtitle">للدبلجة والترجمة الاحترافية</p>
-      <a href="https://www.youtube.com/@-photosho" target="_blank" rel="noopener noreferrer" class="youtube-link" data-i18n="youtubeLink" title="Subscribe to the channel">
-        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        <span data-i18n="subscribe">اشترك في القناة</span>
-      </a>
+      <a href="https://www.youtube.com/@-photosho" target="_blank" rel="noopener noreferrer" class="youtube-link" data-i18n="youtubeLink"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg><span data-i18n="subscribe">اشترك في القناة</span></a>
     </div>
   </div>
 </header>
 
 <div>
   <div class="card">
-    <div class="card-header">
-      <div class="card-icon">✏️</div>
-      <span class="card-title" data-i18n="ttsTitle">نطق النص</span>
-    </div>
+    <div class="card-header"><div class="card-icon">✏️</div><span class="card-title" data-i18n="ttsTitle">نطق النص</span></div>
     <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="selectLanguage">اختر اللغة</span></div>
     <div class="lg" id="g1" style="margin-bottom:10px"></div>
     <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="voice">الصوت</span></div>
@@ -268,10 +220,7 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 
 <div>
   <div class="card">
-    <div class="card-header">
-      <div class="card-icon">🎬</div>
-      <span class="card-title" data-i18n="dubLang">لغة الدبلجة</span>
-    </div>
+    <div class="card-header"><div class="card-icon">🎬</div><span class="card-title" data-i18n="dubLang">لغة الدبلجة</span></div>
     <div class="lg" id="g2"></div>
     <div class="ctrls" style="margin-bottom:0">
       <div class="cg"><label data-i18n="speed">السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
@@ -279,16 +228,8 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
     </div>
   </div>
   <div class="card">
-    <div class="card-header">
-      <div class="card-icon">📂</div>
-      <span class="card-title" data-i18n="srtFile">ملف SRT</span>
-    </div>
-    <div class="ua">
-      <input type="file" accept=".srt,.txt" onchange="ldSRT(event)" aria-label="Upload SRT file">
-      <div class="ui">📁</div>
-      <div class="ut" data-i18n="dragOrClick">اسحب أو اضغط</div>
-      <div class="us" data-i18n="srtOrTxt">.srt أو .txt</div>
-    </div>
+    <div class="card-header"><div class="card-icon">📂</div><span class="card-title" data-i18n="srtFile">ملف SRT</span></div>
+    <div class="ua"><input type="file" accept=".srt,.txt" onchange="ldSRT(event)" aria-label="Upload SRT file"><div class="ui">📁</div><div class="ut" data-i18n="dragOrClick">اسحب أو اضغط</div><div class="us" data-i18n="srtOrTxt">.srt أو .txt</div></div>
     <span class="lbl" data-i18n="orPaste">أو الصق المحتوى</span>
     <textarea id="srtP" data-i18n-placeholder="pasteSRT" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
     <button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" data-i18n="analyzeFile" onclick="prsPaste()">📥 تحليل الملف</button>
@@ -301,20 +242,13 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
     </div>
   </div>
   <div class="card" id="dubCard" style="display:none">
-    <div class="card-header">
-      <div class="card-icon">⚡</div>
-      <span class="card-title" data-i18n="generate">التوليد</span>
-    </div>
+    <div class="card-header"><div class="card-icon">⚡</div><span class="card-title" data-i18n="generate">التوليد</span></div>
     <div class="ib">
       <div class="ir">🔇 <span data-i18n="silentProcessing">معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
       <div class="ir">⏱️ <span data-i18n="syncTiming">تزامن دقيق مع توقيتات SRT</span></div>
       <div class="ir">📤 <span data-i18n="wavFile">ملف WAV لـ YouTube Dubbing</span></div>
     </div>
-    <button class="gb" id="genBtn" onclick="stDub()">
-      <span class="gi">🎬</span>
-      <span class="gl" data-i18n="generateDub">توليد الدبلجة</span>
-      <span class="gs" data-i18n="requiresServer">يتطلب سيرفر Render شغال</span>
-    </button>
+    <button class="gb" id="genBtn" onclick="stDub()"><span class="gi">🎬</span><span class="gl" data-i18n="generateDub">توليد الدبلجة</span><span class="gs" data-i18n="requiresServer">يتطلب سيرفر Render شغال</span></button>
     <div id="dubP" style="display:none">
       <div class="ph"><div class="pd"></div><div class="pt" id="phTxt" data-i18n="processing">جارٍ...</div></div>
       <div class="cb">
@@ -325,10 +259,7 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
         </div>
         <div class="wv on" style="height:22px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
       </div>
-      <div class="pw">
-        <div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div>
-        <div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div>
-      </div>
+      <div class="pw"><div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div><div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div></div>
       <div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px" data-i18n="processing">جارٍ...</div>
       <div class="sc" id="sntC" style="text-align:center;font-size:.65rem;color:#4b5563;font-family:monospace;margin-bottom:10px"></div>
       <button class="btn bsm" style="width:100%;justify-content:center" data-i18n="cancel" onclick="cnclDub()">⏹ إلغاء</button>
@@ -347,54 +278,29 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 
 <div>
   <div class="card tp" style="border-top:4px solid #34d399">
-    <div class="card-header">
-      <div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div>
-      <span class="card-title" data-i18n="srtTranslator">مترجم SRT</span>
-    </div>
+    <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div><span class="card-title" data-i18n="srtTranslator">مترجم SRT</span></div>
     <div class="lbl" data-i18n="selectTransLang">1. اختر لغة الترجمة</div>
     <div class="tg" id="transLangs"></div>
-    <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0" data-i18n="sourceText">2. النص المصدر (SRT)</span>
-      <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteSrc()">📋 لصق</button>
-    </div>
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="sourceText">2. النص المصدر (SRT)</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteSrc()">📋 لصق</button></div>
     <textarea id="srcSRT" data-i18n-placeholder="pasteSRTContent" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
     <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" data-i18n="translate" onclick="startTrans()">🚀 ترجمة</button>
     <div id="transRes" style="display:none;margin-top:14px">
       <div class="trs">
-        <div class="trh">
-          <span class="trt">✅ <span data-i18n="result">النتيجة</span></span>
-          <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="copy" onclick="copyResult()">📋 نسخ</button>
-        </div>
+        <div class="trh"><span class="trt">✅ <span data-i18n="result">النتيجة</span></span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="copy" onclick="copyResult()">📋 نسخ</button></div>
         <div class="trc" id="transOut"></div>
         <button class="db" style="margin-top:10px" data-i18n="downloadSRT" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
       </div>
     </div>
     <div class="st i" id="transSt" style="margin-top:10px" data-i18n="ready">جاهز</div>
   </div>
-
   <div class="card" style="border-top:4px solid #fbbf24">
-    <div class="card-header">
-      <div class="card-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🧹</div>
-      <span class="card-title" data-i18n="cleanText">تنظيف النص من الفراغات</span>
-    </div>
-    <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0" data-i18n="pasteSRTOrText">الصق نص SRT أو أي نص</span>
-      <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteClean()">📋 لصق</button>
-    </div>
+    <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🧹</div><span class="card-title" data-i18n="cleanText">تنظيف النص من الفراغات</span></div>
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="pasteSRTOrText">الصق نص SRT أو أي نص</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteClean()">📋 لصق</button></div>
     <textarea id="cleanInput" data-i18n-placeholder="pasteTextHere" placeholder="الصق النص هنا..." style="min-height:80px;font-family:monospace;font-size:.75rem;margin-bottom:10px"></textarea>
     <div class="ctrls" style="margin-bottom:10px">
-      <label class="tbtn" style="font-size:.7rem">
-        <input type="checkbox" id="removeNumbers" style="display:none" checked>
-        📌 <span data-i18n="removeNumbers">حذف الأرقام</span>
-      </label>
-      <label class="tbtn" style="font-size:.7rem">
-        <input type="checkbox" id="removeTime" style="display:none" checked>
-        ⏱️ <span data-i18n="removeTimestamps">حذف التوقيتات</span>
-      </label>
-      <label class="tbtn" style="font-size:.7rem">
-        <input type="checkbox" id="removeEmpty" style="display:none" checked>
-        🗑️ <span data-i18n="removeEmptyLines">حذف الأسطر الفارغة</span>
-      </label>
+      <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeNumbers" style="display:none" checked>📌 <span data-i18n="removeNumbers">حذف الأرقام</span></label>
+      <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeTime" style="display:none" checked>⏱️ <span data-i18n="removeTimestamps">حذف التوقيتات</span></label>
+      <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeEmpty" style="display:none" checked>🗑️ <span data-i18n="removeEmptyLines">حذف الأسطر الفارغة</span></label>
     </div>
     <button class="btn bs" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000" data-i18n="cleanTextBtn" onclick="cleanText()">🧹 تنظيف النص</button>
     <div id="cleanResult" style="display:none">
@@ -415,15 +321,7 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 <footer>ALHASHMI <span data-i18n="footer">للدبلجة والترجمة · GitHub + Render · gTTS · مجاني 100%</span></footer>
 
 <script>
-const translations={
-  ar:{subtitle:'للدبلجة والترجمة الاحترافية',subscribe:'اشترك في القناة',youtubeLink:'Subscribe to the channel',ttsTitle:'نطق النص',selectLanguage:'اختر اللغة',voice:'الصوت',typeText:'اكتب النص...',speed:'السرعة',pitch:'الطبقة',volume:'الصوت',speak:'نطق',typeAndSpeak:'👋 اكتب نصاً واضغط نطق',audioFilters:'الفلاتر الصوتية',resetFilters:'🔄 إعادة تعيين',presetMale:'👨 رجالي',presetRadio:'📻 راديو',presetWarm:'🌟 دافئ',presetFast:'⚡ سريع',dubLang:'لغة الدبلجة',srtFile:'ملف SRT',dragOrClick:'اسحب أو اضغط',srtOrTxt:'.srt أو .txt',orPaste:'أو الصق المحتوى',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nالنص...',analyzeFile:'📥 تحليل الملف',sentences:'جملة',copy:'📋 نسخ',generate:'التوليد',silentProcessing:'معالجة <strong>صامتة</strong> عبر سيرفر سحابي',syncTiming:'تزامن دقيق مع توقيتات SRT',wavFile:'ملف WAV لـ YouTube Dubbing',generateDub:'توليد الدبلجة',requiresServer:'يتطلب سيرفر Render شغال',processing:'جارٍ...',remaining:'المتبقي',elapsed:'مضى',total:'المجموع',cancel:'⏹ إلغاء',ready:'جاهز',downloadWAV:'⬇️ تنزيل WAV',dubbing:'دبلجة',checkServer:'تأكد سيرفر Render شغال ثم اضغط',srtTranslator:'مترجم SRT',selectTransLang:'1. اختر لغة الترجمة',sourceText:'2. النص المصدر (SRT)',paste:'📋 لصق',pasteSRTContent:'الصق محتوى SRT...',translate:'🚀 ترجمة',result:'النتيجة',downloadSRT:'⬇️ تنزيل SRT',cleanText:'تنظيف النص من الفراغات',pasteSRTOrText:'الصق نص SRT أو أي نص',pasteTextHere:'الصق النص هنا...',removeNumbers:'حذف الأرقام',removeTimestamps:'حذف التوقيتات',removeEmptyLines:'حذف الأسطر الفارغة',cleanTextBtn:'🧹 تنظيف النص',textAfterClean:'النص بعد التنظيف',download:'⬇️ تنزيل',pasteAndClean:'الصق نصاً واضغط تنظيف',footer:'للدبلجة والترجمة · GitHub + Render · gTTS · مجاني 100%',lang_ar:'العربية',lang_en:'الإنجليزية',lang_ru:'الروسية',lang_tr:'التركية',lang_fr:'الفرنسية',lang_de:'الألمانية',lang_es:'الإسبانية',lang_zh:'الصينية',lang_hi:'الهندية',lang_fa:'الفارسية',lang_it:'الإيطالية',lang_nl:'الهولندية',lang_sv:'السويدية'},
-  en:{subtitle:'For Professional Dubbing & Translation',subscribe:'Subscribe to the channel',youtubeLink:'Subscribe to the channel',ttsTitle:'Text to Speech',selectLanguage:'Select Language',voice:'Voice',typeText:'Type text...',speed:'Speed',pitch:'Pitch',volume:'Volume',speak:'Speak',typeAndSpeak:'👋 Type text and click Speak',audioFilters:'Audio Filters',resetFilters:'🔄 Reset Filters',presetMale:'👨 Male',presetRadio:'📻 Radio',presetWarm:'🌟 Warm',presetFast:'⚡ Fast',dubLang:'Dubbing Language',srtFile:'SRT File',dragOrClick:'Drag or Click',srtOrTxt:'.srt or .txt',orPaste:'Or paste content',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nText...',analyzeFile:'📥 Analyze File',sentences:'sentences',copy:'📋 Copy',generate:'Generate',silentProcessing:'<strong>Silent</strong> processing via cloud server',syncTiming:'Precise sync with SRT timings',wavFile:'WAV file for YouTube Dubbing',generateDub:'Generate Dubbing',requiresServer:'Requires Render server running',processing:'Processing...',remaining:'Remaining',elapsed:'Elapsed',total:'Total',cancel:'⏹ Cancel',ready:'Ready',downloadWAV:'⬇️ Download WAV',dubbing:'Dubbing',checkServer:'Make sure Render server is running',srtTranslator:'SRT Translator',selectTransLang:'1. Select translation language',sourceText:'2. Source text (SRT)',paste:'📋 Paste',pasteSRTContent:'Paste SRT content...',translate:'🚀 Translate',result:'Result',downloadSRT:'⬇️ Download SRT',cleanText:'Text Cleaner',pasteSRTOrText:'Paste SRT or any text',pasteTextHere:'Paste text here...',removeNumbers:'Remove numbers',removeTimestamps:'Remove timestamps',removeEmptyLines:'Remove empty lines',cleanTextBtn:'🧹 Clean Text',textAfterClean:'Text after cleaning',download:'⬇️ Download',pasteAndClean:'Paste text and click Clean',footer:'for Dubbing & Translation · GitHub + Render · gTTS · 100% Free',lang_ar:'Arabic',lang_en:'English',lang_ru:'Russian',lang_tr:'Turkish',lang_fr:'French',lang_de:'German',lang_es:'Spanish',lang_zh:'Chinese',lang_hi:'Hindi',lang_fa:'Persian',lang_it:'Italian',lang_nl:'Dutch',lang_sv:'Swedish'},
-  ru:{subtitle:'Для профессионального дубляжа и перевода',subscribe:'Подписаться на канал',youtubeLink:'Subscribe to the channel',ttsTitle:'Текст в речь',selectLanguage:'Выбрать язык',voice:'Голос',typeText:'Введите текст...',speed:'Скорость',pitch:'Тон',volume:'Громкость',speak:'Воспроизвести',typeAndSpeak:'👋 Введите текст и нажмите',audioFilters:'Аудио фильтры',resetFilters:'🔄 Сбросить',presetMale:'👨 Мужской',presetRadio:'📻 Радио',presetWarm:'🌟 Тёплый',presetFast:'⚡ Быстрый',dubLang:'Язык дубляжа',srtFile:'SRT файл',dragOrClick:'Перетащите или нажмите',srtOrTxt:'.srt или .txt',orPaste:'Или вставьте контент',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nТекст...',analyzeFile:'📥 Анализировать',sentences:'предложений',copy:'📋 Копировать',generate:'Генерировать',silentProcessing:'<strong>Тихая</strong> обработка через облако',syncTiming:'Точная синхронизация с SRT',wavFile:'WAV файл для YouTube Dubbing',generateDub:'Создать дубляж',requiresServer:'Требуется запущенный сервер Render',processing:'Обработка...',remaining:'Осталось',elapsed:'Прошло',total:'Всего',cancel:'⏹ Отмена',ready:'Готово',downloadWAV:'⬇️ Скачать WAV',dubbing:'Дубляж',checkServer:'Убедитесь, что сервер Render запущен',srtTranslator:'SRT Переводчик',selectTransLang:'1. Выберите язык перевода',sourceText:'2. Исходный текст (SRT)',paste:'📋 Вставить',pasteSRTContent:'Вставьте содержимое SRT...',translate:'🚀 Перевести',result:'Результат',downloadSRT:'⬇️ Скачать SRT',cleanText:'Очистка текста',pasteSRTOrText:'Вставьте SRT или любой текст',pasteTextHere:'Вставьте текст здесь...',removeNumbers:'Удалить цифры',removeTimestamps:'Удалить метки времени',removeEmptyLines:'Удалить пустые строки',cleanTextBtn:'🧹 Очистить текст',textAfterClean:'Текст после очистки',download:'⬇️ Скачать',pasteAndClean:'Вставьте текст и нажмите Очистить',footer:'для дубляжа и перевода · GitHub + Render · gTTS · 100% Бесплатно',lang_ar:'Арабский',lang_en:'Английский',lang_ru:'Русский',lang_tr:'Турецкий',lang_fr:'Французский',lang_de:'Немецкий',lang_es:'Испанский',lang_zh:'Китайский',lang_hi:'Хинди',lang_fa:'Персидский',lang_it:'Итальянский',lang_nl:'Голландский',lang_sv:'Шведский'},
-  tr:{subtitle:'Profesyonel Dublaj ve Çeviri için',subscribe:'Kanalı takip et',youtubeLink:'Subscribe to the channel',ttsTitle:'Metin Okuma',selectLanguage:'Dil seç',voice:'Ses',typeText:'Metin yaz...',speed:'Hız',pitch:'Perde',volume:'Ses',speak:'Oku',typeAndSpeak:'👋 Metin yaz ve Oku',audioFilters:'Ses Filtreleri',resetFilters:'🔄 Sıfırla',presetMale:'👨 Erkek',presetRadio:'📻 Radyo',presetWarm:'🌟 Sıcak',presetFast:'⚡ Hızlı',dubLang:'Dublaj Dili',srtFile:'SRT Dosyası',dragOrClick:'Sürükleyin veya tıklayın',srtOrTxt:'.srt veya .txt',orPaste:'Veya içerik yapıştır',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nMetin...',analyzeFile:'📥 Dosyayı analiz et',sentences:'cümle',copy:'📋 Kopyala',generate:'Oluştur',silentProcessing:'<strong>Sessiz</strong> bulut işleme',syncTiming:'SRT zamanlamaları ile senkronizasyon',wavFile:'YouTube Dubbing için WAV dosyası',generateDub:'Dublaj oluştur',requiresServer:'Render sunucusu çalışıyor olmalı',processing:'İşleniyor...',remaining:'Kalan',elapsed:'Geçen',total:'Toplam',cancel:'⏹ İptal',ready:'Hazır',downloadWAV:'⬇️ WAV indir',dubbing:'Dublaj',checkServer:'Render sunucusunun çalıştığından emin olun',srtTranslator:'SRT Çeviri',selectTransLang:'1. Çeviri dilini seç',sourceText:'2. Kaynak metin (SRT)',paste:'📋 Yapıştır',pasteSRTContent:'SRT içeriğini yapıştır...',translate:'🚀 Çevir',result:'Sonuç',downloadSRT:'⬇️ SRT indir',cleanText:'Metin Temizleme',pasteSRTOrText:'SRT veya herhangi bir metin yapıştır',pasteTextHere:'Metni buraya yapıştır...',removeNumbers:'Sayıları kaldır',removeTimestamps:'Zaman damgalarını kaldır',removeEmptyLines:'Boş satırları kaldır',cleanTextBtn:'🧹 Metni temizle',textAfterClean:'Temizlendikten sonra metin',download:'⬇️ İndir',pasteAndClean:'Metin yapıştır ve Temizle',footer:'Dublaj ve Çeviri için · GitHub + Render · gTTS · %100 Ücretsiz',lang_ar:'Arapça',lang_en:'İngilizce',lang_ru:'Rusça',lang_tr:'Türkçe',lang_fr:'Fransızca',lang_de:'Almanca',lang_es:'İspanyolca',lang_zh:'Çince',lang_hi:'Hintçe',lang_fa:'Farsça',lang_it:'İtalyanca',lang_nl:'Flemenkçe',lang_sv:'İsveççe'},
-  fr:{subtitle:'Pour le doublage et la traduction professionnels',subscribe:"S'abonner à la chaîne",youtubeLink:'Subscribe to the channel',ttsTitle:'Synthèse vocale',selectLanguage:'Choisir la langue',voice:'Voix',typeText:'Tapez le texte...',speed:'Vitesse',pitch:'Hauteur',volume:'Volume',speak:'Parler',typeAndSpeak:'👋 Tapez un texte et cliquez Parler',audioFilters:'Filtres audio',resetFilters:'🔄 Réinitialiser',presetMale:'👨 Homme',presetRadio:'📻 Radio',presetWarm:'🌟 Chaud',presetFast:'⚡ Rapide',dubLang:'Langue de doublage',srtFile:'Fichier SRT',dragOrClick:'Glissez ou cliquez',srtOrTxt:'.srt ou .txt',orPaste:'Ou collez le contenu',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nTexte...',analyzeFile:'📥 Analyser le fichier',sentences:'phrases',copy:'📋 Copier',generate:'Générer',silentProcessing:'Traitement <strong>silencieux</strong> via cloud',syncTiming:'Synchronisation précise avec SRT',wavFile:'Fichier WAV pour YouTube Dubbing',generateDub:'Générer le doublage',requiresServer:'Nécessite un serveur Render en cours',processing:'Traitement...',remaining:'Restant',elapsed:'Écoulé',total:'Total',cancel:'⏹ Annuler',ready:'Prêt',downloadWAV:'⬇️ Télécharger WAV',dubbing:'Doublage',checkServer:'Assurez-vous que le serveur Render est en cours',srtTranslator:'Traducteur SRT',selectTransLang:'1. Choisissez la langue de traduction',sourceText:'2. Texte source (SRT)',paste:'📋 Coller',pasteSRTContent:'Collez le contenu SRT...',translate:'🚀 Traduire',result:'Résultat',downloadSRT:'⬇️ Télécharger SRT',cleanText:'Nettoyage de texte',pasteSRTOrText:'Collez SRT ou tout texte',pasteTextHere:'Collez le texte ici...',removeNumbers:'Supprimer les nombres',removeTimestamps:'Supprimer les horodatages',removeEmptyLines:'Supprimer les lignes vides',cleanTextBtn:'🧹 Nettoyer le texte',textAfterClean:'Texte après nettoyage',download:'⬇️ Télécharger',pasteAndClean:'Collez un texte et cliquez Nettoyer',footer:'pour le doublage et la traduction · GitHub + Render · gTTS · 100% Gratuit',lang_ar:'Arabe',lang_en:'Anglais',lang_ru:'Russe',lang_tr:'Turc',lang_fr:'Français',lang_de:'Allemand',lang_es:'Espagnol',lang_zh:'Chinois',lang_hi:'Hindi',lang_fa:'Persan',lang_it:'Italien',lang_nl:'Néerlandais',lang_sv:'Suédois'},
-  de:{subtitle:'Für professionelles Dubbing & Übersetzung',subscribe:'Kanal abonnieren',youtubeLink:'Subscribe to the channel',ttsTitle:'Text zu Sprache',selectLanguage:'Sprache wählen',voice:'Stimme',typeText:'Text eingeben...',speed:'Geschwindigkeit',pitch:'Tonhöhe',volume:'Lautstärke',speak:'Sprechen',typeAndSpeak:'👋 Text eingeben und Sprechen klicken',audioFilters:'Audiofilter',resetFilters:'🔄 Zurücksetzen',presetMale:'👨 Männlich',presetRadio:'📻 Radio',presetWarm:'🌟 Warm',presetFast:'⚡ Schnell',dubLang:'Synchronisationssprache',srtFile:'SRT-Datei',dragOrClick:'Ziehen oder klicken',srtOrTxt:'.srt oder .txt',orPaste:'Oder Inhalt einfügen',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nText...',analyzeFile:'📥 Datei analysieren',sentences:'Sätze',copy:'📋 Kopieren',generate:'Generieren',silentProcessing:'<strong>Stille</strong> Verarbeitung über Cloud',syncTiming:'Präzise Synchronisation mit SRT',wavFile:'WAV-Datei für YouTube Dubbing',generateDub:'Dubbing generieren',requiresServer:'Render-Server muss laufen',processing:'Verarbeitung...',remaining:'Verbleibend',elapsed:'Verstrichen',total:'Gesamt',cancel:'⏹ Abbrechen',ready:'Fertig',downloadWAV:'⬇️ WAV herunterladen',dubbing:'Dubbing',checkServer:'Stellen Sie sicher, dass der Render-Server läuft',srtTranslator:'SRT-Übersetzer',selectTransLang:'1. Übersetzungssprache wählen',sourceText:'2. Quelltext (SRT)',paste:'📋 Einfügen',pasteSRTContent:'SRT-Inhalt einfügen...',translate:'🚀 Übersetzen',result:'Ergebnis',downloadSRT:'⬇️ SRT herunterladen',cleanText:'Textbereinigung',pasteSRTOrText:'SRT oder beliebigen Text einfügen',pasteTextHere:'Text hier einfügen...',removeNumbers:'Zahlen entfernen',removeTimestamps:'Zeitstempel entfernen',removeEmptyLines:'Leere Zeilen entfernen',cleanTextBtn:'🧹 Text bereinigen',textAfterClean:'Text nach Bereinigung',download:'⬇️ Herunterladen',pasteAndClean:'Text einfügen und Bereinigen klicken',footer:'für Dubbing & Übersetzung · GitHub + Render · gTTS · 100% Kostenlos',lang_ar:'Arabisch',lang_en:'Englisch',lang_ru:'Russisch',lang_tr:'Türkisch',lang_fr:'Französisch',lang_de:'Deutsch',lang_es:'Spanisch',lang_zh:'Chinesisch',lang_hi:'Hindi',lang_fa:'Persisch',lang_it:'Italienisch',lang_nl:'Niederländisch',lang_sv:'Schwedisch'},
-  es:{subtitle:'Para doblaje y traducción profesionales',subscribe:'Suscribirse al canal',youtubeLink:'Subscribe to the channel',ttsTitle:'Texto a voz',selectLanguage:'Seleccionar idioma',voice:'Voz',typeText:'Escribe texto...',speed:'Velocidad',pitch:'Tono',volume:'Volumen',speak:'Hablar',typeAndSpeak:'👋 Escribe texto y haz clic Hablar',audioFilters:'Filtros de audio',resetFilters:'🔄 Restablecer',presetMale:'👨 Hombre',presetRadio:'📻 Radio',presetWarm:'🌟 Cálido',presetFast:'⚡ Rápido',dubLang:'Idioma de doblaje',srtFile:'Archivo SRT',dragOrClick:'Arrastra o haz clic',srtOrTxt:'.srt o .txt',orPaste:'O pega el contenido',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nTexto...',analyzeFile:'📥 Analizar archivo',sentences:'frases',copy:'📋 Copiar',generate:'Generar',silentProcessing:'Procesamiento <strong>silencioso</strong> en la nube',syncTiming:'Sincronización precisa con SRT',wavFile:'Archivo WAV para YouTube Dubbing',generateDub:'Generar doblaje',requiresServer:'Requiere servidor Render ejecutándose',processing:'Procesando...',remaining:'Restante',elapsed:'Transcurrido',total:'Total',cancel:'⏹ Cancelar',ready:'Listo',downloadWAV:'⬇️ Descargar WAV',dubbing:'Doblaje',checkServer:'Asegúrate de que el servidor Render esté ejecutándose',srtTranslator:'Traductor SRT',selectTransLang:'1. Selecciona idioma de traducción',sourceText:'2. Texto fuente (SRT)',paste:'📋 Pegar',pasteSRTContent:'Pega contenido SRT...',translate:'🚀 Traducir',result:'Resultado',downloadSRT:'⬇️ Descargar SRT',cleanText:'Limpieza de texto',pasteSRTOrText:'Pega SRT o cualquier texto',pasteTextHere:'Pega texto aquí...',removeNumbers:'Eliminar números',removeTimestamps:'Eliminar marcas de tiempo',removeEmptyLines:'Eliminar líneas vacías',cleanTextBtn:'🧹 Limpiar texto',textAfterClean:'Texto después de limpiar',download:'⬇️ Descargar',pasteAndClean:'Pega texto y haz clic Limpiar',footer:'para doblaje y traducción · GitHub + Render · gTTS · 100% Gratis',lang_ar:'Árabe',lang_en:'Inglés',lang_ru:'Ruso',lang_tr:'Turco',lang_fr:'Francés',lang_de:'Alemán',lang_es:'Español',lang_zh:'Chino',lang_hi:'Hindi',lang_fa:'Persa',lang_it:'Italiano',lang_nl:'Neerlandés',lang_sv:'Sueco'}
-};
+const translations={ar:{subtitle:'للدبلجة والترجمة الاحترافية',subscribe:'اشترك في القناة',youtubeLink:'Subscribe to the channel',ttsTitle:'نطق النص',selectLanguage:'اختر اللغة',voice:'الصوت',typeText:'اكتب النص...',speed:'السرعة',pitch:'الطبقة',volume:'الصوت',speak:'نطق',typeAndSpeak:'👋 اكتب نصاً واضغط نطق',audioFilters:'الفلاتر الصوتية',resetFilters:'🔄 إعادة تعيين',presetMale:'👨 رجالي',presetRadio:'📻 راديو',presetWarm:'🌟 دافئ',presetFast:'⚡ سريع',dubLang:'لغة الدبلجة',srtFile:'ملف SRT',dragOrClick:'اسحب أو اضغط',srtOrTxt:'.srt أو .txt',orPaste:'أو الصق المحتوى',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nالنص...',analyzeFile:'📥 تحليل الملف',sentences:'جملة',copy:'📋 نسخ',generate:'التوليد',silentProcessing:'معالجة <strong>صامتة</strong> عبر سيرفر سحابي',syncTiming:'تزامن دقيق مع توقيتات SRT',wavFile:'ملف WAV لـ YouTube Dubbing',generateDub:'توليد الدبلجة',requiresServer:'يتطلب سيرفر Render شغال',processing:'جارٍ...',remaining:'المتبقي',elapsed:'مضى',total:'المجموع',cancel:'⏹ إلغاء',ready:'جاهز',downloadWAV:'⬇️ تنزيل WAV',dubbing:'دبلجة',checkServer:'تأكد سيرفر Render شغال ثم اضغط',srtTranslator:'مترجم SRT',selectTransLang:'1. اختر لغة الترجمة',sourceText:'2. النص المصدر (SRT)',paste:'📋 لصق',pasteSRTContent:'الصق محتوى SRT...',translate:'🚀 ترجمة',result:'النتيجة',downloadSRT:'⬇️ تنزيل SRT',cleanText:'تنظيف النص من الفراغات',pasteSRTOrText:'الصق نص SRT أو أي نص',pasteTextHere:'الصق النص هنا...',removeNumbers:'حذف الأرقام',removeTimestamps:'حذف التوقيتات',removeEmptyLines:'حذف الأسطر الفارغة',cleanTextBtn:'🧹 تنظيف النص',textAfterClean:'النص بعد التنظيف',download:'⬇️ تنزيل',pasteAndClean:'الصق نصاً واضغط تنظيف',footer:'للدبلجة والترجمة · GitHub + Render · gTTS · مجاني 100%',lang_ar:'العربية',lang_en:'الإنجليزية',lang_ru:'الروسية',lang_tr:'التركية',lang_fr:'الفرنسية',lang_de:'الألمانية',lang_es:'الإسبانية',lang_zh:'الصينية',lang_hi:'الهندية',lang_fa:'الفارسية',lang_it:'الإيطالية',lang_nl:'الهولندية',lang_sv:'السويدية'},en:{subtitle:'For Professional Dubbing & Translation',subscribe:'Subscribe to the channel',youtubeLink:'Subscribe to the channel',ttsTitle:'Text to Speech',selectLanguage:'Select Language',voice:'Voice',typeText:'Type text...',speed:'Speed',pitch:'Pitch',volume:'Volume',speak:'Speak',typeAndSpeak:'👋 Type text and click Speak',audioFilters:'Audio Filters',resetFilters:'🔄 Reset Filters',presetMale:'👨 Male',presetRadio:'📻 Radio',presetWarm:'🌟 Warm',presetFast:'⚡ Fast',dubLang:'Dubbing Language',srtFile:'SRT File',dragOrClick:'Drag or Click',srtOrTxt:'.srt or .txt',orPaste:'Or paste content',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nText...',analyzeFile:'📥 Analyze File',sentences:'sentences',copy:'📋 Copy',generate:'Generate',silentProcessing:'<strong>Silent</strong> processing via cloud server',syncTiming:'Precise sync with SRT timings',wavFile:'WAV file for YouTube Dubbing',generateDub:'Generate Dubbing',requiresServer:'Requires Render server running',processing:'Processing...',remaining:'Remaining',elapsed:'Elapsed',total:'Total',cancel:'⏹ Cancel',ready:'Ready',downloadWAV:'⬇️ Download WAV',dubbing:'Dubbing',checkServer:'Make sure Render server is running',srtTranslator:'SRT Translator',selectTransLang:'1. Select translation language',sourceText:'2. Source text (SRT)',paste:'📋 Paste',pasteSRTContent:'Paste SRT content...',translate:'🚀 Translate',result:'Result',downloadSRT:'⬇️ Download SRT',cleanText:'Text Cleaner',pasteSRTOrText:'Paste SRT or any text',pasteTextHere:'Paste text here...',removeNumbers:'Remove numbers',removeTimestamps:'Remove timestamps',removeEmptyLines:'Remove empty lines',cleanTextBtn:'🧹 Clean Text',textAfterClean:'Text after cleaning',download:'⬇️ Download',pasteAndClean:'Paste text and click Clean',footer:'for Dubbing & Translation · GitHub + Render · gTTS · 100% Free',lang_ar:'Arabic',lang_en:'English',lang_ru:'Russian',lang_tr:'Turkish',lang_fr:'French',lang_de:'German',lang_es:'Spanish',lang_zh:'Chinese',lang_hi:'Hindi',lang_fa:'Persian',lang_it:'Italian',lang_nl:'Dutch',lang_sv:'Swedish'},ru:{subtitle:'Для профессионального дубляжа и перевода',subscribe:'Подписаться на канал',youtubeLink:'Subscribe to the channel',ttsTitle:'Текст в речь',selectLanguage:'Выбрать язык',voice:'Голос',typeText:'Введите текст...',speed:'Скорость',pitch:'Тон',volume:'Громкость',speak:'Воспроизвести',typeAndSpeak:'👋 Введите текст и нажмите',audioFilters:'Аудио фильтры',resetFilters:'🔄 Сбросить',presetMale:'👨 Мужской',presetRadio:'📻 Радио',presetWarm:'🌟 Тёплый',presetFast:'⚡ Быстрый',dubLang:'Язык дубляжа',srtFile:'SRT файл',dragOrClick:'Перетащите или нажмите',srtOrTxt:'.srt или .txt',orPaste:'Или вставьте контент',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nТекст...',analyzeFile:'📥 Анализировать',sentences:'предложений',copy:'📋 Копировать',generate:'Генерировать',silentProcessing:'<strong>Тихая</strong> обработка через облако',syncTiming:'Точная синхронизация с SRT',wavFile:'WAV файл для YouTube Dubbing',generateDub:'Создать дубляж',requiresServer:'Требуется запущенный сервер Render',processing:'Обработка...',remaining:'Осталось',elapsed:'Прошло',total:'Всего',cancel:'⏹ Отмена',ready:'Готово',downloadWAV:'⬇️ Скачать WAV',dubbing:'Дубляж',checkServer:'Убедитесь, что сервер Render запущен',srtTranslator:'SRT Переводчик',selectTransLang:'1. Выберите язык перевода',sourceText:'2. Исходный текст (SRT)',paste:'📋 Вставить',pasteSRTContent:'Вставьте содержимое SRT...',translate:'🚀 Перевести',result:'Результат',downloadSRT:'⬇️ Скачать SRT',cleanText:'Очистка текста',pasteSRTOrText:'Вставьте SRT или любой текст',pasteTextHere:'Вставьте текст здесь...',removeNumbers:'Удалить цифры',removeTimestamps:'Удалить метки времени',removeEmptyLines:'Удалить пустые строки',cleanTextBtn:'🧹 Очистить текст',textAfterClean:'Текст после очистки',download:'⬇️ Скачать',pasteAndClean:'Вставьте текст и нажмите Очистить',footer:'для дубляжа и перевода · GitHub + Render · gTTS · 100% Бесплатно',lang_ar:'Арабский',lang_en:'Английский',lang_ru:'Русский',lang_tr:'Турецкий',lang_fr:'Французский',lang_de:'Немецкий',lang_es:'Испанский',lang_zh:'Китайский',lang_hi:'Хинди',lang_fa:'Персидский',lang_it:'Итальянский',lang_nl:'Голландский',lang_sv:'Шведский'},tr:{subtitle:'Profesyonel Dublaj ve Çeviri için',subscribe:'Kanalı takip et',youtubeLink:'Subscribe to the channel',ttsTitle:'Metin Okuma',selectLanguage:'Dil seç',voice:'Ses',typeText:'Metin yaz...',speed:'Hız',pitch:'Perde',volume:'Ses',speak:'Oku',typeAndSpeak:'👋 Metin yaz ve Oku',audioFilters:'Ses Filtreleri',resetFilters:'🔄 Sıfırla',presetMale:'👨 Erkek',presetRadio:'📻 Radyo',presetWarm:'🌟 Sıcak',presetFast:'⚡ Hızlı',dubLang:'Dublaj Dili',srtFile:'SRT Dosyası',dragOrClick:'Sürükleyin veya tıklayın',srtOrTxt:'.srt veya .txt',orPaste:'Veya içerik yapıştır',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nMetin...',analyzeFile:'📥 Dosyayı analiz et',sentences:'cümle',copy:'📋 Kopyala',generate:'Oluştur',silentProcessing:'<strong>Sessiz</strong> bulut işleme',syncTiming:'SRT zamanlamaları ile senkronizasyon',wavFile:'YouTube Dubbing için WAV dosyası',generateDub:'Dublaj oluştur',requiresServer:'Render sunucusu çalışıyor olmalı',processing:'İşleniyor...',remaining:'Kalan',elapsed:'Geçen',total:'Toplam',cancel:'⏹ İptal',ready:'Hazır',downloadWAV:'⬇️ WAV indir',dubbing:'Dublaj',checkServer:'Render sunucusunun çalıştığından emin olun',srtTranslator:'SRT Çeviri',selectTransLang:'1. Çeviri dilini seç',sourceText:'2. Kaynak metin (SRT)',paste:'📋 Yapıştır',pasteSRTContent:'SRT içeriğini yapıştır...',translate:'🚀 Çevir',result:'Sonuç',downloadSRT:'⬇️ SRT indir',cleanText:'Metin Temizleme',pasteSRTOrText:'SRT veya herhangi bir metin yapıştır',pasteTextHere:'Metni buraya yapıştır...',removeNumbers:'Sayıları kaldır',removeTimestamps:'Zaman damgalarını kaldır',removeEmptyLines:'Boş satırları kaldır',cleanTextBtn:'🧹 Metni temizle',textAfterClean:'Temizlendikten sonra metin',download:'⬇️ İndir',pasteAndClean:'Metin yapıştır ve Temizle',footer:'Dublaj ve Çeviri için · GitHub + Render · gTTS · %100 Ücretsiz',lang_ar:'Arapça',lang_en:'İngilizce',lang_ru:'Rusça',lang_tr:'Türkçe',lang_fr:'Fransızca',lang_de:'Almanca',lang_es:'İspanyolca',lang_zh:'Çince',lang_hi:'Hintçe',lang_fa:'Farsça',lang_it:'İtalyanca',lang_nl:'Flemenkçe',lang_sv:'İsveççe'},fr:{subtitle:'Pour le doublage et la traduction professionnels',subscribe:"S'abonner à la chaîne",youtubeLink:'Subscribe to the channel',ttsTitle:'Synthèse vocale',selectLanguage:'Choisir la langue',voice:'Voix',typeText:'Tapez le texte...',speed:'Vitesse',pitch:'Hauteur',volume:'Volume',speak:'Parler',typeAndSpeak:'👋 Tapez un texte et cliquez Parler',audioFilters:'Filtres audio',resetFilters:'🔄 Réinitialiser',presetMale:'👨 Homme',presetRadio:'📻 Radio',presetWarm:'🌟 Chaud',presetFast:'⚡ Rapide',dubLang:'Langue de doublage',srtFile:'Fichier SRT',dragOrClick:'Glissez ou cliquez',srtOrTxt:'.srt ou .txt',orPaste:'Ou collez le contenu',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nTexte...',analyzeFile:'📥 Analyser le fichier',sentences:'phrases',copy:'📋 Copier',generate:'Générer',silentProcessing:'Traitement <strong>silencieux</strong> via cloud',syncTiming:'Synchronisation précise avec SRT',wavFile:'Fichier WAV pour YouTube Dubbing',generateDub:'Générer le doublage',requiresServer:'Nécessite un serveur Render en cours',processing:'Traitement...',remaining:'Restant',elapsed:'Écoulé',total:'Total',cancel:'⏹ Annuler',ready:'Prêt',downloadWAV:'⬇️ Télécharger WAV',dubbing:'Doublage',checkServer:'Assurez-vous que le serveur Render est en cours',srtTranslator:'Traducteur SRT',selectTransLang:'1. Choisissez la langue de traduction',sourceText:'2. Texte source (SRT)',paste:'📋 Coller',pasteSRTContent:'Collez le contenu SRT...',translate:'🚀 Traduire',result:'Résultat',downloadSRT:'⬇️ Télécharger SRT',cleanText:'Nettoyage de texte',pasteSRTOrText:'Collez SRT ou tout texte',pasteTextHere:'Collez le texte ici...',removeNumbers:'Supprimer les nombres',removeTimestamps:'Supprimer les horodatages',removeEmptyLines:'Supprimer les lignes vides',cleanTextBtn:'🧹 Nettoyer le texte',textAfterClean:'Texte après nettoyage',download:'⬇️ Télécharger',pasteAndClean:'Collez un texte et cliquez Nettoyer',footer:'pour le doublage et la traduction · GitHub + Render · gTTS · 100% Gratuit',lang_ar:'Arabe',lang_en:'Anglais',lang_ru:'Russe',lang_tr:'Turc',lang_fr:'Français',lang_de:'Allemand',lang_es:'Espagnol',lang_zh:'Chinois',lang_hi:'Hindi',lang_fa:'Persan',lang_it:'Italien',lang_nl:'Néerlandais',lang_sv:'Suédois'},de:{subtitle:'Für professionelles Dubbing & Übersetzung',subscribe:'Kanal abonnieren',youtubeLink:'Subscribe to the channel',ttsTitle:'Text zu Sprache',selectLanguage:'Sprache wählen',voice:'Stimme',typeText:'Text eingeben...',speed:'Geschwindigkeit',pitch:'Tonhöhe',volume:'Lautstärke',speak:'Sprechen',typeAndSpeak:'👋 Text eingeben und Sprechen klicken',audioFilters:'Audiofilter',resetFilters:'🔄 Zurücksetzen',presetMale:'👨 Männlich',presetRadio:'📻 Radio',presetWarm:'🌟 Warm',presetFast:'⚡ Schnell',dubLang:'Synchronisationssprache',srtFile:'SRT-Datei',dragOrClick:'Ziehen oder klicken',srtOrTxt:'.srt oder .txt',orPaste:'Oder Inhalt einfügen',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nText...',analyzeFile:'📥 Datei analysieren',sentences:'Sätze',copy:'📋 Kopieren',generate:'Generieren',silentProcessing:'<strong>Stille</strong> Verarbeitung über Cloud',syncTiming:'Präzise Synchronisation mit SRT',wavFile:'WAV-Datei für YouTube Dubbing',generateDub:'Dubbing generieren',requiresServer:'Render-Server muss laufen',processing:'Verarbeitung...',remaining:'Verbleibend',elapsed:'Verstrichen',total:'Gesamt',cancel:'⏹ Abbrechen',ready:'Fertig',downloadWAV:'⬇️ WAV herunterladen',dubbing:'Dubbing',checkServer:'Stellen Sie sicher, dass der Render-Server läuft',srtTranslator:'SRT-Übersetzer',selectTransLang:'1. Übersetzungssprache wählen',sourceText:'2. Quelltext (SRT)',paste:'📋 Einfügen',pasteSRTContent:'SRT-Inhalt einfügen...',translate:'🚀 Übersetzen',result:'Ergebnis',downloadSRT:'⬇️ SRT herunterladen',cleanText:'Textbereinigung',pasteSRTOrText:'SRT oder beliebigen Text einfügen',pasteTextHere:'Text hier einfügen...',removeNumbers:'Zahlen entfernen',removeTimestamps:'Zeitstempel entfernen',removeEmptyLines:'Leere Zeilen entfernen',cleanTextBtn:'🧹 Text bereinigen',textAfterClean:'Text nach Bereinigung',download:'⬇️ Herunterladen',pasteAndClean:'Text einfügen und Bereinigen klicken',footer:'für Dubbing & Übersetzung · GitHub + Render · gTTS · 100% Kostenlos',lang_ar:'Arabisch',lang_en:'Englisch',lang_ru:'Russisch',lang_tr:'Türkisch',lang_fr:'Französisch',lang_de:'Deutsch',lang_es:'Spanisch',lang_zh:'Chinesisch',lang_hi:'Hindi',lang_fa:'Persisch',lang_it:'Italienisch',lang_nl:'Niederländisch',lang_sv:'Schwedisch'},es:{subtitle:'Para doblaje y traducción profesionales',subscribe:'Suscribirse al canal',youtubeLink:'Subscribe to the channel',ttsTitle:'Texto a voz',selectLanguage:'Seleccionar idioma',voice:'Voz',typeText:'Escribe texto...',speed:'Velocidad',pitch:'Tono',volume:'Volumen',speak:'Hablar',typeAndSpeak:'👋 Escribe texto y haz clic Hablar',audioFilters:'Filtros de audio',resetFilters:'🔄 Restablecer',presetMale:'👨 Hombre',presetRadio:'📻 Radio',presetWarm:'🌟 Cálido',presetFast:'⚡ Rápido',dubLang:'Idioma de doblaje',srtFile:'Archivo SRT',dragOrClick:'Arrastra o haz clic',srtOrTxt:'.srt o .txt',orPaste:'O pega el contenido',pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nTexto...',analyzeFile:'📥 Analizar archivo',sentences:'frases',copy:'📋 Copiar',generate:'Generar',silentProcessing:'Procesamiento <strong>silencioso</strong> en la nube',syncTiming:'Sincronización precisa con SRT',wavFile:'Archivo WAV para YouTube Dubbing',generateDub:'Generar doblaje',requiresServer:'Requiere servidor Render ejecutándose',processing:'Procesando...',remaining:'Restante',elapsed:'Transcurrido',total:'Total',cancel:'⏹ Cancelar',ready:'Listo',downloadWAV:'⬇️ Descargar WAV',dubbing:'Doblaje',checkServer:'Asegúrate de que el servidor Render esté ejecutándose',srtTranslator:'Traductor SRT',selectTransLang:'1. Selecciona idioma de traducción',sourceText:'2. Texto fuente (SRT)',paste:'📋 Pegar',pasteSRTContent:'Pega contenido SRT...',translate:'🚀 Traducir',result:'Resultado',downloadSRT:'⬇️ Descargar SRT',cleanText:'Limpieza de texto',pasteSRTOrText:'Pega SRT o cualquier texto',pasteTextHere:'Pega texto aquí...',removeNumbers:'Eliminar números',removeTimestamps:'Eliminar marcas de tiempo',removeEmptyLines:'Eliminar líneas vacías',cleanTextBtn:'🧹 Limpiar texto',textAfterClean:'Texto después de limpiar',download:'⬇️ Descargar',pasteAndClean:'Pega texto y haz clic Limpiar',footer:'para doblaje y traducción · GitHub + Render · gTTS · 100% Gratis',lang_ar:'Árabe',lang_en:'Inglés',lang_ru:'Ruso',lang_tr:'Turco',lang_fr:'Francés',lang_de:'Alemán',lang_es:'Español',lang_zh:'Chino',lang_hi:'Hindi',lang_fa:'Persa',lang_it:'Italiano',lang_nl:'Neerlandés',lang_sv:'Sueco'}};
 
 let currentLanguage='ar';
 const LANGS=[{c:'en-US',g:'en',n:'English',f:'🇺🇸',code:'en'},{c:'es-ES',g:'es',n:'Español',f:'🇪🇸',code:'es'},{c:'ru-RU',g:'ru',n:'Русский',f:'🇷🇺',code:'ru'},{c:'tr-TR',g:'tr',n:'Türkçe',f:'🇹🇷',code:'tr'},{c:'de-DE',g:'de',n:'Deutsch',f:'🇩🇪',code:'de'},{c:'zh-CN',g:'zh-CN',n:'中文',f:'🇨🇳',code:'zh'},{c:'hi-IN',g:'hi',n:'हिन्दी',f:'🇮🇳',code:'hi'},{c:'fa-IR',g:'fa',n:'فارسی',f:'🇮🇷',code:'fa'},{c:'fr-FR',g:'fr',n:'Français',f:'🇫🇷',code:'fr'},{c:'sv-SE',g:'sv',n:'Svenska',f:'🇸🇪',code:'sv'},{c:'it-IT',g:'it',n:'Italiano',f:'🇮🇹',code:'it'},{c:'nl-NL',g:'nl',n:'Nederlands',f:'🇳🇱',code:'nl'},{c:'ar-SA',g:'ar',n:'العربية',f:'🇸🇦',code:'ar'}];
