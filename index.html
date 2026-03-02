@@ -8,8 +8,8 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a0a1a;color:#e0e0ff;min-height:100vh;overflow-x:hidden}
 .bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 20%,#1a0533 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,#001233 0%,transparent 50%),#0a0a1a}
-.wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr;gap:24px}
-@media(min-width:1024px){.wrap{grid-template-columns:320px 1fr;align-items:start}}
+.wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr;gap:24px}
+@media(min-width:1200px){.wrap{grid-template-columns:280px 1fr 320px;align-items:start}}
 header{text-align:center;margin-bottom:28px;grid-column:1/-1}
 .logo-container{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:20px}
 .logo-img{width:120px;height:120px;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(167,139,250,.3);background:linear-gradient(135deg,#1a0533,#001233);display:flex;align-items:center;justify-content:center;padding:10px;transition:transform .3s ease}
@@ -122,7 +122,14 @@ footer{text-align:center;padding:18px;color:#374151;font-size:.75rem;grid-column
 
 /* ✅ الفلاتر على اليسار - ثابتة */
 .filters-panel{position:sticky;top:24px}
-@media(max-width:1023px){.filters-panel{position:static}}
+@media(max-width:1199px){.filters-panel{position:static;order:-1}}
+
+/* ✅ توزيع الأعمدة */
+@media(min-width:1200px){
+  .col-tts{order:3}      /* نطق النص - يسار */
+  .col-dub{order:2}      /* دبلجة - وسط */
+  .col-trans{order:1}    /* ترجمة - يمين */
+}
 
 @media(max-width:600px){h1{font-size:1.5rem}.lg{grid-template-columns:repeat(3,1fr)}.sit{display:none}.cr{gap:12px}.cv{font-size:1.2rem}.tg{grid-template-columns:1fr}}
 </style>
@@ -135,7 +142,8 @@ footer{text-align:center;padding:18px;color:#374151;font-size:.75rem;grid-column
 <header>
   <div class="logo-container">
     <div class="logo-img">
-      <img src="https://i.imgur.com/lKwDdho.png" alt="ALHASHMI Logo">
+      <!-- ✅ استبدل الرابط أدناه برابط الشعار المباشر -->
+      <img src="https://i.imgur.com/YOUR_LOGO.png" alt="ALHASHMI Logo" id="siteLogo">
     </div>
     <div>
       <h1>ALHASHMI</h1>
@@ -145,7 +153,133 @@ footer{text-align:center;padding:18px;color:#374151;font-size:.75rem;grid-column
   <p class="sub" style="color:#6b7280;font-size:.85rem">سيرفر سحابي + واجهة ويب · مجاني 100%</p>
 </header>
 
-<!-- ✅ الفلاتر على اليسار -->
+<!-- ✅ نطق النص - يسار -->
+<div class="col-tts">
+  <div class="card">
+    <div class="sh"><span class="sn">✏️</span> نطق النص</div>
+    <span class="lbl">اختر اللغة</span>
+    <div class="lg" id="g1"></div>
+    <span class="lbl">الصوت</span>
+    <select id="vs"></select>
+    <div class="tw"><textarea id="ti" placeholder="اكتب النص..."></textarea><span class="cc" id="cc">0</span></div>
+    <div class="ctrls">
+      <div class="cg"><label>السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
+      <div class="cg"><label>الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
+      <div class="cg"><label>الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
+    </div>
+    <div class="wv" id="wv1"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+    <div class="br">
+      <button class="btn bs" id="sb" onclick="tSpeak()"><span id="si">▶</span><span id="st2">نطق</span></button>
+      <button class="btn bsm" onclick="tPause()">⏸</button>
+      <button class="btn bsm" onclick="clrTxt()">🗑</button>
+    </div>
+    <div class="st i" id="s1">👋 اكتب نصاً واضغط نطق</div>
+  </div>
+</div>
+
+<!-- ✅ دبلجة SRT - وسط -->
+<div class="col-dub">
+  <div class="card">
+    <div class="sh"><span class="sn">١</span> لغة الدبلجة</div>
+    <div class="lg" id="g2"></div>
+    <div class="ctrls" style="margin-bottom:0">
+      <div class="cg"><label>السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
+      <div class="cg"><label>الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sh"><span class="sn">٢</span> ملف SRT</div>
+    <div class="ua">
+      <input type="file" accept=".srt,.txt" onchange="ldSRT(event)">
+      <div class="ui">📂</div>
+      <div class="ut">اسحب أو اضغط</div>
+      <div class="us">.srt أو .txt</div>
+    </div>
+    <span class="lbl">أو الصق المحتوى</span>
+    <textarea id="srtP" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:70px;font-size:.78rem;font-family:monospace"></textarea>
+    <button class="btn bsm" style="margin-top:6px;font-size:.78rem" onclick="prsPaste()">📥 تحليل</button>
+    <div id="srtInfo" style="display:none;margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="color:#34d399;font-size:.82rem;font-weight:700">✅ <span id="sCnt">0</span> جملة · <span id="sDur">0:00:00</span></span>
+        <button class="btn bsm" style="padding:4px 10px;font-size:.7rem" onclick="cpySRT()">📋</button>
+      </div>
+      <div class="sl" id="srtL"></div>
+    </div>
+  </div>
+
+  <div class="card" id="dubCard" style="display:none">
+    <div class="sh"><span class="sn">٣</span> التوليد</div>
+    <div class="ib">
+      <div class="ir">🔇 <span>معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
+      <div class="ir">⏱️ <span>تزامن دقيق مع توقيتات SRT</span></div>
+      <div class="ir">📤 <span>ملف WAV لـ YouTube Dubbing</span></div>
+    </div>
+    <button class="gb" id="genBtn" onclick="stDub()">
+      <span class="gi">🎬</span>
+      <span class="gl">توليد الدبلجة</span>
+      <span class="gs">يتطلب سيرفر Render شغال</span>
+    </button>
+
+    <div id="dubP" style="display:none">
+      <div style="height:16px"></div>
+      <div class="ph"><div class="pd"></div><div class="pt" id="phTxt">جارٍ...</div></div>
+      <div class="cb">
+        <div class="cr">
+          <div class="ci"><div class="cl">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
+          <div class="ci"><div class="cl">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
+          <div class="ci"><div class="cl">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
+        </div>
+        <div class="wv on" style="height:26px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+      </div>
+      <div class="pw">
+        <div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div>
+        <div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div>
+      </div>
+      <div class="cs" id="curS">جارٍ...</div>
+      <div class="sc" id="sntC"></div>
+      <button class="btn bsm" style="width:100%;justify-content:center" onclick="cnclDub()">⏹ إلغاء</button>
+    </div>
+
+    <div id="dubRes" style="display:none">
+      <div class="rb">
+        <div class="rt">🎉 جاهز</div>
+        <audio id="dubAu" controls style="width:100%;margin-bottom:12px;border-radius:8px"></audio>
+        <button class="db" onclick="dlRes()">⬇️ تنزيل WAV</button>
+        <div class="yh">📤 YouTube Studio → دبلجة</div>
+      </div>
+    </div>
+    <div class="st i" id="dubSt">تأكد سيرفر Render شغال ثم اضغط</div>
+  </div>
+</div>
+
+<!-- ✅ ترجمة SRT - يمين -->
+<div class="col-trans">
+  <div class="card tp">
+    <div class="sh"><span class="sn" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</span> مترجم SRT</div>
+    <div class="lbl">1. اختر لغة الترجمة</div>
+    <div class="tg" id="transLangs"></div>
+    <div class="lbl-row">
+      <span class="lbl" style="margin-bottom:0">2. النص المصدر (SRT)</span>
+      <button class="btn bsm" style="padding:6px 12px;font-size:.75rem" onclick="pasteSrc()">📋 لصق</button>
+    </div>
+    <textarea id="srcSRT" placeholder="الصق محتوى SRT..." style="min-height:100px;font-family:monospace;font-size:.8rem"></textarea>
+    <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="startTrans()">🚀 ترجمة</button>
+    <div id="transRes" style="display:none;margin-top:16px">
+      <div class="trs">
+        <div class="trh">
+          <span class="trt">✅ النتيجة</span>
+          <button class="btn bsm" style="padding:6px 12px;font-size:.75rem" onclick="copyResult()">📋 نسخ</button>
+        </div>
+        <div class="trc" id="transOut"></div>
+        <button class="db" style="margin-top:12px" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
+      </div>
+    </div>
+    <div class="st i" id="transSt" style="margin-top:12px">جاهز</div>
+  </div>
+</div>
+
+<!-- ✅ الفلاتر على اليسار (تحت نطق النص) -->
 <div class="filters-panel">
   <div class="card" id="filtersCard" style="display:none">
     <div class="sh"><span class="sn">🎛️</span> الفلاتر الصوتية</div>
@@ -184,143 +318,12 @@ footer{text-align:center;padding:18px;color:#374151;font-size:.75rem;grid-column
     
     <button class="btn bsm" style="width:100%;justify-content:center;margin-top:12px" onclick="resetFilters()">🔄 إعادة تعيين الفلاتر</button>
     
-    <!-- ✅ Presets جاهزة -->
     <div class="sh" style="margin-top:20px"><span class="sn">⚡</span> إعدادات سريعة</div>
     <div class="sg">
       <button class="sbtn" onclick="applyPreset('male')">👨 صوت رجالي</button>
       <button class="sbtn" onclick="applyPreset('radio')">📻 راديو</button>
       <button class="sbtn" onclick="applyPreset('warm')">🌟 دافئ</button>
       <button class="sbtn" onclick="applyPreset('fast')">⚡ سريع</button>
-    </div>
-  </div>
-</div>
-
-<!-- ✅ المحتوى الرئيسي -->
-<div>
-  <div class="card tp">
-    <div class="sh"><span class="sn" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</span> مترجم SRT</div>
-    <div class="lbl">1. اختر لغة الترجمة</div>
-    <div class="tg" id="transLangs"></div>
-    <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0">2. النص المصدر (SRT)</span>
-      <button class="btn bsm" style="padding:6px 12px;font-size:.75rem" onclick="pasteSrc()">📋 لصق</button>
-    </div>
-    <textarea id="srcSRT" placeholder="الصق محتوى SRT..." style="min-height:100px;font-family:monospace;font-size:.8rem"></textarea>
-    <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="startTrans()">🚀 ترجمة</button>
-    <div id="transRes" style="display:none;margin-top:16px">
-      <div class="trs">
-        <div class="trh">
-          <span class="trt">✅ النتيجة</span>
-          <button class="btn bsm" style="padding:6px 12px;font-size:.75rem" onclick="copyResult()">📋 نسخ</button>
-        </div>
-        <div class="trc" id="transOut"></div>
-        <button class="db" style="margin-top:12px" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
-      </div>
-    </div>
-    <div class="st i" id="transSt" style="margin-top:12px">جاهز</div>
-  </div>
-
-  <div>
-    <div class="tabs">
-      <button class="tb on" onclick="swTab('t1',this)">✏️ نطق النص</button>
-      <button class="tb" onclick="swTab('t2',this)">🎬 دبلجة SRT</button>
-    </div>
-
-    <div id="t1" class="tc on">
-      <div class="card">
-        <span class="lbl">اختر اللغة</span>
-        <div class="lg" id="g1"></div>
-        <span class="lbl">الصوت</span>
-        <select id="vs"></select>
-        <div class="tw"><textarea id="ti" placeholder="اكتب النص..."></textarea><span class="cc" id="cc">0</span></div>
-        <div class="ctrls">
-          <div class="cg"><label>السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
-          <div class="cg"><label>الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
-          <div class="cg"><label>الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
-        </div>
-        <div class="wv" id="wv1"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
-        <div class="br">
-          <button class="btn bs" id="sb" onclick="tSpeak()"><span id="si">▶</span><span id="st2">نطق</span></button>
-          <button class="btn bsm" onclick="tPause()">⏸</button>
-          <button class="btn bsm" onclick="clrTxt()">🗑</button>
-        </div>
-        <div class="st i" id="s1">👋 اكتب نصاً واضغط نطق</div>
-      </div>
-    </div>
-
-    <div id="t2" class="tc">
-      <div class="card">
-        <div class="sh"><span class="sn">١</span> لغة الدبلجة</div>
-        <div class="lg" id="g2"></div>
-        <div class="ctrls" style="margin-bottom:0">
-          <div class="cg"><label>السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
-          <div class="cg"><label>الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="sh"><span class="sn">٢</span> ملف SRT</div>
-        <div class="ua">
-          <input type="file" accept=".srt,.txt" onchange="ldSRT(event)">
-          <div class="ui">📂</div>
-          <div class="ut">اسحب أو اضغط</div>
-          <div class="us">.srt أو .txt</div>
-        </div>
-        <span class="lbl">أو الصق المحتوى</span>
-        <textarea id="srtP" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:70px;font-size:.78rem;font-family:monospace"></textarea>
-        <button class="btn bsm" style="margin-top:6px;font-size:.78rem" onclick="prsPaste()">📥 تحليل</button>
-        <div id="srtInfo" style="display:none;margin-top:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <span style="color:#34d399;font-size:.82rem;font-weight:700">✅ <span id="sCnt">0</span> جملة · <span id="sDur">0:00:00</span></span>
-            <button class="btn bsm" style="padding:4px 10px;font-size:.7rem" onclick="cpySRT()">📋</button>
-          </div>
-          <div class="sl" id="srtL"></div>
-        </div>
-      </div>
-
-      <div class="card" id="dubCard" style="display:none">
-        <div class="sh"><span class="sn">٣</span> التوليد</div>
-        <div class="ib">
-          <div class="ir">🔇 <span>معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
-          <div class="ir">⏱️ <span>تزامن دقيق مع توقيتات SRT</span></div>
-          <div class="ir">📤 <span>ملف WAV لـ YouTube Dubbing</span></div>
-        </div>
-        <button class="gb" id="genBtn" onclick="stDub()">
-          <span class="gi">🎬</span>
-          <span class="gl">توليد الدبلجة</span>
-          <span class="gs">يتطلب سيرفر Render شغال</span>
-        </button>
-
-        <div id="dubP" style="display:none">
-          <div style="height:16px"></div>
-          <div class="ph"><div class="pd"></div><div class="pt" id="phTxt">جارٍ...</div></div>
-          <div class="cb">
-            <div class="cr">
-              <div class="ci"><div class="cl">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
-              <div class="ci"><div class="cl">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
-              <div class="ci"><div class="cl">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
-            </div>
-            <div class="wv on" style="height:26px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
-          </div>
-          <div class="pw">
-            <div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div>
-            <div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div>
-          </div>
-          <div class="cs" id="curS">جارٍ...</div>
-          <div class="sc" id="sntC"></div>
-          <button class="btn bsm" style="width:100%;justify-content:center" onclick="cnclDub()">⏹ إلغاء</button>
-        </div>
-
-        <div id="dubRes" style="display:none">
-          <div class="rb">
-            <div class="rt">🎉 جاهز</div>
-            <audio id="dubAu" controls style="width:100%;margin-bottom:12px;border-radius:8px"></audio>
-            <button class="db" onclick="dlRes()">⬇️ تنزيل WAV</button>
-            <div class="yh">📤 YouTube Studio → دبلجة</div>
-          </div>
-        </div>
-        <div class="st i" id="dubSt">تأكد سيرفر Render شغال ثم اضغط</div>
-      </div>
     </div>
   </div>
 </div>
