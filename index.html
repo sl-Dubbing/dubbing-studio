@@ -12,9 +12,43 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 @media(min-width:1200px){.wrap{grid-template-columns:1fr 1fr 1fr;align-items:start}}
 header{text-align:center;margin-bottom:32px;grid-column:1/-1}
 .logo-container{display:flex;flex-direction:column;align-items:center;gap:12px}
-.logo-img{width:100px;height:100px;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(167,139,250,.4);background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;padding:8px;transition:transform .3s ease}
-.logo-img:hover{transform:scale(1.05)}
-.logo-img img{width:100%;height:100%;object-fit:contain}
+
+/* ✅ شعار شفاف ومتحرك */
+.logo-img{
+  width:100px;
+  height:100px;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 10px 40px rgba(167,139,250,.4);
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px;
+  animation:logoFloat 3s ease-in-out infinite,logoGlow 2s ease-in-out infinite alternate;
+  transition:transform .3s ease
+}
+.logo-img:hover{transform:scale(1.1) rotate(5deg)}
+.logo-img img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 0 10px rgba(167,139,250,.5));
+  animation:logoPulse 2s ease-in-out infinite
+}
+@keyframes logoFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+@keyframes logoGlow{
+  0%{box-shadow:0 10px 40px rgba(167,139,250,.4)}
+  100%{box-shadow:0 10px 60px rgba(167,139,250,.8),0 0 20px rgba(167,139,250,.6)}
+}
+@keyframes logoPulse{
+  0%,100%{filter:drop-shadow(0 0 10px rgba(167,139,250,.5))}
+  50%{filter:drop-shadow(0 0 20px rgba(167,139,250,.8))}
+}
+
 .logo-container h1{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px}
 .logo-container .subtitle{color:#a78bfa;font-size:.85rem;font-weight:600}
 .logo-container .youtube-link{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,0,0,.1);border:1px solid rgba(255,0,0,.3);border-radius:20px;color:#ff4444;font-size:.75rem;font-weight:600;text-decoration:none;transition:all .3s;margin-top:8px}
@@ -26,7 +60,7 @@ header{text-align:center;margin-bottom:32px;grid-column:1/-1}
 .lang-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;color:#e0e0ff;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .3s;backdrop-filter:blur(10px)}
 .lang-btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-2px)}
 .lang-btn svg{width:20px;height:20px;fill:#e0e0ff}
-.lang-dropdown{position:absolute;top:100%;left:0;margin-top:8px;background:rgba(255,255,255,.95);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);min-width:200px;overflow:hidden;transform:scale(0);transform-origin:top left;transition:all .3s;opacity:0}
+.lang-dropdown{position:absolute;top:100%;left:0;margin-top:8px;background:rgba(255,255,255,.98);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);min-width:220px;overflow:hidden;transform:scale(0);transform-origin:top left;transition:all .3s;opacity:0}
 .lang-dropdown.show{transform:scale(1);opacity:1}
 .lang-option{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;transition:all .2s;border-bottom:1px solid rgba(0,0,0,.05)}
 .lang-option:last-child{border-bottom:none}
@@ -184,10 +218,10 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
     </div>
     <div>
       <h1>ALHASHMI</h1>
-      <p class="subtitle">للدبلجة والترجمة الاحترافية</p>
-      <a href="https://www.youtube.com/@-photosho" target="_blank" class="youtube-link" title="اشترك في القناة">
+      <p class="subtitle" data-i18n="subtitle">للدبلجة والترجمة الاحترافية</p>
+      <a href="https://www.youtube.com/@-photosho" target="_blank" class="youtube-link" data-i18n="youtubeLink" title="Subscribe to the channel">
         <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        <span>اشترك في القناة</span>
+        <span data-i18n="subscribe">اشترك في القناة</span>
       </a>
     </div>
   </div>
@@ -198,31 +232,31 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
   <div class="card">
     <div class="card-header">
       <div class="card-icon">✏️</div>
-      <span class="card-title">نطق النص</span>
+      <span class="card-title" data-i18n="ttsTitle">نطق النص</span>
     </div>
-    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">اختر اللغة</span></div>
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="selectLanguage">اختر اللغة</span></div>
     <div class="lg" id="g1" style="margin-bottom:10px"></div>
-    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الصوت</span></div>
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="voice">الصوت</span></div>
     <select id="vs" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#e0e0ff;font-size:.75rem;margin-bottom:10px"></select>
-    <div class="tw"><textarea id="ti" placeholder="اكتب النص..." style="min-height:80px;font-size:.8rem"></textarea><span class="cc" id="cc">0</span></div>
+    <div class="tw"><textarea id="ti" data-i18n-placeholder="typeText" placeholder="اكتب النص..." style="min-height:80px;font-size:.8rem"></textarea><span class="cc" id="cc">0</span></div>
     <div class="ctrls" style="margin-bottom:10px">
-      <div class="cg"><label style="font-size:.55rem">السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
-      <div class="cg"><label style="font-size:.55rem">الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
-      <div class="cg"><label style="font-size:.55rem">الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
+      <div class="cg"><label style="font-size:.55rem" data-i18n="speed">السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
+      <div class="cg"><label style="font-size:.55rem" data-i18n="pitch">الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
+      <div class="cg"><label style="font-size:.55rem" data-i18n="volume">الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
     </div>
     <div class="wv" id="wv1" style="height:20px;margin:8px 0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
     <div class="br">
-      <button class="btn bs" id="sb" onclick="tSpeak()" style="padding:8px 12px;font-size:.75rem"><span id="si">▶</span><span id="st2">نطق</span></button>
+      <button class="btn bs" id="sb" onclick="tSpeak()" style="padding:8px 12px;font-size:.75rem"><span id="si">▶</span><span id="st2" data-i18n="speak">نطق</span></button>
       <button class="btn bsm" onclick="tPause()" style="padding:8px 10px;font-size:.75rem">⏸</button>
       <button class="btn bsm" onclick="clrTxt()" style="padding:8px 10px;font-size:.75rem">🗑</button>
     </div>
-    <div class="st i" id="s1" style="margin-top:8px;font-size:.7rem">👋 اكتب نصاً واضغط نطق</div>
+    <div class="st i" id="s1" style="margin-top:8px;font-size:.7rem" data-i18n="typeAndSpeak">👋 اكتب نصاً واضغط نطق</div>
   </div>
   <div class="filters-card" id="filtersCard" style="display:none">
-    <div class="fc-title"><span>🎛️</span> الفلاتر الصوتية</div>
-    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">السرعة</span><span class="rv" id="speedVal">1.0x</span></div>
+    <div class="fc-title"><span>🎛️</span> <span data-i18n="audioFilters">الفلاتر الصوتية</span></div>
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="speed">السرعة</span><span class="rv" id="speedVal">1.0x</span></div>
     <input type="range" id="filterSpeed" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الطبقة</span><span class="rv" id="pitchVal">1.0</span></div>
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="pitch">الطبقة</span><span class="rv" id="pitchVal">1.0</span></div>
     <input type="range" id="filterPitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
     <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Bass</span><span class="rv" id="bassVal">0dB</span></div>
     <input type="range" id="eqBass" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
@@ -230,12 +264,12 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
     <input type="range" id="eqMid" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
     <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Treble</span><span class="rv" id="trebleVal">0dB</span></div>
     <input type="range" id="eqTreble" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-    <button class="btn bsm" style="width:100%;justify-content:center;margin-top:8px;font-size:.7rem;padding:6px" onclick="resetFilters()">🔄 إعادة تعيين</button>
+    <button class="btn bsm" style="width:100%;justify-content:center;margin-top:8px;font-size:.7rem;padding:6px" data-i18n="resetFilters" onclick="resetFilters()">🔄 إعادة تعيين</button>
     <div class="sg">
-      <button class="sbtn" onclick="applyPreset('male')">👨 رجالي</button>
-      <button class="sbtn" onclick="applyPreset('radio')">📻 راديو</button>
-      <button class="sbtn" onclick="applyPreset('warm')">🌟 دافئ</button>
-      <button class="sbtn" onclick="applyPreset('fast')">⚡ سريع</button>
+      <button class="sbtn" onclick="applyPreset('male')" data-i18n="presetMale">👨 رجالي</button>
+      <button class="sbtn" onclick="applyPreset('radio')" data-i18n="presetRadio">📻 راديو</button>
+      <button class="sbtn" onclick="applyPreset('warm')" data-i18n="presetWarm">🌟 دافئ</button>
+      <button class="sbtn" onclick="applyPreset('fast')" data-i18n="presetFast">⚡ سريع</button>
     </div>
   </div>
 </div>
@@ -245,32 +279,32 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
   <div class="card">
     <div class="card-header">
       <div class="card-icon">🎬</div>
-      <span class="card-title">لغة الدبلجة</span>
+      <span class="card-title" data-i18n="dubLang">لغة الدبلجة</span>
     </div>
     <div class="lg" id="g2"></div>
     <div class="ctrls" style="margin-bottom:0">
-      <div class="cg"><label>السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
-      <div class="cg"><label>الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
+      <div class="cg"><label data-i18n="speed">السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
+      <div class="cg"><label data-i18n="volume">الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
     </div>
   </div>
   <div class="card">
     <div class="card-header">
       <div class="card-icon">📂</div>
-      <span class="card-title">ملف SRT</span>
+      <span class="card-title" data-i18n="srtFile">ملف SRT</span>
     </div>
     <div class="ua">
       <input type="file" accept=".srt,.txt" onchange="ldSRT(event)">
       <div class="ui">📁</div>
-      <div class="ut">اسحب أو اضغط</div>
-      <div class="us">.srt أو .txt</div>
+      <div class="ut" data-i18n="dragOrClick">اسحب أو اضغط</div>
+      <div class="us" data-i18n="srtOrTxt">.srt أو .txt</div>
     </div>
-    <span class="lbl">أو الصق المحتوى</span>
-    <textarea id="srtP" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
-    <button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" onclick="prsPaste()">📥 تحليل الملف</button>
+    <span class="lbl" data-i18n="orPaste">أو الصق المحتوى</span>
+    <textarea id="srtP" data-i18n-placeholder="pasteSRT" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
+    <button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" data-i18n="analyzeFile" onclick="prsPaste()">📥 تحليل الملف</button>
     <div id="srtInfo" style="display:none;margin-top:12px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> جملة · <span id="sDur">0:00:00</span></span>
-        <button class="btn bsm" style="padding:4px 8px;font-size:.65rem" onclick="cpySRT()">📋</button>
+        <span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> <span data-i18n="sentences">جملة</span> · <span id="sDur">0:00:00</span></span>
+        <button class="btn bsm" style="padding:4px 8px;font-size:.65rem" data-i18n="copy" onclick="cpySRT()">📋</button>
       </div>
       <div class="sl" id="srtL"></div>
     </div>
@@ -278,25 +312,25 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
   <div class="card" id="dubCard" style="display:none">
     <div class="card-header">
       <div class="card-icon">⚡</div>
-      <span class="card-title">التوليد</span>
+      <span class="card-title" data-i18n="generate">التوليد</span>
     </div>
     <div class="ib">
-      <div class="ir">🔇 <span>معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
-      <div class="ir">⏱️ <span>تزامن دقيق مع توقيتات SRT</span></div>
-      <div class="ir">📤 <span>ملف WAV لـ YouTube Dubbing</span></div>
+      <div class="ir">🔇 <span data-i18n="silentProcessing">معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
+      <div class="ir">⏱️ <span data-i18n="syncTiming">تزامن دقيق مع توقيتات SRT</span></div>
+      <div class="ir">📤 <span data-i18n="wavFile">ملف WAV لـ YouTube Dubbing</span></div>
     </div>
     <button class="gb" id="genBtn" onclick="stDub()">
       <span class="gi">🎬</span>
-      <span class="gl">توليد الدبلجة</span>
-      <span class="gs">يتطلب سيرفر Render شغال</span>
+      <span class="gl" data-i18n="generateDub">توليد الدبلجة</span>
+      <span class="gs" data-i18n="requiresServer">يتطلب سيرفر Render شغال</span>
     </button>
     <div id="dubP" style="display:none">
-      <div class="ph"><div class="pd"></div><div class="pt" id="phTxt">جارٍ...</div></div>
+      <div class="ph"><div class="pd"></div><div class="pt" id="phTxt" data-i18n="processing">جارٍ...</div></div>
       <div class="cb">
         <div class="cr">
-          <div class="ci"><div class="cl">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
-          <div class="ci"><div class="cl">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
-          <div class="ci"><div class="cl">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
+          <div class="ci"><div class="cl" data-i18n="remaining">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
+          <div class="ci"><div class="cl" data-i18n="elapsed">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
+          <div class="ci"><div class="cl" data-i18n="total">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
         </div>
         <div class="wv on" style="height:22px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
       </div>
@@ -304,19 +338,19 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
         <div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div>
         <div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div>
       </div>
-      <div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px">جارٍ...</div>
+      <div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px" data-i18n="processing">جارٍ...</div>
       <div class="sc" id="sntC" style="text-align:center;font-size:.65rem;color:#4b5563;font-family:monospace;margin-bottom:10px"></div>
-      <button class="btn bsm" style="width:100%;justify-content:center" onclick="cnclDub()">⏹ إلغاء</button>
+      <button class="btn bsm" style="width:100%;justify-content:center" data-i18n="cancel" onclick="cnclDub()">⏹ إلغاء</button>
     </div>
     <div id="dubRes" style="display:none">
       <div class="rb">
-        <div class="rt">🎉 جاهز</div>
+        <div class="rt">🎉 <span data-i18n="ready">جاهز</span></div>
         <audio id="dubAu" controls style="width:100%;margin-bottom:10px;border-radius:8px"></audio>
-        <button class="db" onclick="dlRes()">⬇️ تنزيل WAV</button>
-        <div class="yh" style="font-size:.65rem;color:#6b7280;text-align:center;margin-top:8px">📤 YouTube Studio → دبلجة</div>
+        <button class="db" data-i18n="downloadWAV" onclick="dlRes()">⬇️ تنزيل WAV</button>
+        <div class="yh" style="font-size:.65rem;color:#6b7280;text-align:center;margin-top:8px">📤 YouTube Studio → <span data-i18n="dubbing">دبلجة</span></div>
       </div>
     </div>
-    <div class="st i" id="dubSt" style="margin-top:12px">تأكد سيرفر Render شغال ثم اضغط</div>
+    <div class="st i" id="dubSt" style="margin-top:12px" data-i18n="checkServer">تأكد سيرفر Render شغال ثم اضغط</div>
   </div>
 </div>
 
@@ -325,84 +359,519 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
   <div class="card tp" style="border-top:4px solid #34d399">
     <div class="card-header">
       <div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div>
-      <span class="card-title">مترجم SRT</span>
+      <span class="card-title" data-i18n="srtTranslator">مترجم SRT</span>
     </div>
-    <div class="lbl">1. اختر لغة الترجمة</div>
+    <div class="lbl" data-i18n="selectTransLang">1. اختر لغة الترجمة</div>
     <div class="tg" id="transLangs"></div>
     <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0">2. النص المصدر (SRT)</span>
-      <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteSrc()">📋 لصق</button>
+      <span class="lbl" style="margin-bottom:0" data-i18n="sourceText">2. النص المصدر (SRT)</span>
+      <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteSrc()">📋 لصق</button>
     </div>
-    <textarea id="srcSRT" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
-    <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="startTrans()">🚀 ترجمة</button>
+    <textarea id="srcSRT" data-i18n-placeholder="pasteSRTContent" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
+    <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" data-i18n="translate" onclick="startTrans()">🚀 ترجمة</button>
     <div id="transRes" style="display:none;margin-top:14px">
       <div class="trs">
         <div class="trh">
-          <span class="trt">✅ النتيجة</span>
-          <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="copyResult()">📋 نسخ</button>
+          <span class="trt">✅ <span data-i18n="result">النتيجة</span></span>
+          <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="copy" onclick="copyResult()">📋 نسخ</button>
         </div>
         <div class="trc" id="transOut"></div>
-        <button class="db" style="margin-top:10px" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
+        <button class="db" style="margin-top:10px" data-i18n="downloadSRT" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
       </div>
     </div>
-    <div class="st i" id="transSt" style="margin-top:10px">جاهز</div>
+    <div class="st i" id="transSt" style="margin-top:10px" data-i18n="ready">جاهز</div>
   </div>
 
   <!-- ✅ أداة حذف الفراغات والتنسيق -->
   <div class="card" style="border-top:4px solid #fbbf24">
     <div class="card-header">
       <div class="card-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🧹</div>
-      <span class="card-title">تنظيف النص من الفراغات</span>
+      <span class="card-title" data-i18n="cleanText">تنظيف النص من الفراغات</span>
     </div>
     <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0">الصق نص SRT أو أي نص</span>
-      <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteClean()">📋 لصق</button>
+      <span class="lbl" style="margin-bottom:0" data-i18n="pasteSRTOrText">الصق نص SRT أو أي نص</span>
+      <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteClean()">📋 لصق</button>
     </div>
-    <textarea id="cleanInput" placeholder="الصق النص هنا..." style="min-height:80px;font-family:monospace;font-size:.75rem;margin-bottom:10px"></textarea>
+    <textarea id="cleanInput" data-i18n-placeholder="pasteTextHere" placeholder="الصق النص هنا..." style="min-height:80px;font-family:monospace;font-size:.75rem;margin-bottom:10px"></textarea>
     <div class="ctrls" style="margin-bottom:10px">
       <label class="tbtn" style="font-size:.7rem">
         <input type="checkbox" id="removeNumbers" style="display:none" checked>
-        📌 حذف الأرقام
+        📌 <span data-i18n="removeNumbers">حذف الأرقام</span>
       </label>
       <label class="tbtn" style="font-size:.7rem">
         <input type="checkbox" id="removeTime" style="display:none" checked>
-        ⏱️ حذف التوقيتات
+        ⏱️ <span data-i18n="removeTimestamps">حذف التوقيتات</span>
       </label>
       <label class="tbtn" style="font-size:.7rem">
         <input type="checkbox" id="removeEmpty" style="display:none" checked>
-        🗑️ حذف الأسطر الفارغة
+        🗑️ <span data-i18n="removeEmptyLines">حذف الأسطر الفارغة</span>
       </label>
     </div>
-    <button class="btn bs" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000" onclick="cleanText()">🧹 تنظيف النص</button>
+    <button class="btn bs" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000" data-i18n="cleanTextBtn" onclick="cleanText()">🧹 تنظيف النص</button>
     <div id="cleanResult" style="display:none">
       <div class="clean-box">
-        <div class="clean-title">✨ النص بعد التنظيف</div>
+        <div class="clean-title">✨ <span data-i18n="textAfterClean">النص بعد التنظيف</span></div>
         <div class="clean-output" id="cleanOutput"></div>
         <div class="br">
-          <button class="btn bsm" style="flex:1;justify-content:center" onclick="copyClean()">📋 نسخ</button>
-          <button class="btn bsm" style="flex:1;justify-content:center" onclick="dlClean()">⬇️ تنزيل</button>
+          <button class="btn bsm" style="flex:1;justify-content:center" data-i18n="copy" onclick="copyClean()">📋 نسخ</button>
+          <button class="btn bsm" style="flex:1;justify-content:center" data-i18n="download" onclick="dlClean()">⬇️ تنزيل</button>
         </div>
       </div>
     </div>
-    <div class="st i" id="cleanSt" style="margin-top:10px">الصق نصاً واضغط تنظيف</div>
+    <div class="st i" id="cleanSt" style="margin-top:10px" data-i18n="pasteAndClean">الصق نصاً واضغط تنظيف</div>
   </div>
 </div>
 
 </div>
-<footer>ALHASHMI للدبلجة والترجمة · GitHub + Render · gTTS · مجاني 100%</footer>
+<footer>ALHASHMI <span data-i18n="footer">للدبلجة والترجمة · GitHub + Render · gTTS · مجاني 100%</span></footer>
 
 <script>
-// ✅ إعدادات اللغة
-let currentLanguage='ar';
+// ✅ قاموس الترجمة الكامل
 const translations={
-  ar:{title:'نطق النص',dub:'لغة الدبلجة',srt:'ملف SRT',translate:'مترجم SRT',clean:'تنظيف النص'},
-  en:{title:'Text to Speech',dub:'Dubbing Language',srt:'SRT File',translate:'SRT Translator',clean:'Text Cleaner'},
-  ru:{title:'Текст в речь',dub:'Язык дубляжа',srt:'SRT файл',translate:'Переводчик SRT',clean:'Очистка текста'},
-  tr:{title:'Metin Okuma',dub:'Dublaj Dili',srt:'SRT Dosyası',translate:'SRT Çeviri',clean:'Metin Temizleme'},
-  fr:{title:'Synthèse vocale',dub:'Langue de doublage',srt:'Fichier SRT',translate:'Traducteur SRT',clean:'Nettoyage de texte'},
-  de:{title:'Text zu Sprache',dub:'Synchronisationssprache',srt:'SRT-Datei',translate:'SRT-Übersetzer',clean:'Textbereinigung'},
-  es:{title:'Texto a voz',dub:'Idioma de doblaje',srt:'Archivo SRT',translate:'Traductor SRT',clean:'Limpieza de texto'}
+  ar:{
+    subtitle:'للدبلجة والترجمة الاحترافية',
+    subscribe:'اشترك في القناة',
+    youtubeLink:'Subscribe to the channel',
+    ttsTitle:'نطق النص',
+    selectLanguage:'اختر اللغة',
+    voice:'الصوت',
+    typeText:'اكتب النص...',
+    speed:'السرعة',
+    pitch:'الطبقة',
+    volume:'الصوت',
+    speak:'نطق',
+    typeAndSpeak:'👋 اكتب نصاً واضغط نطق',
+    audioFilters:'الفلاتر الصوتية',
+    resetFilters:'🔄 إعادة تعيين',
+    presetMale:'👨 رجالي',
+    presetRadio:'📻 راديو',
+    presetWarm:'🌟 دافئ',
+    presetFast:'⚡ سريع',
+    dubLang:'لغة الدبلجة',
+    srtFile:'ملف SRT',
+    dragOrClick:'اسحب أو اضغط',
+    srtOrTxt:'.srt أو .txt',
+    orPaste:'أو الصق المحتوى',
+    pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nالنص...',
+    analyzeFile:'📥 تحليل الملف',
+    sentences:'جملة',
+    copy:'📋 نسخ',
+    generate:'التوليد',
+    silentProcessing:'معالجة <strong>صامتة</strong> عبر سيرفر سحابي',
+    syncTiming:'تزامن دقيق مع توقيتات SRT',
+    wavFile:'ملف WAV لـ YouTube Dubbing',
+    generateDub:'توليد الدبلجة',
+    requiresServer:'يتطلب سيرفر Render شغال',
+    processing:'جارٍ...',
+    remaining:'المتبقي',
+    elapsed:'مضى',
+    total:'المجموع',
+    cancel:'⏹ إلغاء',
+    ready:'جاهز',
+    downloadWAV:'⬇️ تنزيل WAV',
+    dubbing:'دبلجة',
+    checkServer:'تأكد سيرفر Render شغال ثم اضغط',
+    srtTranslator:'مترجم SRT',
+    selectTransLang:'1. اختر لغة الترجمة',
+    sourceText:'2. النص المصدر (SRT)',
+    paste:'📋 لصق',
+    pasteSRTContent:'الصق محتوى SRT...',
+    translate:'🚀 ترجمة',
+    result:'النتيجة',
+    downloadSRT:'⬇️ تنزيل SRT',
+    cleanText:'تنظيف النص من الفراغات',
+    pasteSRTOrText:'الصق نص SRT أو أي نص',
+    pasteTextHere:'الصق النص هنا...',
+    removeNumbers:'حذف الأرقام',
+    removeTimestamps:'حذف التوقيتات',
+    removeEmptyLines:'حذف الأسطر الفارغة',
+    cleanTextBtn:'🧹 تنظيف النص',
+    textAfterClean:'النص بعد التنظيف',
+    download:'⬇️ تنزيل',
+    pasteAndClean:'الصق نصاً واضغط تنظيف',
+    footer:'للدبلجة والترجمة · GitHub + Render · gTTS · مجاني 100%'
+  },
+  en:{
+    subtitle:'For Professional Dubbing & Translation',
+    subscribe:'Subscribe to the channel',
+    youtubeLink:'Subscribe to the channel',
+    ttsTitle:'Text to Speech',
+    selectLanguage:'Select Language',
+    voice:'Voice',
+    typeText:'Type text...',
+    speed:'Speed',
+    pitch:'Pitch',
+    volume:'Volume',
+    speak:'Speak',
+    typeAndSpeak:'👋 Type text and click Speak',
+    audioFilters:'Audio Filters',
+    resetFilters:'🔄 Reset Filters',
+    presetMale:'👨 Male',
+    presetRadio:'📻 Radio',
+    presetWarm:'🌟 Warm',
+    presetFast:'⚡ Fast',
+    dubLang:'Dubbing Language',
+    srtFile:'SRT File',
+    dragOrClick:'Drag or Click',
+    srtOrTxt:'.srt or .txt',
+    orPaste:'Or paste content',
+    pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nText...',
+    analyzeFile:'📥 Analyze File',
+    sentences:'sentences',
+    copy:'📋 Copy',
+    generate:'Generate',
+    silentProcessing:'<strong>Silent</strong> processing via cloud server',
+    syncTiming:'Precise sync with SRT timings',
+    wavFile:'WAV file for YouTube Dubbing',
+    generateDub:'Generate Dubbing',
+    requiresServer:'Requires Render server running',
+    processing:'Processing...',
+    remaining:'Remaining',
+    elapsed:'Elapsed',
+    total:'Total',
+    cancel:'⏹ Cancel',
+    ready:'Ready',
+    downloadWAV:'⬇️ Download WAV',
+    dubbing:'Dubbing',
+    checkServer:'Make sure Render server is running',
+    srtTranslator:'SRT Translator',
+    selectTransLang:'1. Select translation language',
+    sourceText:'2. Source text (SRT)',
+    paste:'📋 Paste',
+    pasteSRTContent:'Paste SRT content...',
+    translate:'🚀 Translate',
+    result:'Result',
+    downloadSRT:'⬇️ Download SRT',
+    cleanText:'Text Cleaner',
+    pasteSRTOrText:'Paste SRT or any text',
+    pasteTextHere:'Paste text here...',
+    removeNumbers:'Remove numbers',
+    removeTimestamps:'Remove timestamps',
+    removeEmptyLines:'Remove empty lines',
+    cleanTextBtn:'🧹 Clean Text',
+    textAfterClean:'Text after cleaning',
+    download:'⬇️ Download',
+    pasteAndClean:'Paste text and click Clean',
+    footer:'for Dubbing & Translation · GitHub + Render · gTTS · 100% Free'
+  },
+  ru:{
+    subtitle:'Для профессионального дубляжа и перевода',
+    subscribe:'Подписаться на канал',
+    youtubeLink:'Subscribe to the channel',
+    ttsTitle:'Текст в речь',
+    selectLanguage:'Выбрать язык',
+    voice:'Голос',
+    typeText:'Введите текст...',
+    speed:'Скорость',
+    pitch:'Тон',
+    volume:'Громкость',
+    speak:'Воспроизвести',
+    typeAndSpeak:'👋 Введите текст и нажмите',
+    audioFilters:'Аудио фильтры',
+    resetFilters:'🔄 Сбросить',
+    presetMale:'👨 Мужской',
+    presetRadio:'📻 Радио',
+    presetWarm:'🌟 Тёплый',
+    presetFast:'⚡ Быстрый',
+    dubLang:'Язык дубляжа',
+    srtFile:'SRT файл',
+    dragOrClick:'Перетащите или нажмите',
+    srtOrTxt:'.srt или .txt',
+    orPaste:'Или вставьте контент',
+    pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nТекст...',
+    analyzeFile:'📥 Анализировать',
+    sentences:'предложений',
+    copy:'📋 Копировать',
+    generate:'Генерировать',
+    silentProcessing:'<strong>Тихая</strong> обработка через облако',
+    syncTiming:'Точная синхронизация с SRT',
+    wavFile:'WAV файл для YouTube Dubbing',
+    generateDub:'Создать дубляж',
+    requiresServer:'Требуется запущенный сервер Render',
+    processing:'Обработка...',
+    remaining:'Осталось',
+    elapsed:'Прошло',
+    total:'Всего',
+    cancel:'⏹ Отмена',
+    ready:'Готово',
+    downloadWAV:'⬇️ Скачать WAV',
+    dubbing:'Дубляж',
+    checkServer:'Убедитесь, что сервер Render запущен',
+    srtTranslator:'SRT Переводчик',
+    selectTransLang:'1. Выберите язык перевода',
+    sourceText:'2. Исходный текст (SRT)',
+    paste:'📋 Вставить',
+    pasteSRTContent:'Вставьте содержимое SRT...',
+    translate:'🚀 Перевести',
+    result:'Результат',
+    downloadSRT:'⬇️ Скачать SRT',
+    cleanText:'Очистка текста',
+    pasteSRTOrText:'Вставьте SRT или любой текст',
+    pasteTextHere:'Вставьте текст здесь...',
+    removeNumbers:'Удалить цифры',
+    removeTimestamps:'Удалить метки времени',
+    removeEmptyLines:'Удалить пустые строки',
+    cleanTextBtn:'🧹 Очистить текст',
+    textAfterClean:'Текст после очистки',
+    download:'⬇️ Скачать',
+    pasteAndClean:'Вставьте текст и нажмите Очистить',
+    footer:'для дубляжа и перевода · GitHub + Render · gTTS · 100% Бесплатно'
+  },
+  tr:{
+    subtitle:'Profesyonel Dublaj ve Çeviri için',
+    subscribe:'Kanalı takip et',
+    youtubeLink:'Subscribe to the channel',
+    ttsTitle:'Metin Okuma',
+    selectLanguage:'Dil seç',
+    voice:'Ses',
+    typeText:'Metin yaz...',
+    speed:'Hız',
+    pitch:'Perde',
+    volume:'Ses',
+    speak:'Oku',
+    typeAndSpeak:'👋 Metin yaz ve Oku',
+    audioFilters:'Ses Filtreleri',
+    resetFilters:'🔄 Sıfırla',
+    presetMale:'👨 Erkek',
+    presetRadio:'📻 Radyo',
+    presetWarm:'🌟 Sıcak',
+    presetFast:'⚡ Hızlı',
+    dubLang:'Dublaj Dili',
+    srtFile:'SRT Dosyası',
+    dragOrClick:'Sürükleyin veya tıklayın',
+    srtOrTxt:'.srt veya .txt',
+    orPaste:'Veya içerik yapıştır',
+    pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nMetin...',
+    analyzeFile:'📥 Dosyayı analiz et',
+    sentences:'cümle',
+    copy:'📋 Kopyala',
+    generate:'Oluştur',
+    silentProcessing:'<strong>Sessiz</strong> bulut işleme',
+    syncTiming:'SRT zamanlamaları ile senkronizasyon',
+    wavFile:'YouTube Dubbing için WAV dosyası',
+    generateDub:'Dublaj oluştur',
+    requiresServer:'Render sunucusu çalışıyor olmalı',
+    processing:'İşleniyor...',
+    remaining:'Kalan',
+    elapsed:'Geçen',
+    total:'Toplam',
+    cancel:'⏹ İptal',
+    ready:'Hazır',
+    downloadWAV:'⬇️ WAV indir',
+    dubbing:'Dublaj',
+    checkServer:'Render sunucusunun çalıştığından emin olun',
+    srtTranslator:'SRT Çeviri',
+    selectTransLang:'1. Çeviri dilini seç',
+    sourceText:'2. Kaynak metin (SRT)',
+    paste:'📋 Yapıştır',
+    pasteSRTContent:'SRT içeriğini yapıştır...',
+    translate:'🚀 Çevir',
+    result:'Sonuç',
+    downloadSRT:'⬇️ SRT indir',
+    cleanText:'Metin Temizleme',
+    pasteSRTOrText:'SRT veya herhangi bir metin yapıştır',
+    pasteTextHere:'Metni buraya yapıştır...',
+    removeNumbers:'Sayıları kaldır',
+    removeTimestamps:'Zaman damgalarını kaldır',
+    removeEmptyLines:'Boş satırları kaldır',
+    cleanTextBtn:'🧹 Metni temizle',
+    textAfterClean:'Temizlendikten sonra metin',
+    download:'⬇️ İndir',
+    pasteAndClean:'Metin yapıştır ve Temizle',
+    footer:'Dublaj ve Çeviri için · GitHub + Render · gTTS · %100 Ücretsiz'
+  },
+  fr:{
+    subtitle:'Pour le doublage et la traduction professionnels',
+    subscribe:"S'abonner à la chaîne",
+    youtubeLink:'Subscribe to the channel',
+    ttsTitle:'Synthèse vocale',
+    selectLanguage:'Choisir la langue',
+    voice:'Voix',
+    typeText:'Tapez le texte...',
+    speed:'Vitesse',
+    pitch:'Hauteur',
+    volume:'Volume',
+    speak:'Parler',
+    typeAndSpeak:'👋 Tapez un texte et cliquez Parler',
+    audioFilters:'Filtres audio',
+    resetFilters:'🔄 Réinitialiser',
+    presetMale:'👨 Homme',
+    presetRadio:'📻 Radio',
+    presetWarm:'🌟 Chaud',
+    presetFast:'⚡ Rapide',
+    dubLang:'Langue de doublage',
+    srtFile:'Fichier SRT',
+    dragOrClick:'Glissez ou cliquez',
+    srtOrTxt:'.srt ou .txt',
+    orPaste:'Ou collez le contenu',
+    pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nTexte...',
+    analyzeFile:'📥 Analyser le fichier',
+    sentences:'phrases',
+    copy:'📋 Copier',
+    generate:'Générer',
+    silentProcessing:'Traitement <strong>silencieux</strong> via cloud',
+    syncTiming:'Synchronisation précise avec SRT',
+    wavFile:'Fichier WAV pour YouTube Dubbing',
+    generateDub:'Générer le doublage',
+    requiresServer:'Nécessite un serveur Render en cours',
+    processing:'Traitement...',
+    remaining:'Restant',
+    elapsed:'Écoulé',
+    total:'Total',
+    cancel:'⏹ Annuler',
+    ready:'Prêt',
+    downloadWAV:'⬇️ Télécharger WAV',
+    dubbing:'Doublage',
+    checkServer:'Assurez-vous que le serveur Render est en cours',
+    srtTranslator:'Traducteur SRT',
+    selectTransLang:"1. Choisissez la langue de traduction",
+    sourceText:'2. Texte source (SRT)',
+    paste:'📋 Coller',
+    pasteSRTContent:'Collez le contenu SRT...',
+    translate:'🚀 Traduire',
+    result:'Résultat',
+    downloadSRT:'⬇️ Télécharger SRT',
+    cleanText:'Nettoyage de texte',
+    pasteSRTOrText:'Collez SRT ou tout texte',
+    pasteTextHere:'Collez le texte ici...',
+    removeNumbers:'Supprimer les nombres',
+    removeTimestamps:'Supprimer les horodatages',
+    removeEmptyLines:'Supprimer les lignes vides',
+    cleanTextBtn:'🧹 Nettoyer le texte',
+    textAfterClean:'Texte après nettoyage',
+    download:'⬇️ Télécharger',
+    pasteAndClean:'Collez un texte et cliquez Nettoyer',
+    footer:'pour le doublage et la traduction · GitHub + Render · gTTS · 100% Gratuit'
+  },
+  de:{
+    subtitle:'Für professionelles Dubbing & Übersetzung',
+    subscribe:'Kanal abonnieren',
+    youtubeLink:'Subscribe to the channel',
+    ttsTitle:'Text zu Sprache',
+    selectLanguage:'Sprache wählen',
+    voice:'Stimme',
+    typeText:'Text eingeben...',
+    speed:'Geschwindigkeit',
+    pitch:'Tonhöhe',
+    volume:'Lautstärke',
+    speak:'Sprechen',
+    typeAndSpeak:'👋 Text eingeben und Sprechen klicken',
+    audioFilters:'Audiofilter',
+    resetFilters:'🔄 Zurücksetzen',
+    presetMale:'👨 Männlich',
+    presetRadio:'📻 Radio',
+    presetWarm:'🌟 Warm',
+    presetFast:'⚡ Schnell',
+    dubLang:'Synchronisationssprache',
+    srtFile:'SRT-Datei',
+    dragOrClick:'Ziehen oder klicken',
+    srtOrTxt:'.srt oder .txt',
+    orPaste:'Oder Inhalt einfügen',
+    pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nText...',
+    analyzeFile:'📥 Datei analysieren',
+    sentences:'Sätze',
+    copy:'📋 Kopieren',
+    generate:'Generieren',
+    silentProcessing:'<strong>Stille</strong> Verarbeitung über Cloud',
+    syncTiming:'Präzise Synchronisation mit SRT',
+    wavFile:'WAV-Datei für YouTube Dubbing',
+    generateDub:'Dubbing generieren',
+    requiresServer:'Render-Server muss laufen',
+    processing:'Verarbeitung...',
+    remaining:'Verbleibend',
+    elapsed:'Verstrichen',
+    total:'Gesamt',
+    cancel:'⏹ Abbrechen',
+    ready:'Fertig',
+    downloadWAV:'⬇️ WAV herunterladen',
+    dubbing:'Dubbing',
+    checkServer:'Stellen Sie sicher, dass der Render-Server läuft',
+    srtTranslator:'SRT-Übersetzer',
+    selectTransLang:'1. Übersetzungssprache wählen',
+    sourceText:'2. Quelltext (SRT)',
+    paste:'📋 Einfügen',
+    pasteSRTContent:'SRT-Inhalt einfügen...',
+    translate:'🚀 Übersetzen',
+    result:'Ergebnis',
+    downloadSRT:'⬇️ SRT herunterladen',
+    cleanText:'Textbereinigung',
+    pasteSRTOrText:'SRT oder beliebigen Text einfügen',
+    pasteTextHere:'Text hier einfügen...',
+    removeNumbers:'Zahlen entfernen',
+    removeTimestamps:'Zeitstempel entfernen',
+    removeEmptyLines:'Leere Zeilen entfernen',
+    cleanTextBtn:'🧹 Text bereinigen',
+    textAfterClean:'Text nach Bereinigung',
+    download:'⬇️ Herunterladen',
+    pasteAndClean:'Text einfügen und Bereinigen klicken',
+    footer:'für Dubbing & Übersetzung · GitHub + Render · gTTS · 100% Kostenlos'
+  },
+  es:{
+    subtitle:'Para doblaje y traducción profesionales',
+    subscribe:'Suscribirse al canal',
+    youtubeLink:'Subscribe to the channel',
+    ttsTitle:'Texto a voz',
+    selectLanguage:'Seleccionar idioma',
+    voice:'Voz',
+    typeText:'Escribe texto...',
+    speed:'Velocidad',
+    pitch:'Tono',
+    volume:'Volumen',
+    speak:'Hablar',
+    typeAndSpeak:'👋 Escribe texto y haz clic Hablar',
+    audioFilters:'Filtros de audio',
+    resetFilters:'🔄 Restablecer',
+    presetMale:'👨 Hombre',
+    presetRadio:'📻 Radio',
+    presetWarm:'🌟 Cálido',
+    presetFast:'⚡ Rápido',
+    dubLang:'Idioma de doblaje',
+    srtFile:'Archivo SRT',
+    dragOrClick:'Arrastra o haz clic',
+    srtOrTxt:'.srt o .txt',
+    orPaste:'O pega el contenido',
+    pasteSRT:'1\n00:00:00,000 --> 00:00:02,000\nTexto...',
+    analyzeFile:'📥 Analizar archivo',
+    sentences:'frases',
+    copy:'📋 Copiar',
+    generate:'Generar',
+    silentProcessing:'Procesamiento <strong>silencioso</strong> en la nube',
+    syncTiming:'Sincronización precisa con SRT',
+    wavFile:'Archivo WAV para YouTube Dubbing',
+    generateDub:'Generar doblaje',
+    requiresServer:'Requiere servidor Render ejecutándose',
+    processing:'Procesando...',
+    remaining:'Restante',
+    elapsed:'Transcurrido',
+    total:'Total',
+    cancel:'⏹ Cancelar',
+    ready:'Listo',
+    downloadWAV:'⬇️ Descargar WAV',
+    dubbing:'Doblaje',
+    checkServer:'Asegúrate de que el servidor Render esté ejecutándose',
+    srtTranslator:'Traductor SRT',
+    selectTransLang:'1. Selecciona idioma de traducción',
+    sourceText:'2. Texto fuente (SRT)',
+    paste:'📋 Pegar',
+    pasteSRTContent:'Pega contenido SRT...',
+    translate:'🚀 Traducir',
+    result:'Resultado',
+    downloadSRT:'⬇️ Descargar SRT',
+    cleanText:'Limpieza de texto',
+    pasteSRTOrText:'Pega SRT o cualquier texto',
+    pasteTextHere:'Pega texto aquí...',
+    removeNumbers:'Eliminar números',
+    removeTimestamps:'Eliminar marcas de tiempo',
+    removeEmptyLines:'Eliminar líneas vacías',
+    cleanTextBtn:'🧹 Limpiar texto',
+    textAfterClean:'Texto después de limpiar',
+    download:'⬇️ Descargar',
+    pasteAndClean:'Pega texto y haz clic Limpiar',
+    footer:'para doblaje y traducción · GitHub + Render · gTTS · 100% Gratis'
+  }
 };
+
+let currentLanguage='ar';
 
 function toggleLang(){
   document.getElementById('langDropdown').classList.toggle('show');
@@ -410,30 +879,36 @@ function toggleLang(){
 
 function setLang(lang){
   currentLanguage=lang;
-  document.getElementById('currentLang').textContent=document.querySelector(`[data-lang="${lang}"] .lang-name`).textContent;
+  const langName=document.querySelector(`[data-lang="${lang}"] .lang-name`).textContent;
+  document.getElementById('currentLang').textContent=langName;
   document.querySelectorAll('.lang-option').forEach(opt=>opt.classList.remove('active'));
   document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
   document.getElementById('langDropdown').classList.remove('show');
   
-  // تغيير اتجاه الصفحة للعربية
   if(lang==='ar'){
     document.documentElement.dir='rtl';
   }else{
     document.documentElement.dir='ltr';
   }
   
-  // تحديث العناوين
-  updateTranslations();
+  updateAllTranslations();
 }
 
-function updateTranslations(){
+function updateAllTranslations(){
   const t=translations[currentLanguage];
   if(!t)return;
-  // يمكن إضافة المزيد من الترجمات هنا
-  console.log('Language changed to:',currentLanguage);
+  
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.getAttribute('data-i18n');
+    if(t[key])el.innerHTML=t[key];
+  });
+  
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key=el.getAttribute('data-i18n-placeholder');
+    if(t[key])el.placeholder=t[key];
+  });
 }
 
-// إغلاق القائمة عند النقر خارجها
 document.addEventListener('click',function(e){
   const langSwitcher=document.querySelector('.lang-switcher');
   if(!langSwitcher.contains(e.target)){
