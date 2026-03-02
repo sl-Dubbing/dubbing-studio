@@ -6,168 +6,146 @@
 <title>ALHASHMI للدبلجة والترجمة</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a0a1a;color:#e0e0ff;min-height:100vh;overflow-x:hidden}
-.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 20%,#1a0533 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,#001233 0%,transparent 50%),#0a0a1a}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#1a0533 0%,#0a0a1a 50%,#001233 100%);color:#e0e0ff;min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 20%,rgba(167,139,250,.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(96,165,250,.15) 0%,transparent 50%)}
 .wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr;gap:24px}
-@media(min-width:1200px){.wrap{grid-template-columns:280px 1fr 320px;align-items:start}}
-header{text-align:center;margin-bottom:28px;grid-column:1/-1}
-.logo-container{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:20px}
-.logo-img{width:120px;height:120px;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(167,139,250,.3);background:linear-gradient(135deg,#1a0533,#001233);display:flex;align-items:center;justify-content:center;padding:10px;transition:transform .3s ease}
-.logo-img:hover{transform:scale(1.05) rotate(2deg)}
+@media(min-width:1200px){.wrap{grid-template-columns:1fr 1fr 1fr;align-items:start}}
+header{text-align:center;margin-bottom:32px;grid-column:1/-1}
+.logo-container{display:flex;flex-direction:column;align-items:center;gap:12px}
+.logo-img{width:100px;height:100px;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(167,139,250,.4);background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;padding:8px;transition:transform .3s ease}
+.logo-img:hover{transform:scale(1.05)}
 .logo-img img{width:100%;height:100%;object-fit:contain}
-.logo-container h1{font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px;letter-spacing:2px}
-.sub{color:#6b7280;font-size:.9rem}
-.tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,.08)}
-.tb{padding:10px 20px;border:none;background:transparent;color:#6b7280;cursor:pointer;font-size:.88rem;font-family:inherit;border-bottom:2px solid transparent;transition:all .2s;font-weight:600}
-.tb.on{color:#a78bfa;border-bottom-color:#a78bfa}
-.tc{display:none}.tc.on{display:block}
-.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.5);margin-bottom:16px}
-.sh{display:flex;align-items:center;gap:10px;font-size:.95rem;font-weight:700;color:#e0e0ff;margin-bottom:16px}
-.sn{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:#fff;flex-shrink:0}
-.lbl{font-size:.78rem;color:#a78bfa;margin-bottom:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;display:block}
-.lg{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:7px;margin-bottom:16px}
-.lb{padding:8px 5px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#c4b5fd;cursor:pointer;font-size:.75rem;transition:all .2s;text-align:center;font-family:inherit}
+.logo-container h1{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px}
+.logo-container .subtitle{color:#a78bfa;font-size:.85rem;font-weight:600}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.5);margin-bottom:16px}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.card-icon{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.card-title{font-size:1rem;font-weight:700;color:#e0e0ff}
+.lbl{font-size:.7rem;color:#a78bfa;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px;display:block}
+.lg{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:16px}
+.lb{padding:10px 6px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#c4b5fd;cursor:pointer;font-size:.7rem;transition:all .2s;text-align:center;font-family:inherit}
 .lb:hover{background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4);transform:translateY(-2px)}
 .lb.on{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(96,165,250,.3));border-color:#a78bfa;color:#fff;box-shadow:0 0 16px rgba(167,139,250,.3)}
-.lf{font-size:1.1rem;display:block;margin-bottom:2px}
+.lf{font-size:1.2rem;display:block;margin-bottom:2px}
 .tw{position:relative;margin-bottom:16px}
-textarea{width:100%;min-height:140px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#e0e0ff;font-size:.95rem;padding:14px;resize:vertical;font-family:inherit;transition:border-color .3s;outline:none;line-height:1.7}
+textarea{width:100%;min-height:120px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#e0e0ff;font-size:.85rem;padding:12px;resize:vertical;font-family:inherit;transition:border-color .3s;outline:none;line-height:1.6}
 textarea:focus{border-color:#a78bfa;box-shadow:0 0 0 3px rgba(167,139,250,.12)}
 textarea::placeholder{color:#4b5563}
-.cc{position:absolute;bottom:9px;left:11px;font-size:.7rem;color:#4b5563}
-.ctrls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.cg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:90px}
-.cg label{font-size:.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:.4px}
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,.1);outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#60a5fa);cursor:pointer}
-.rv{font-size:.75rem;color:#a78bfa;font-weight:600}
-.wv{display:flex;align-items:center;justify-content:center;gap:3px;height:34px;margin:12px 0;opacity:0;transition:opacity .3s}
-.wv.on{opacity:1}
-.wb{width:4px;border-radius:4px;background:linear-gradient(180deg,#a78bfa,#60a5fa);animation:wva 1.2s ease-in-out infinite}
-.wb:nth-child(1){height:16px;animation-delay:0s}.wb:nth-child(2){height:26px;animation-delay:.1s}.wb:nth-child(3){height:34px;animation-delay:.2s}.wb:nth-child(4){height:26px;animation-delay:.3s}.wb:nth-child(5){height:16px;animation-delay:.4s}.wb:nth-child(6){height:30px;animation-delay:.5s}.wb:nth-child(7){height:20px;animation-delay:.6s}.wb:nth-child(8){height:34px;animation-delay:.7s}.wb:nth-child(9){height:26px;animation-delay:.8s}.wb:nth-child(10){height:16px;animation-delay:.9s}
-@keyframes wva{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
-.br{display:flex;gap:9px;flex-wrap:wrap}
-.btn{padding:11px 20px;border-radius:11px;border:none;cursor:pointer;font-size:.85rem;font-weight:600;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
+.cc{position:absolute;bottom:8px;left:10px;font-size:.65rem;color:#4b5563}
+.ctrls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.cg{display:flex;flex-direction:column;gap:3px;flex:1;min-width:70px}
+.cg label{font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.4px}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.1);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#60a5fa);cursor:pointer}
+.rv{font-size:.65rem;color:#a78bfa;font-weight:600}
+.br{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-size:.75rem;font-weight:600;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:5px}
 .bs{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;flex:1;justify-content:center;box-shadow:0 4px 16px rgba(124,58,237,.4)}
 .bs:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(124,58,237,.6)}
 .bsm{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9ca3af}
 .bsm:hover{background:rgba(255,255,255,.1)}
-.st{text-align:center;font-size:.85rem;padding:9px;border-radius:8px;min-height:36px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .3s;margin-top:12px}
+.st{text-align:center;font-size:.75rem;padding:8px;border-radius:8px;min-height:32px;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .3s;margin-top:10px}
 .st.i{color:#60a5fa;background:rgba(96,165,250,.07)}
 .st.ok{color:#34d399;background:rgba(52,211,153,.07)}
 .st.er{color:#f87171;background:rgba(248,113,113,.07)}
 .st.wn{color:#fbbf24;background:rgba(251,191,36,.07)}
-.ua{border:2px dashed rgba(96,165,250,.28);border-radius:12px;padding:22px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative}
+.ua{border:2px dashed rgba(96,165,250,.28);border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px;position:relative}
 .ua:hover{border-color:rgba(96,165,250,.55);background:rgba(96,165,250,.04)}
 .ua input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
-.ui{font-size:1.9rem;margin-bottom:6px}
-.ut{color:#60a5fa;font-size:.85rem}
-.us{color:#4b5563;font-size:.72rem;margin-top:3px}
-.sl{max-height:260px;overflow-y:auto;margin-bottom:12px;scrollbar-width:thin;scrollbar-color:#a78bfa transparent}
+.ui{font-size:1.5rem;margin-bottom:4px}
+.ut{color:#60a5fa;font-size:.75rem}
+.us{color:#4b5563;font-size:.65rem;margin-top:2px}
+.sl{max-height:220px;overflow-y:auto;margin-bottom:10px;scrollbar-width:thin;scrollbar-color:#a78bfa transparent}
 .sl::-webkit-scrollbar{width:4px}
 .sl::-webkit-scrollbar-thumb{background:#a78bfa;border-radius:4px}
-.si{display:flex;gap:8px;padding:9px 11px;border-radius:8px;margin-bottom:5px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);align-items:flex-start;transition:all .15s}
-.si.hl{background:rgba(96,165,250,.12);border-color:rgba(96,165,250,.3)}
+.si{display:flex;gap:6px;padding:8px 10px;border-radius:8px;margin-bottom:4px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);align-items:flex-start;transition:all .15s}
 .si.done{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.3)}
-.sin{color:#4b5563;font-size:.7rem;min-width:20px;padding-top:3px}
-.sit{color:#60a5fa;font-size:.68rem;min-width:130px;padding-top:3px;font-family:monospace}
-.sit2{color:#e0e0ff;font-size:.84rem;line-height:1.5;flex:1}
-.ib{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:12px;padding:14px 16px;margin-bottom:18px}
-.ir{display:flex;align-items:flex-start;gap:8px;font-size:.8rem;color:#9ca3af;line-height:1.5;margin-bottom:5px}
-.ir:last-child{margin-bottom:0}
-.ir strong{color:#60a5fa}
-.gb{width:100%;padding:22px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#059669,#0d9488);box-shadow:0 6px 28px rgba(5,150,105,.45);display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .2s;font-family:inherit;position:relative;overflow:hidden;margin-bottom:0}
-.gb::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);animation:shm 2s infinite;background-size:200% 100%}
-@keyframes shm{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.sin{color:#4b5563;font-size:.65rem;min-width:18px;padding-top:2px}
+.sit{color:#60a5fa;font-size:.6rem;min-width:110px;padding-top:2px;font-family:monospace}
+.sit2{color:#e0e0ff;font-size:.75rem;line-height:1.4;flex:1}
+.gb{width:100%;padding:18px;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,#059669,#0d9488);box-shadow:0 6px 28px rgba(5,150,105,.45);display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;font-family:inherit;position:relative;overflow:hidden;margin-bottom:0}
 .gb:hover{transform:translateY(-3px);box-shadow:0 10px 38px rgba(5,150,105,.65)}
-.gb:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.gi{font-size:2rem}.gl{font-size:1.1rem;font-weight:800;color:#fff}.gs{font-size:.75rem;color:rgba(255,255,255,.7)}
-.cb{text-align:center;background:rgba(0,0,0,.35);border-radius:14px;padding:22px 16px;margin-bottom:16px;border:1px solid rgba(255,255,255,.06)}
-.cr{display:flex;justify-content:center;gap:24px;margin-bottom:12px}
-.ci{text-align:center}
-.cl{font-size:.65rem;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
-.cv{font-size:1.6rem;font-weight:800;font-family:monospace;line-height:1}
-.cr1{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.cr2{color:#34d399}.cr3{color:#4b5563}
-.ph{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:14px;font-size:.85rem}
-.pd{width:8px;height:8px;border-radius:50%;background:#fbbf24;animation:blk 1s ease-in-out infinite}
-@keyframes blk{0%,100%{opacity:1}50%{opacity:.2}}
-.pt{color:#fbbf24;font-weight:600}
-.pw{margin-bottom:14px}
-.pb{width:100%;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin-bottom:6px}
-.pf{height:100%;background:linear-gradient(90deg,#7c3aed,#2563eb,#34d399);border-radius:4px;transition:width .4s ease}
-.pm{display:flex;justify-content:space-between;font-size:.72rem;color:#6b7280;font-family:monospace}
-.cs{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:10px;padding:11px 15px;font-size:.87rem;line-height:1.6;color:#c4b5fd;text-align:center;min-height:44px;margin-bottom:8px}
-.sc{text-align:center;font-size:.72rem;color:#4b5563;font-family:monospace;margin-bottom:12px}
-.rb{background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:14px;padding:18px;margin-top:14px}
-.rt{color:#34d399;font-weight:700;font-size:.9rem;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.db{display:inline-flex;align-items:center;gap:6px;padding:12px 20px;background:linear-gradient(135deg,#059669,#0d9488);border-radius:10px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:all .2s;border:none;cursor:pointer;font-family:inherit;width:100%;justify-content:center}
+.gi{font-size:1.8rem}.gl{font-size:1rem;font-weight:800;color:#fff}.gs{font-size:.65rem;color:rgba(255,255,255,.7)}
+.pw{margin-bottom:12px}
+.pb{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:5px}
+.pf{height:100%;background:linear-gradient(90deg,#7c3aed,#2563eb,#34d399);border-radius:3px;transition:width .4s ease}
+.pm{display:flex;justify-content:space-between;font-size:.65rem;color:#6b7280;font-family:monospace}
+.rb{background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:14px;padding:16px;margin-top:12px}
+.rt{color:#34d399;font-weight:700;font-size:.85rem;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.db{display:inline-flex;align-items:center;gap:5px;padding:10px 16px;background:linear-gradient(135deg,#059669,#0d9488);border-radius:10px;color:#fff;text-decoration:none;font-size:.8rem;font-weight:600;transition:all .2s;border:none;cursor:pointer;font-family:inherit;width:100%;justify-content:center}
 .db:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(5,150,105,.4)}
-.yh{font-size:.72rem;color:#6b7280;text-align:center;margin-top:10px;line-height:1.5}
-.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:6px}
-.sbtn{padding:8px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);color:#9ca3af;cursor:pointer;font-size:.76rem;text-align:right;transition:all .2s;font-family:inherit;line-height:1.4}
+.filters-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-top:16px}
+.fc-title{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:.85rem;font-weight:700;color:#e0e0ff}
+.lbl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:12px}
+.sbtn{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);color:#9ca3af;cursor:pointer;font-size:.68rem;transition:all .2s;font-family:inherit}
 .sbtn:hover{background:rgba(255,255,255,.06);color:#e0e0ff;border-color:rgba(167,139,250,.25)}
-footer{text-align:center;padding:18px;color:#374151;font-size:.75rem;grid-column:1/-1}
-.tp{border-top:4px solid #34d399}
-.tl{display:flex;flex-direction:column;gap:12px}
-.tg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tbtn{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#9ca3af;cursor:pointer;font-size:.8rem;transition:all .2s}
+.tg{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:14px}
+.tbtn{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#9ca3af;cursor:pointer;font-size:.7rem;transition:all .2s}
 .tbtn:hover{background:rgba(52,211,153,.1);color:#34d399;border-color:#34d399}
 .tbtn.on{background:#34d399;color:#000;font-weight:700}
-.trs{background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:16px}
-.trh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.trt{color:#34d399;font-weight:700}
-.trc{font-size:.85rem;color:#d1d5db;line-height:1.6;white-space:pre-wrap;background:rgba(0,0,0,.2);padding:12px;border-radius:8px;max-height:300px;overflow-y:auto}
-.lbl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
-
-/* ✅ الفلاتر على اليسار - ثابتة */
-.filters-panel{position:sticky;top:24px}
-@media(max-width:1199px){.filters-panel{position:static;order:-1}}
-
-/* ✅ توزيع الأعمدة */
-@media(min-width:1200px){
-  .col-tts{order:3}      /* نطق النص - يسار */
-  .col-dub{order:2}      /* دبلجة - وسط */
-  .col-trans{order:1}    /* ترجمة - يمين */
-}
-
-@media(max-width:600px){h1{font-size:1.5rem}.lg{grid-template-columns:repeat(3,1fr)}.sit{display:none}.cr{gap:12px}.cv{font-size:1.2rem}.tg{grid-template-columns:1fr}}
+.trs{background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:14px;margin-top:14px}
+.trh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.trt{color:#34d399;font-weight:700;font-size:.8rem}
+.trc{font-size:.75rem;color:#d1d5db;line-height:1.5;white-space:pre-wrap;background:rgba(0,0,0,.2);padding:10px;border-radius:8px;max-height:250px;overflow-y:auto}
+.ib{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:12px;margin-bottom:14px}
+.ir{display:flex;align-items:flex-start;gap:6px;font-size:.7rem;color:#9ca3af;line-height:1.4;margin-bottom:4px}
+.ir:last-child{margin-bottom:0}
+.ir strong{color:#60a5fa}
+.cb{text-align:center;background:rgba(0,0,0,.35);border-radius:12px;padding:16px 12px;margin-bottom:12px;border:1px solid rgba(255,255,255,.06)}
+.cr{display:flex;justify-content:center;gap:18px;margin-bottom:10px}
+.ci{text-align:center}
+.cl{font-size:.55rem;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
+.cv{font-size:1.2rem;font-weight:800;font-family:monospace;line-height:1}
+.cr1{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cr2{color:#34d399}.cr3{color:#4b5563}
+.wv{display:flex;align-items:center;justify-content:center;gap:2px;height:28px;margin:10px 0;opacity:0;transition:opacity .3s}
+.wv.on{opacity:1}
+.wb{width:3px;border-radius:3px;background:linear-gradient(180deg,#a78bfa,#60a5fa);animation:wva 1.2s ease-in-out infinite}
+.wb:nth-child(1){height:14px;animation-delay:0s}.wb:nth-child(2){height:22px;animation-delay:.1s}.wb:nth-child(3){height:28px;animation-delay:.2s}.wb:nth-child(4){height:22px;animation-delay:.3s}.wb:nth-child(5){height:14px;animation-delay:.4s}.wb:nth-child(6){height:26px;animation-delay:.5s}.wb:nth-child(7){height:18px;animation-delay:.6s}.wb:nth-child(8){height:28px;animation-delay:.7s}
+@keyframes wva{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+.ph{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:12px;font-size:.75rem}
+.pd{width:6px;height:6px;border-radius:50%;background:#fbbf24;animation:blk 1s ease-in-out infinite}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:.2}}
+.pt{color:#fbbf24;font-weight:600}
+footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:1/-1;border-top:1px solid rgba(255,255,255,.05);margin-top:24px}
+@media(max-width:1199px){.wrap{grid-template-columns:1fr}.card{margin-bottom:20px}}
+@media(max-width:600px){h1{font-size:1.4rem}.lg{grid-template-columns:repeat(3,1fr)}.sit{display:none}.cr{gap:10px}.cv{font-size:1rem}.tg{grid-template-columns:1fr}.lb{padding:8px 4px}}
 </style>
 </head>
 <body>
 <div class="bg"></div>
 <div class="wrap">
 
-<!-- ✅ Header مع الشعار -->
 <header>
   <div class="logo-container">
     <div class="logo-img">
-      <!-- ✅ استبدل الرابط أدناه برابط الشعار المباشر -->
-      <img src="https://i.imgur.com/YOUR_LOGO.png" alt="ALHASHMI Logo" id="siteLogo">
+      <img src="logo.png" alt="ALHASHMI Logo" id="siteLogo">
     </div>
     <div>
       <h1>ALHASHMI</h1>
-      <p class="sub" style="font-size:1rem;color:#a78bfa;font-weight:600">للدبلجة والترجمة الاحترافية</p>
+      <p class="subtitle">للدبلجة والترجمة الاحترافية</p>
     </div>
   </div>
-  <p class="sub" style="color:#6b7280;font-size:.85rem">سيرفر سحابي + واجهة ويب · مجاني 100%</p>
 </header>
 
-<!-- ✅ نطق النص - يسار -->
-<div class="col-tts">
+<div>
   <div class="card">
-    <div class="sh"><span class="sn">✏️</span> نطق النص</div>
+    <div class="card-header">
+      <div class="card-icon">✏️</div>
+      <span class="card-title">نطق النص</span>
+    </div>
     <span class="lbl">اختر اللغة</span>
     <div class="lg" id="g1"></div>
     <span class="lbl">الصوت</span>
-    <select id="vs"></select>
+    <select id="vs" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#e0e0ff;font-size:.8rem;margin-bottom:12px"></select>
     <div class="tw"><textarea id="ti" placeholder="اكتب النص..."></textarea><span class="cc" id="cc">0</span></div>
     <div class="ctrls">
       <div class="cg"><label>السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
       <div class="cg"><label>الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
       <div class="cg"><label>الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
     </div>
-    <div class="wv" id="wv1"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+    <div class="wv" id="wv1"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
     <div class="br">
       <button class="btn bs" id="sb" onclick="tSpeak()"><span id="si">▶</span><span id="st2">نطق</span></button>
       <button class="btn bsm" onclick="tPause()">⏸</button>
@@ -175,41 +153,67 @@ footer{text-align:center;padding:18px;color:#374151;font-size:.75rem;grid-column
     </div>
     <div class="st i" id="s1">👋 اكتب نصاً واضغط نطق</div>
   </div>
+  <div class="filters-card" id="filtersCard" style="display:none">
+    <div class="fc-title"><span>🎛️</span> الفلاتر الصوتية</div>
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">السرعة</span><span class="rv" id="speedVal">1.0x</span></div>
+    <input type="range" id="filterSpeed" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:12px" oninput="updateFilters()">
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الطبقة</span><span class="rv" id="pitchVal">1.0</span></div>
+    <input type="range" id="filterPitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:12px" oninput="updateFilters()">
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Bass</span><span class="rv" id="bassVal">0dB</span></div>
+    <input type="range" id="eqBass" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:12px" oninput="updateFilters()">
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Mid</span><span class="rv" id="midVal">0dB</span></div>
+    <input type="range" id="eqMid" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:12px" oninput="updateFilters()">
+    <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Treble</span><span class="rv" id="trebleVal">0dB</span></div>
+    <input type="range" id="eqTreble" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:12px" oninput="updateFilters()">
+    <button class="btn bsm" style="width:100%;justify-content:center;margin-top:10px;font-size:.7rem" onclick="resetFilters()">🔄 إعادة تعيين</button>
+    <div class="sg">
+      <button class="sbtn" onclick="applyPreset('male')">👨 رجالي</button>
+      <button class="sbtn" onclick="applyPreset('radio')">📻 راديو</button>
+      <button class="sbtn" onclick="applyPreset('warm')">🌟 دافئ</button>
+      <button class="sbtn" onclick="applyPreset('fast')">⚡ سريع</button>
+    </div>
+  </div>
 </div>
 
-<!-- ✅ دبلجة SRT - وسط -->
-<div class="col-dub">
+<div>
   <div class="card">
-    <div class="sh"><span class="sn">١</span> لغة الدبلجة</div>
+    <div class="card-header">
+      <div class="card-icon">🎬</div>
+      <span class="card-title">لغة الدبلجة</span>
+    </div>
     <div class="lg" id="g2"></div>
     <div class="ctrls" style="margin-bottom:0">
       <div class="cg"><label>السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
       <div class="cg"><label>الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
     </div>
   </div>
-
   <div class="card">
-    <div class="sh"><span class="sn">٢</span> ملف SRT</div>
+    <div class="card-header">
+      <div class="card-icon">📂</div>
+      <span class="card-title">ملف SRT</span>
+    </div>
     <div class="ua">
       <input type="file" accept=".srt,.txt" onchange="ldSRT(event)">
-      <div class="ui">📂</div>
+      <div class="ui">📁</div>
       <div class="ut">اسحب أو اضغط</div>
       <div class="us">.srt أو .txt</div>
     </div>
     <span class="lbl">أو الصق المحتوى</span>
-    <textarea id="srtP" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:70px;font-size:.78rem;font-family:monospace"></textarea>
-    <button class="btn bsm" style="margin-top:6px;font-size:.78rem" onclick="prsPaste()">📥 تحليل</button>
-    <div id="srtInfo" style="display:none;margin-top:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="color:#34d399;font-size:.82rem;font-weight:700">✅ <span id="sCnt">0</span> جملة · <span id="sDur">0:00:00</span></span>
-        <button class="btn bsm" style="padding:4px 10px;font-size:.7rem" onclick="cpySRT()">📋</button>
+    <textarea id="srtP" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
+    <button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" onclick="prsPaste()">📥 تحليل الملف</button>
+    <div id="srtInfo" style="display:none;margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> جملة · <span id="sDur">0:00:00</span></span>
+        <button class="btn bsm" style="padding:4px 8px;font-size:.65rem" onclick="cpySRT()">📋</button>
       </div>
       <div class="sl" id="srtL"></div>
     </div>
   </div>
-
   <div class="card" id="dubCard" style="display:none">
-    <div class="sh"><span class="sn">٣</span> التوليد</div>
+    <div class="card-header">
+      <div class="card-icon">⚡</div>
+      <span class="card-title">التوليد</span>
+    </div>
     <div class="ib">
       <div class="ir">🔇 <span>معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
       <div class="ir">⏱️ <span>تزامن دقيق مع توقيتات SRT</span></div>
@@ -220,9 +224,7 @@ footer{text-align:center;padding:18px;color:#374151;font-size:.75rem;grid-column
       <span class="gl">توليد الدبلجة</span>
       <span class="gs">يتطلب سيرفر Render شغال</span>
     </button>
-
     <div id="dubP" style="display:none">
-      <div style="height:16px"></div>
       <div class="ph"><div class="pd"></div><div class="pt" id="phTxt">جارٍ...</div></div>
       <div class="cb">
         <div class="cr">
@@ -230,101 +232,53 @@ footer{text-align:center;padding:18px;color:#374151;font-size:.75rem;grid-column
           <div class="ci"><div class="cl">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
           <div class="ci"><div class="cl">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
         </div>
-        <div class="wv on" style="height:26px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+        <div class="wv on" style="height:22px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
       </div>
       <div class="pw">
         <div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div>
         <div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div>
       </div>
-      <div class="cs" id="curS">جارٍ...</div>
-      <div class="sc" id="sntC"></div>
+      <div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px">جارٍ...</div>
+      <div class="sc" id="sntC" style="text-align:center;font-size:.65rem;color:#4b5563;font-family:monospace;margin-bottom:10px"></div>
       <button class="btn bsm" style="width:100%;justify-content:center" onclick="cnclDub()">⏹ إلغاء</button>
     </div>
-
     <div id="dubRes" style="display:none">
       <div class="rb">
         <div class="rt">🎉 جاهز</div>
-        <audio id="dubAu" controls style="width:100%;margin-bottom:12px;border-radius:8px"></audio>
+        <audio id="dubAu" controls style="width:100%;margin-bottom:10px;border-radius:8px"></audio>
         <button class="db" onclick="dlRes()">⬇️ تنزيل WAV</button>
-        <div class="yh">📤 YouTube Studio → دبلجة</div>
+        <div class="yh" style="font-size:.65rem;color:#6b7280;text-align:center;margin-top:8px">📤 YouTube Studio → دبلجة</div>
       </div>
     </div>
-    <div class="st i" id="dubSt">تأكد سيرفر Render شغال ثم اضغط</div>
+    <div class="st i" id="dubSt" style="margin-top:12px">تأكد سيرفر Render شغال ثم اضغط</div>
   </div>
 </div>
 
-<!-- ✅ ترجمة SRT - يمين -->
-<div class="col-trans">
-  <div class="card tp">
-    <div class="sh"><span class="sn" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</span> مترجم SRT</div>
+<div>
+  <div class="card tp" style="border-top:4px solid #34d399">
+    <div class="card-header">
+      <div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div>
+      <span class="card-title">مترجم SRT</span>
+    </div>
     <div class="lbl">1. اختر لغة الترجمة</div>
     <div class="tg" id="transLangs"></div>
     <div class="lbl-row">
       <span class="lbl" style="margin-bottom:0">2. النص المصدر (SRT)</span>
-      <button class="btn bsm" style="padding:6px 12px;font-size:.75rem" onclick="pasteSrc()">📋 لصق</button>
+      <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteSrc()">📋 لصق</button>
     </div>
-    <textarea id="srcSRT" placeholder="الصق محتوى SRT..." style="min-height:100px;font-family:monospace;font-size:.8rem"></textarea>
+    <textarea id="srcSRT" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
     <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="startTrans()">🚀 ترجمة</button>
-    <div id="transRes" style="display:none;margin-top:16px">
+    <div id="transRes" style="display:none;margin-top:14px">
       <div class="trs">
         <div class="trh">
           <span class="trt">✅ النتيجة</span>
-          <button class="btn bsm" style="padding:6px 12px;font-size:.75rem" onclick="copyResult()">📋 نسخ</button>
+          <button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="copyResult()">📋 نسخ</button>
         </div>
         <div class="trc" id="transOut"></div>
-        <button class="db" style="margin-top:12px" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
+        <button class="db" style="margin-top:10px" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
       </div>
     </div>
-    <div class="st i" id="transSt" style="margin-top:12px">جاهز</div>
-  </div>
-</div>
-
-<!-- ✅ الفلاتر على اليسار (تحت نطق النص) -->
-<div class="filters-panel">
-  <div class="card" id="filtersCard" style="display:none">
-    <div class="sh"><span class="sn">🎛️</span> الفلاتر الصوتية</div>
-    
-    <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0">السرعة (Speed)</span>
-      <span class="rv" id="speedVal">1.0x</span>
-    </div>
-    <input type="range" id="filterSpeed" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:16px" oninput="updateFilters()">
-    
-    <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0">الطبقة (Pitch)</span>
-      <span class="rv" id="pitchVal">1.0</span>
-    </div>
-    <input type="range" id="filterPitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:16px" oninput="updateFilters()">
-    
-    <div class="sh" style="margin-top:20px"><span class="sn">🎚️</span> معادل الترددات (EQ)</div>
-    
-    <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0">Bass (منخفضة)</span>
-      <span class="rv" id="bassVal">0dB</span>
-    </div>
-    <input type="range" id="eqBass" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:16px" oninput="updateFilters()">
-    
-    <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0">Mid (متوسطة)</span>
-      <span class="rv" id="midVal">0dB</span>
-    </div>
-    <input type="range" id="eqMid" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:16px" oninput="updateFilters()">
-    
-    <div class="lbl-row">
-      <span class="lbl" style="margin-bottom:0">Treble (عالية)</span>
-      <span class="rv" id="trebleVal">0dB</span>
-    </div>
-    <input type="range" id="eqTreble" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:16px" oninput="updateFilters()">
-    
-    <button class="btn bsm" style="width:100%;justify-content:center;margin-top:12px" onclick="resetFilters()">🔄 إعادة تعيين الفلاتر</button>
-    
-    <div class="sh" style="margin-top:20px"><span class="sn">⚡</span> إعدادات سريعة</div>
-    <div class="sg">
-      <button class="sbtn" onclick="applyPreset('male')">👨 صوت رجالي</button>
-      <button class="sbtn" onclick="applyPreset('radio')">📻 راديو</button>
-      <button class="sbtn" onclick="applyPreset('warm')">🌟 دافئ</button>
-      <button class="sbtn" onclick="applyPreset('fast')">⚡ سريع</button>
-    </div>
+    <div class="st i" id="transSt" style="margin-top:10px">جاهز</div>
   </div>
 </div>
 
@@ -348,79 +302,41 @@ const LANGS=[
   {c:'ar-SA',g:'ar',n:'العربية',f:'🇸🇦',l:'العربية',code:'ar'},
 ];
 const SAMP={'en-US':['The quick brown fox.','Welcome to AI!'],'ar-SA':['بسم الله الرحمن الرحيم.','مرحباً بكم!'],'es-ES':['El zorro marrón.','¡Bienvenido!'],'fr-FR':['Le renard brun.','Bienvenue!'],'de-DE':['Der schnelle Fuchs.','Willkommen!']};
-
 let L1='en-US',L2='en-US',voices=[],spk=false,pau=false,srtData=[],dubbing=false,dubCanc=false,resBlob=null,transLang='en',transBlob=null;
-
-// ✅ متغيرات الفلاتر
-let filterSpeed = 1.0;
-let filterPitch = 1.0;
-let eqBass = 0;
-let eqMid = 0;
-let eqTreble = 0;
-
+let filterSpeed=1.0,filterPitch=1.0,eqBass=0,eqMid=0,eqTreble=0;
 const SERVER_URL='https://dubbing-api-v2.onrender.com';
 
-// ✅ تحديث الفلاتر
 function updateFilters(){
-  filterSpeed = parseFloat(document.getElementById('filterSpeed').value);
-  filterPitch = parseFloat(document.getElementById('filterPitch').value);
-  eqBass = parseFloat(document.getElementById('eqBass').value);
-  eqMid = parseFloat(document.getElementById('eqMid').value);
-  eqTreble = parseFloat(document.getElementById('eqTreble').value);
-  
-  document.getElementById('speedVal').textContent = filterSpeed.toFixed(1) + 'x';
-  document.getElementById('pitchVal').textContent = filterPitch.toFixed(1);
-  document.getElementById('bassVal').textContent = eqBass + 'dB';
-  document.getElementById('midVal').textContent = eqMid + 'dB';
-  document.getElementById('trebleVal').textContent = eqTreble + 'dB';
+  filterSpeed=parseFloat(document.getElementById('filterSpeed').value);
+  filterPitch=parseFloat(document.getElementById('filterPitch').value);
+  eqBass=parseFloat(document.getElementById('eqBass').value);
+  eqMid=parseFloat(document.getElementById('eqMid').value);
+  eqTreble=parseFloat(document.getElementById('eqTreble').value);
+  document.getElementById('speedVal').textContent=filterSpeed.toFixed(1)+'x';
+  document.getElementById('pitchVal').textContent=filterPitch.toFixed(1);
+  document.getElementById('bassVal').textContent=eqBass+'dB';
+  document.getElementById('midVal').textContent=eqMid+'dB';
+  document.getElementById('trebleVal').textContent=eqTreble+'dB';
 }
-
-// ✅ إعادة تعيين الفلاتر
 function resetFilters(){
-  filterSpeed = 1.0;
-  filterPitch = 1.0;
-  eqBass = 0;
-  eqMid = 0;
-  eqTreble = 0;
-  
-  document.getElementById('filterSpeed').value = 1;
-  document.getElementById('filterPitch').value = 1;
-  document.getElementById('eqBass').value = 0;
-  document.getElementById('eqMid').value = 0;
-  document.getElementById('eqTreble').value = 0;
-  
-  updateFilters();
-  ssDub('🔄 تم إعادة تعيين الفلاتر','ok');
+  filterSpeed=1.0;filterPitch=1.0;eqBass=0;eqMid=0;eqTreble=0;
+  document.getElementById('filterSpeed').value=1;document.getElementById('filterPitch').value=1;
+  document.getElementById('eqBass').value=0;document.getElementById('eqMid').value=0;document.getElementById('eqTreble').value=0;
+  updateFilters();ssDub('🔄 تم إعادة تعيين الفلاتر','ok');
 }
-
-// ✅ Presets جاهزة
 function applyPreset(name){
-  const presets = {
-    'male': {speed:1.0, pitch:0.85, bass:3, mid:0, treble:-2},
-    'radio': {speed:1.0, pitch:1.0, bass:-5, mid:3, treble:5},
-    'warm': {speed:1.0, pitch:0.9, bass:5, mid:2, treble:-3},
-    'fast': {speed:1.3, pitch:1.0, bass:0, mid:0, treble:0}
+  const presets={
+    'male':{speed:1.0,pitch:0.85,bass:3,mid:0,treble:-2},
+    'radio':{speed:1.0,pitch:1.0,bass:-5,mid:3,treble:5},
+    'warm':{speed:1.0,pitch:0.9,bass:5,mid:2,treble:-3},
+    'fast':{speed:1.3,pitch:1.0,bass:0,mid:0,treble:0}
   };
-  
-  const p = presets[name];
-  if(!p) return;
-  
-  filterSpeed = p.speed;
-  filterPitch = p.pitch;
-  eqBass = p.bass;
-  eqMid = p.mid;
-  eqTreble = p.treble;
-  
-  document.getElementById('filterSpeed').value = p.speed;
-  document.getElementById('filterPitch').value = p.pitch;
-  document.getElementById('eqBass').value = p.bass;
-  document.getElementById('eqMid').value = p.mid;
-  document.getElementById('eqTreble').value = p.treble;
-  
-  updateFilters();
-  ssDub('✅ تم تطبيق الإعداد: ' + name,'ok');
+  const p=presets[name];if(!p)return;
+  filterSpeed=p.speed;filterPitch=p.pitch;eqBass=p.bass;eqMid=p.mid;eqTreble=p.treble;
+  document.getElementById('filterSpeed').value=p.speed;document.getElementById('filterPitch').value=p.pitch;
+  document.getElementById('eqBass').value=p.bass;document.getElementById('eqMid').value=p.mid;document.getElementById('eqTreble').value=p.treble;
+  updateFilters();ssDub('✅ تم تطبيق الإعداد: '+name,'ok');
 }
-
 function swTab(id,btn){document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');btn.classList.add('on');}
 function mkGrid(gid,cur,cb){const g=document.getElementById(gid);LANGS.forEach(l=>{const b=document.createElement('button');b.className='lb'+(l.c===cur?' on':'');b.dataset.c=l.c;b.innerHTML=`<span class="lf">${l.f}</span>${l.l}`;b.onclick=()=>{g.querySelectorAll('.lb').forEach(x=>x.classList.toggle('on',x.dataset.c===l.c));cb(l.c);};g.appendChild(b);});}
 mkGrid('g1',L1,c=>{L1=c;updV();mkSamp();});mkGrid('g2',L2,c=>{L2=c;});
