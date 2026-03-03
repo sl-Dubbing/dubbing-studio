@@ -18,26 +18,26 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a0a1a;
 .bg::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background-image:url('background.png');background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed;opacity:0.6;z-index:1}
 .wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr;gap:24px}
 @media(min-width:1200px){.wrap{grid-template-columns:1fr 1fr 1fr;align-items:start}}
-header{text-align:center;margin-bottom:32px;grid-column:1/-1}
-.logo-container{display:flex;flex-direction:column;align-items:center;gap:12px}
+header{text-align:center;margin-bottom:32px;grid-column:1/-1; display: flex; justify-content: center;}
+.logo-container{display:flex;flex-direction:column;align-items:center;gap:12px; position: relative; z-index: 10;}
 
-/* ✅ تم تعديل الشعار: إزالة الخلفية والمربع */
+/* ✅ تم تعديل الشعار ليكون في الوسط وحجم مثالي */
 .logo-img{
-    width: 120px; 
-    height: 120px; 
+    width: 100px; 
+    height: 100px; 
     background: transparent; 
     border: none; 
     box-shadow: none; 
-    border-radius: 0; 
+    border-radius: 50%; /* جعله دائري اذا كان ذلك مناسباً للشعار */
     overflow: visible; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    padding: 0; 
+    padding: 5px;
     animation: logoFloat 3s ease-in-out infinite; 
-    transition: transform .3s ease
+    transition: transform .3s ease;
 }
-.logo-img:hover{transform:scale(1.05)}
+.logo-img:hover{transform:scale(1.1)}
 .logo-img img{
     width: 100%; 
     height: 100%; 
@@ -49,8 +49,9 @@ header{text-align:center;margin-bottom:32px;grid-column:1/-1}
 @keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes logoGlow{0%{box-shadow:0 10px 40px rgba(167,139,250,.4)}100%{box-shadow:0 10px 60px rgba(167,139,250,.8),0 0 20px rgba(167,139,250,.6)}}
 @keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 10px rgba(167,139,250,.5))}50%{filter:drop-shadow(0 0 20px rgba(167,139,250,.8))}}
-.logo-container h1{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px}
+.logo-container h1{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px; margin-bottom: 4px;}
 .logo-container .subtitle{color:#a78bfa;font-size:.85rem;font-weight:600}
+
 .lang-switcher{position:fixed;top:20px;left:20px;z-index:1000}
 .lang-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;color:#e0e0ff;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .3s;backdrop-filter:blur(10px)}
 .lang-btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-2px)}
@@ -443,8 +444,8 @@ transition: all .2s;
 .modal-pay.loading .btn-spinner { display:block; }
 .modal-secure { display:flex; align-items:center; gap:5px; font-size:.62rem; color:#4b5563; margin-top:12px; justify-content:center; }
 /* ===== AUTH SYSTEM STYLES ===== */
-.auth-switcher { position:fixed; top:20px; right:20px; z-index:1000; }
-.auth-btn {
+.auth-switcher { position:fixed; top:20px; right:20px; z-index:1000; display: flex; flex-direction: column-reverse; gap: 8px; align-items: flex-end; }
+.auth-btn, .upgrade-link {
 display:flex; align-items:center; gap:8px;
 padding:10px 16px;
 background:rgba(255,255,255,.1);
@@ -462,6 +463,44 @@ background:linear-gradient(135deg,#a78bfa,#60a5fa);
 display:flex; align-items:center; justify-content:center;
 font-size:.75rem; font-weight:800; color:white;
 }
+
+/* ⭐ تصميم رابط الترقية الذهبية الجديد */
+.upgrade-link {
+    background: linear-gradient(135deg, #FCD34D, #F59E0B); /* لون ذهبي متدرج */
+    color: #422006 !important; /* نص داكن للغة أفضل */
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+}
+.upgrade-link:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+    background: linear-gradient(135deg, #FDE68A, #F59E0B);
+}
+.upgrade-link svg {
+    fill: #422006 !important;
+}
+/* Animation shimmer */
+.upgrade-link::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+    pointer-events: none;
+}
+@keyframes shine {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+
 /* Auth Dropdown */
 .auth-dropdown {
 position:absolute; top:100%; right:0;
@@ -592,368 +631,374 @@ text-align:center;
 <div class="lang-option" onclick="setLang('es')" data-lang="es" role="menuitem"><span class="lang-flag">🇪🇸</span><span class="lang-name">Español</span></div>
 </div>
 </div>
-<!-- ===== AUTH BUTTON (top-right) ===== -->
+<!-- ===== AUTH BUTTON + UPGRADE LINK (Top Right) ===== -->
 <div class="auth-switcher" id="authSwitcher">
-<!-- زر تسجيل الدخول (قبل الدخول) -->
-<button class="auth-btn" id="authToggleBtn" onclick="toggleAuthDropdown()">
-<svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-<span id="authBtnLabel">تسجيل الدخول</span>
-<svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-</button>
-<div class="auth-dropdown" id="authDropdown">
-<!-- لوحة المستخدم (بعد الدخول) -->
-<div id="userPanel" style="display:none">
-<div class="user-panel">
-<div class="user-info">
-<div class="user-avatar-lg" id="userAvatarLg">?</div>
-<div class="user-details">
-<div class="user-email" id="userEmailDisplay">—</div>
-<div class="user-plan" id="userPlanBadge" data-i18n="freePlan">خطة مجانية</div>
-</div>
-</div>
-<div class="usage-title" data-i18n="usageTitle">📊 الاستخدام المجاني المتبقي</div>
-<div class="usage-item">
-<div class="usage-row">
-<span class="usage-label">✏️ نطق النص</span>
-<span class="usage-count" id="uc-tts">6/6</span>
-</div>
-<div class="usage-bar-bg"><div class="usage-bar-fill tts" id="ub-tts" style="width:100%"></div></div>
-</div>
-<div class="usage-item">
-<div class="usage-row">
-<span class="usage-label">🎬 الدبلجة</span>
-<span class="usage-count" id="uc-dub">⏱️ 30 ث مجانية</span>
-</div>
-<div class="usage-bar-bg"><div class="usage-bar-fill dub" id="ub-dub" style="width:100%"></div></div>
-</div>
-<div class="usage-item">
-<div class="usage-row">
-<span class="usage-label">🌐 مترجم SRT</span>
-<span class="usage-count" id="uc-srt">6/6</span>
-</div>
-<div class="usage-bar-bg"><div class="usage-bar-fill srt" id="ub-srt" style="width:100%"></div></div>
-</div>
-<button class="user-logout" onclick="logoutUser()" data-i18n="logout">🚪 تسجيل الخروج</button>
-</div>
-</div>
-<!-- نموذج تسجيل الدخول / الإنشاء -->
-<div id="authForms">
-<div class="auth-tabs">
-<button class="auth-tab on" id="tab-login" onclick="switchAuthTab('login')" data-i18n="loginTab">تسجيل الدخول</button>
-<button class="auth-tab"   id="tab-register" onclick="switchAuthTab('register')" data-i18n="registerTab">إنشاء حساب</button>
-</div>
-<!-- Login Form -->
-<div class="auth-form" id="form-login">
-<div class="auth-field">
-<label>البريد الإلكتروني</label>
-<input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
-</div>
-<div class="auth-field">
-<label>كلمة المرور</label>
-<input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
-</div>
-<button class="auth-submit" id="loginBtn" onclick="doLogin()">
-<div class="btn-spinner"></div>
-<span class="btn-text" data-i18n="loginSubmit">🔐 دخول</span>
-</button>
-<div class="auth-msg" id="login-msg"></div>
-</div>
-<!-- Register Form -->
-<div class="auth-form" id="form-register" style="display:none">
-<div class="auth-field">
-<label>البريد الإلكتروني</label>
-<input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
-</div>
-<div class="auth-field">
-<label>كلمة المرور</label>
-<input type="password" id="reg-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password">
-</div>
-<div class="auth-field">
-<label>تأكيد كلمة المرور</label>
-<input type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password">
-</div>
-<button class="auth-submit" id="registerBtn" onclick="doRegister()">
-<div class="btn-spinner"></div>
-<span class="btn-text" data-i18n="registerSubmit">🚀 إنشاء حساب مجاني</span>
-</button>
-<div class="auth-msg" id="register-msg"></div>
-</div>
-</div>
-</div>
+    <!-- زر الترقية الجديد (الذهبي) -->
+    <div class="upgrade-link" onclick="startCheckout('dub')">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span style="color: #422006 !important;">👑 ترقية الحساب Pro</span>
+    </div>
+    
+    <!-- زر تسجيل الدخول / المستخدم -->
+    <button class="auth-btn" id="authToggleBtn" onclick="toggleAuthDropdown()">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        <span id="authBtnLabel">تسجيل الدخول</span>
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+    </button>
+    <div class="auth-dropdown" id="authDropdown">
+        <!-- لوحة المستخدم (بعد الدخول) -->
+        <div id="userPanel" style="display:none">
+            <div class="user-panel">
+                <div class="user-info">
+                    <div class="user-avatar-lg" id="userAvatarLg">?</div>
+                    <div class="user-details">
+                        <div class="user-email" id="userEmailDisplay">—</div>
+                        <div class="user-plan" id="userPlanBadge" data-i18n="freePlan">خطة مجانية</div>
+                    </div>
+                </div>
+                <div class="usage-title" data-i18n="usageTitle">📊 الاستخدام المجاني المتبقي</div>
+                <div class="usage-item">
+                    <div class="usage-row">
+                        <span class="usage-label">✏️ نطق النص</span>
+                        <span class="usage-count" id="uc-tts">6/6</span>
+                    </div>
+                    <div class="usage-bar-bg"><div class="usage-bar-fill tts" id="ub-tts" style="width:100%"></div></div>
+                </div>
+                <div class="usage-item">
+                    <div class="usage-row">
+                        <span class="usage-label">🎬 الدبلجة</span>
+                        <span class="usage-count" id="uc-dub">⏱️ 30 ث مجانية</span>
+                    </div>
+                    <div class="usage-bar-bg"><div class="usage-bar-fill dub" id="ub-dub" style="width:100%"></div></div>
+                </div>
+                <div class="usage-item">
+                    <div class="usage-row">
+                        <span class="usage-label">🌐 مترجم SRT</span>
+                        <span class="usage-count" id="uc-srt">6/6</span>
+                    </div>
+                    <div class="usage-bar-bg"><div class="usage-bar-fill srt" id="ub-srt" style="width:100%"></div></div>
+                </div>
+                <button class="user-logout" onclick="logoutUser()" data-i18n="logout">🚪 تسجيل الخروج</button>
+            </div>
+        </div>
+        <!-- نموذج تسجيل الدخول / الإنشاء -->
+        <div id="authForms">
+            <div class="auth-tabs">
+                <button class="auth-tab on" id="tab-login" onclick="switchAuthTab('login')" data-i18n="loginTab">تسجيل الدخول</button>
+                <button class="auth-tab"   id="tab-register" onclick="switchAuthTab('register')" data-i18n="registerTab">إنشاء حساب</button>
+            </div>
+            <!-- Login Form -->
+            <div class="auth-form" id="form-login">
+                <div class="auth-field">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="auth-field">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button class="auth-submit" id="loginBtn" onclick="doLogin()">
+                    <div class="btn-spinner"></div>
+                    <span class="btn-text" data-i18n="loginSubmit">🔐 دخول</span>
+                </button>
+                <div class="auth-msg" id="login-msg"></div>
+            </div>
+            <!-- Register Form -->
+            <div class="auth-form" id="form-register" style="display:none">
+                <div class="auth-field">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="auth-field">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="reg-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password">
+                </div>
+                <div class="auth-field">
+                    <label>تأكيد كلمة المرور</label>
+                    <input type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password">
+                </div>
+                <button class="auth-submit" id="registerBtn" onclick="doRegister()">
+                    <div class="btn-spinner"></div>
+                    <span class="btn-text" data-i18n="registerSubmit">🚀 إنشاء حساب مجاني</span>
+                </button>
+                <div class="auth-msg" id="register-msg"></div>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- ===== END AUTH BUTTON ===== -->
 <div class="logo-container">
-<div class="logo-img">
-    <!-- ✅ تم استبدال SVG بصورة logo.png من GitHub -->
-    <!-- ⚠️ استبدل الرابط أدناه بالرابط الخام (Raw) من GitHub -->
-    <img src="logo.png" alt="sl-Dubbing Logo">
-</div>
-<div>
-<h1>sl-Dubbing</h1>
-<p class="subtitle"><span style="background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700">&amp; Translation</span> — <span data-i18n="subtitle">دبلجة وترجمة احترافية</span></p>
-</div>
+    <div class="logo-img">
+        <!-- ✅ تم استبدال SVG بصورة logo.png من GitHub -->
+        <!-- ⚠️ استبدل الرابط أدناه بالرابط الخام (Raw) من GitHub -->
+        <img src="logo.png" alt="sl-Dubbing Logo">
+    </div>
+    <div>
+        <h1>sl-Dubbing</h1>
+        <p class="subtitle"><span style="background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700">&amp; Translation</span> — <span data-i18n="subtitle">دبلجة وترجمة احترافية</span></p>
+    </div>
 </div>
 </header>
 <!-- ===== STRIPE PAYMENT SECTION ===== -->
 <div class="payment-section">
-<div class="payment-section-title">
-<h2 data-i18n="shopTitle">🛒 المتجر — ترقية الحساب</h2>
-<p data-i18n="shopSub">ادفع مرة واحدة واستمتع مدى الحياة · مدعوم بـ Stripe</p>
-</div>
-<div class="payment-grid">
-<!-- بطاقة نطق النص -->
-<div class="payment-card tts">
-<span class="payment-badge tts" data-i18n="ttsBadge">✏️ نطق النص</span>
-<span class="payment-icon">🎙️</span>
-<div class="payment-title" data-i18n="ttsCardTitle">تفعيل النطق مدى الحياة</div>
-<div class="payment-desc" data-i18n="ttsCardDesc">نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود</div>
-<ul class="payment-features">
-<li>أصوات متعددة اللغات (13+ لغة)</li>
-<li>تحكم في السرعة والطبقة والصوت</li>
-<li>فلاتر صوتية متقدمة</li>
-<li>دفعة واحدة · بدون اشتراك</li>
-</ul>
-<div class="price-display">
-<span class="price-amount tts">$10</span>
-<span class="price-label" data-i18n="lifetime">مدى الحياة</span>
-</div>
-<button class="buy-btn tts" id="btn-tts" onclick="startCheckout('tts')"><span data-i18n="buyNow">💳 شراء الآن</span>
-<div class="btn-spinner"></div>
-<span class="btn-text">💳 شراء الآن</span>
-</button>
-<div class="payment-note" data-i18n="securePayment">🔒 دفع آمن عبر Stripe</div>
-</div>
-<!-- بطاقة الدبلجة -->
-<div class="payment-card dub">
-<span class="payment-badge dub" data-i18n="dubBadge">🎬 دبلجة</span>
-<span class="payment-icon">🚀</span>
-<div class="payment-title" data-i18n="dubCardTitle">فتح الدبلجة مدى الحياة</div>
-<div class="payment-desc" data-i18n="dubCardDesc">دبلجة SRT كاملة بلا حدود — التجربة المجانية: أول 30 ثانية فقط</div>
-<ul class="payment-features">
-<li>دبلجة SRT بالكامل مع التزامن</li>
-<li>تصدير WAV لـ YouTube Dubbing</li>
-<li>معالجة سحابية صامتة</li>
-<li>دفعة واحدة · بدون اشتراك</li>
-</ul>
-<div class="price-display">
-<span class="price-amount dub">$50</span>
-<span class="price-label">مدى الحياة</span>
-</div>
-<button class="buy-btn dub" id="btn-dub" onclick="startCheckout('dub')"><span data-i18n="buyNow">💳 شراء الآن</span>
-<div class="btn-spinner"></div>
-<span class="btn-text">💳 شراء الآن</span>
-</button>
-<div class="payment-note" data-i18n="securePayment">🔒 دفع آمن عبر Stripe</div>
-</div>
-<!-- بطاقة مترجم SRT -->
-<div class="payment-card srt">
-<span class="payment-badge srt" data-i18n="srtBadge">🌐 مترجم</span>
-<span class="payment-icon">🌍</span>
-<div class="payment-title" data-i18n="srtCardTitle">شراء المترجم مدى الحياة</div>
-<div class="payment-desc" data-i18n="srtCardDesc">ترجمة ملفات SRT إلى أكثر من 13 لغة بنقرة واحدة</div>
-<ul class="payment-features">
-<li>ترجمة لـ 13+ لغة عالمية</li>
-<li>تنزيل SRT مترجم جاهز</li>
-<li>تنظيف النص التلقائي</li>
-<li>دفعة واحدة · بدون اشتراك</li>
-</ul>
-<div class="price-display">
-<span class="price-amount srt">$10</span>
-<span class="price-label">مدى الحياة</span>
-</div>
-<button class="buy-btn srt" id="btn-srt" onclick="startCheckout('srt')"><span data-i18n="buyNow">💳 شراء الآن</span>
-<div class="btn-spinner"></div>
-<span class="btn-text">💳 شراء الآن</span>
-</button>
-<div class="payment-note" data-i18n="securePayment">🔒 دفع آمن عبر Stripe</div>
-</div>
-</div>
+    <div class="payment-section-title">
+        <h2 data-i18n="shopTitle">🛒 المتجر — ترقية الحساب</h2>
+        <p data-i18n="shopSub">ادفع مرة واحدة واستمتع مدى الحياة · مدعوم بـ Stripe</p>
+    </div>
+    <div class="payment-grid">
+        <!-- بطاقة نطق النص -->
+        <div class="payment-card tts">
+            <span class="payment-badge tts" data-i18n="ttsBadge">✏️ نطق النص</span>
+            <span class="payment-icon">🎙️</span>
+            <div class="payment-title" data-i18n="ttsCardTitle">تفعيل النطق مدى الحياة</div>
+            <div class="payment-desc" data-i18n="ttsCardDesc">نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود</div>
+            <ul class="payment-features">
+                <li>أصوات متعددة اللغات (13+ لغة)</li>
+                <li>تحكم في السرعة والطبقة والصوت</li>
+                <li>فلاتر صوتية متقدمة</li>
+                <li>دفعة واحدة · بدون اشتراك</li>
+            </ul>
+            <div class="price-display">
+                <span class="price-amount tts">$10</span>
+                <span class="price-label" data-i18n="lifetime">مدى الحياة</span>
+            </div>
+            <button class="buy-btn tts" id="btn-tts" onclick="startCheckout('tts')"><span data-i18n="buyNow">💳 شراء الآن</span>
+                <div class="btn-spinner"></div>
+                <span class="btn-text">💳 شراء الآن</span>
+            </button>
+            <div class="payment-note" data-i18n="securePayment">🔒 دفع آمن عبر Stripe</div>
+        </div>
+        <!-- بطاقة الدبلجة -->
+        <div class="payment-card dub">
+            <span class="payment-badge dub" data-i18n="dubBadge">🎬 دبلجة</span>
+            <span class="payment-icon">🚀</span>
+            <div class="payment-title" data-i18n="dubCardTitle">فتح الدبلجة مدى الحياة</div>
+            <div class="payment-desc" data-i18n="dubCardDesc">دبلجة SRT كاملة بلا حدود — التجربة المجانية: أول 30 ثانية فقط</div>
+            <ul class="payment-features">
+                <li>دبلجة SRT بالكامل مع التزامن</li>
+                <li>تصدير WAV لـ YouTube Dubbing</li>
+                <li>معالجة سحابية صامتة</li>
+                <li>دفعة واحدة · بدون اشتراك</li>
+            </ul>
+            <div class="price-display">
+                <span class="price-amount dub">$50</span>
+                <span class="price-label">مدى الحياة</span>
+            </div>
+            <button class="buy-btn dub" id="btn-dub" onclick="startCheckout('dub')"><span data-i18n="buyNow">💳 شراء الآن</span>
+                <div class="btn-spinner"></div>
+                <span class="btn-text">💳 شراء الآن</span>
+            </button>
+            <div class="payment-note" data-i18n="securePayment">🔒 دفع آمن عبر Stripe</div>
+        </div>
+        <!-- بطاقة مترجم SRT -->
+        <div class="payment-card srt">
+            <span class="payment-badge srt" data-i18n="srtBadge">🌐 مترجم</span>
+            <span class="payment-icon">🌍</span>
+            <div class="payment-title" data-i18n="srtCardTitle">شراء المترجم مدى الحياة</div>
+            <div class="payment-desc" data-i18n="srtCardDesc">ترجمة ملفات SRT إلى أكثر من 13 لغة بنقرة واحدة</div>
+            <ul class="payment-features">
+                <li>ترجمة لـ 13+ لغة عالمية</li>
+                <li>تنزيل SRT مترجم جاهز</li>
+                <li>تنظيف النص التلقائي</li>
+                <li>دفعة واحدة · بدون اشتراك</li>
+            </ul>
+            <div class="price-display">
+                <span class="price-amount srt">$10</span>
+                <span class="price-label">مدى الحياة</span>
+            </div>
+            <button class="buy-btn srt" id="btn-srt" onclick="startCheckout('srt')"><span data-i18n="buyNow">💳 شراء الآن</span>
+                <div class="btn-spinner"></div>
+                <span class="btn-text">💳 شراء الآن</span>
+            </button>
+            <div class="payment-note" data-i18n="securePayment">🔒 دفع آمن عبر Stripe</div>
+        </div>
+    </div>
 </div>
 <!-- ===== END PAYMENT SECTION ===== -->
 <div class="feature-zone" id="zone-tts">
-<!-- قفل: نطق النص -->
-<div class="lock-overlay tts-lock" id="lock-tts">
-<div class="lock-icon" id="lock-icon-tts">🔒</div>
-<div class="lock-title" id="lock-title-tts">نطق النص — مقفل</div>
-<div class="lock-free-badge" id="lock-free-tts" style="display:none">🎁 <span id="lock-free-count-tts">6</span> استخدامات مجانية</div>
-<div class="lock-uses-left" id="lock-uses-tts" style="display:none">متبقي <strong id="lock-left-tts">0</strong> من 6 استخدامات</div>
-<div class="lock-sub" id="lock-sub-tts">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
-<button class="lock-buy-hint tts-btn" id="lock-action-tts" onclick="lockAction('tts')" data-i18n="lockSignup">👤 سجّل للاستخدام المجاني</button>
-</div>
-<div class="card">
-<div class="card-header"><div class="card-icon">✏️</div><span class="card-title" data-i18n="ttsTitle">نطق النص</span></div>
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="selectLanguage">اختر اللغة</span></div>
-<div class="lg" id="g1" style="margin-bottom:10px"></div>
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="voice">الصوت</span></div>
-<select id="vs" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#e0e0ff;font-size:.75rem;margin-bottom:10px"></select>
-<div class="tw"><textarea id="ti" data-i18n-placeholder="typeText" placeholder="اكتب النص..." style="min-height:80px;font-size:.8rem"></textarea><span class="cc" id="cc">0</span></div>
-<div class="ctrls" style="margin-bottom:10px">
-<div class="cg"><label style="font-size:.55rem" data-i18n="speed">السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
-<div class="cg"><label style="font-size:.55rem" data-i18n="pitch">الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
-<div class="cg"><label style="font-size:.55rem" data-i18n="volume">الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
-</div>
-<div class="wv" id="wv1" style="height:20px;margin:8px 0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
-<div class="br">
-<button class="btn bs" id="sb" onclick="guardedAction('tts', tSpeak)" style="padding:8px 12px;font-size:.75rem"><span id="si">▶</span><span id="st2" data-i18n="speak">نطق</span></button>
-<button class="btn bsm" onclick="tPause()" style="padding:8px 10px;font-size:.75rem">⏸</button>
-<button class="btn bsm" onclick="clrTxt()" style="padding:8px 10px;font-size:.75rem">🗑</button>
-</div>
-<div class="st i" id="s1" style="margin-top:8px;font-size:.7rem" data-i18n="typeAndSpeak">👋 اكتب نصاً واضغط نطق</div>
-</div>
-<div class="filters-card" id="filtersCard" style="display:none">
-<div class="fc-title"><span>🎛️</span> <span data-i18n="audioFilters">الفلاتر الصوتية</span></div>
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="speed">السرعة</span><span class="rv" id="speedVal">1.0x</span></div>
-<input type="range" id="filterSpeed" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="pitch">الطبقة</span><span class="rv" id="pitchVal">1.0</span></div>
-<input type="range" id="filterPitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0">Bass</span><span class="rv" id="bassVal">0dB</span></div>
-<input type="range" id="eqBass" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0">Mid</span><span class="rv" id="midVal">0dB</span></div>
-<input type="range" id="eqMid" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0">Treble</span><span class="rv" id="trebleVal">0dB</span></div>
-<input type="range" id="eqTreble" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-<button class="btn bsm" style="width:100%;justify-content:center;margin-top:8px;font-size:.7rem;padding:6px" data-i18n="resetFilters" onclick="resetFilters()">🔄 إعادة تعيين</button>
-<div class="sg">
-<button class="sbtn" onclick="applyPreset('male')" data-i18n="presetMale">👨 رجالي</button>
-<button class="sbtn" onclick="applyPreset('radio')" data-i18n="presetRadio">📻 راديو</button>
-<button class="sbtn" onclick="applyPreset('warm')" data-i18n="presetWarm">🌟 دافئ</button>
-<button class="sbtn" onclick="applyPreset('fast')" data-i18n="presetFast">⚡ سريع</button>
-</div>
-</div>
+    <!-- قفل: نطق النص -->
+    <div class="lock-overlay tts-lock" id="lock-tts">
+        <div class="lock-icon" id="lock-icon-tts">🔒</div>
+        <div class="lock-title" id="lock-title-tts">نطق النص — مقفل</div>
+        <div class="lock-free-badge" id="lock-free-tts" style="display:none">🎁 <span id="lock-free-count-tts">6</span> استخدامات مجانية</div>
+        <div class="lock-uses-left" id="lock-uses-tts" style="display:none">متبقي <strong id="lock-left-tts">0</strong> من 6 استخدامات</div>
+        <div class="lock-sub" id="lock-sub-tts">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
+        <button class="lock-buy-hint tts-btn" id="lock-action-tts" onclick="lockAction('tts')" data-i18n="lockSignup">👤 سجّل للاستخدام المجاني</button>
+    </div>
+    <div class="card">
+        <div class="card-header"><div class="card-icon">✏️</div><span class="card-title" data-i18n="ttsTitle">نطق النص</span></div>
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="selectLanguage">اختر اللغة</span></div>
+        <div class="lg" id="g1" style="margin-bottom:10px"></div>
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="voice">الصوت</span></div>
+        <select id="vs" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#e0e0ff;font-size:.75rem;margin-bottom:10px"></select>
+        <div class="tw"><textarea id="ti" data-i18n-placeholder="typeText" placeholder="اكتب النص..." style="min-height:80px;font-size:.8rem"></textarea><span class="cc" id="cc">0</span></div>
+        <div class="ctrls" style="margin-bottom:10px">
+            <div class="cg"><label style="font-size:.55rem" data-i18n="speed">السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
+            <div class="cg"><label style="font-size:.55rem" data-i18n="pitch">الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
+            <div class="cg"><label style="font-size:.55rem" data-i18n="volume">الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
+        </div>
+        <div class="wv" id="wv1" style="height:20px;margin:8px 0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+        <div class="br">
+            <button class="btn bs" id="sb" onclick="guardedAction('tts', tSpeak)" style="padding:8px 12px;font-size:.75rem"><span id="si">▶</span><span id="st2" data-i18n="speak">نطق</span></button>
+            <button class="btn bsm" onclick="tPause()" style="padding:8px 10px;font-size:.75rem">⏸</button>
+            <button class="btn bsm" onclick="clrTxt()" style="padding:8px 10px;font-size:.75rem">🗑</button>
+        </div>
+        <div class="st i" id="s1" style="margin-top:8px;font-size:.7rem" data-i18n="typeAndSpeak">👋 اكتب نصاً واضغط نطق</div>
+    </div>
+    <div class="filters-card" id="filtersCard" style="display:none">
+        <div class="fc-title"><span>🎛️</span> <span data-i18n="audioFilters">الفلاتر الصوتية</span></div>
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="speed">السرعة</span><span class="rv" id="speedVal">1.0x</span></div>
+        <input type="range" id="filterSpeed" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="pitch">الطبقة</span><span class="rv" id="pitchVal">1.0</span></div>
+        <input type="range" id="filterPitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Bass</span><span class="rv" id="bassVal">0dB</span></div>
+        <input type="range" id="eqBass" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Mid</span><span class="rv" id="midVal">0dB</span></div>
+        <input type="range" id="eqMid" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Treble</span><span class="rv" id="trebleVal">0dB</span></div>
+        <input type="range" id="eqTreble" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+        <button class="btn bsm" style="width:100%;justify-content:center;margin-top:8px;font-size:.7rem;padding:6px" data-i18n="resetFilters" onclick="resetFilters()">🔄 إعادة تعيين</button>
+        <div class="sg">
+            <button class="sbtn" onclick="applyPreset('male')" data-i18n="presetMale">👨 رجالي</button>
+            <button class="sbtn" onclick="applyPreset('radio')" data-i18n="presetRadio">📻 راديو</button>
+            <button class="sbtn" onclick="applyPreset('warm')" data-i18n="presetWarm">🌟 دافئ</button>
+            <button class="sbtn" onclick="applyPreset('fast')" data-i18n="presetFast">⚡ سريع</button>
+        </div>
+    </div>
 </div><!-- end zone-tts -->
 <div class="feature-zone" id="zone-dub">
-<!-- قفل: الدبلجة -->
-<div class="lock-overlay dub-lock" id="lock-dub">
-<div class="lock-icon" id="lock-icon-dub">🔒</div>
-<div class="lock-title" id="lock-title-dub">الدبلجة — مقفلة</div>
-<div class="lock-free-badge" id="lock-free-dub" style="display:none">🎁 تجربة مجانية: أول 30 ثانية</div>
-<div class="lock-uses-left" id="lock-uses-dub" style="display:none">متبقي <strong id="lock-left-dub">0</strong> من 6 استخدامات</div>
-<div class="lock-sub" id="lock-sub-dub">سجّل للحصول على تجربة مجانية (30 ث) أو اشترِ للملف الكامل</div>
-<button class="lock-buy-hint dub-btn" id="lock-action-dub" onclick="lockAction('dub')" data-i18n="lockSignup">👤 سجّل للاستخدام المجاني</button>
-</div>
-<div class="card">
-<div class="card-header"><div class="card-icon">🎬</div><span class="card-title" data-i18n="dubLang">لغة الدبلجة</span></div>
-<div class="lg" id="g2"></div>
-<div class="ctrls" style="margin-bottom:0">
-<div class="cg"><label data-i18n="speed">السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
-<div class="cg"><label data-i18n="volume">الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
-</div>
-</div>
-<div class="card">
-<div class="card-header"><div class="card-icon">📂</div><span class="card-title" data-i18n="srtFile">ملف SRT</span></div>
-<div class="ua"><input type="file" accept=".srt,.txt" onchange="ldSRT(event)" aria-label="Upload SRT file"><div class="ui">📁</div><div class="ut" data-i18n="dragOrClick">اسحب أو اضغط</div><div class="us" data-i18n="srtOrTxt">.srt أو .txt</div></div>
-<span class="lbl" data-i18n="orPaste">أو الصق المحتوى</span>
-<textarea id="srtP" data-i18n-placeholder="pasteSRT" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
-<button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" data-i18n="analyzeFile" onclick="prsPaste()">📥 تحليل الملف</button>
-<div id="srtInfo" style="display:none;margin-top:12px">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-<span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> <span data-i18n="sentences">جملة</span> · <span id="sDur">0:00:00</span></span>
-<button class="btn bsm" style="padding:4px 8px;font-size:.65rem" data-i18n="copy" onclick="cpySRT()">📋</button>
-</div>
-<div class="sl" id="srtL"></div>
-</div>
-</div>
-<div class="card" id="dubCard" style="display:none">
-<div class="card-header"><div class="card-icon">⚡</div><span class="card-title" data-i18n="generate">التوليد</span></div>
-<div class="ib">
-<div class="ir">🔇 <span data-i18n="silentProcessing">معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
-<div class="ir">⏱️ <span data-i18n="syncTiming">تزامن دقيق مع توقيتات SRT</span></div>
-<div class="ir">📤 <span data-i18n="wavFile">ملف WAV لـ YouTube Dubbing</span></div>
-</div>
-<button class="gb" id="genBtn" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl" data-i18n="generateDub">توليد الدبلجة</span><span class="gs" data-i18n="requiresServer">يتطلب سيرفر Render شغال</span></button>
-<div id="dubP" style="display:none">
-<div class="ph"><div class="pd"></div><div class="pt" id="phTxt" data-i18n="processing">جارٍ...</div></div>
-<div class="cb">
-<div class="cr">
-<div class="ci"><div class="cl" data-i18n="remaining">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
-<div class="ci"><div class="cl" data-i18n="elapsed">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
-<div class="ci"><div class="cl" data-i18n="total">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
-</div>
-<div class="wv on" style="height:22px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
-</div>
-<div class="pw"><div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div><div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div></div>
-<div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px" data-i18n="processing">جارٍ...</div>
-<div class="sc" id="sntC" style="text-align:center;font-size:.65rem;color:#4b5563;font-family:monospace;margin-bottom:10px"></div>
-<button class="btn bsm" style="width:100%;justify-content:center" data-i18n="cancel" onclick="cnclDub()">⏹ إلغاء</button>
-</div>
-<div id="dubRes" style="display:none">
-<div class="rb">
-<div class="rt">🎉 <span data-i18n="ready">جاهز</span></div>
-<audio id="dubAu" controls style="width:100%;margin-bottom:10px;border-radius:8px"></audio>
-<button class="db" data-i18n="downloadWAV" onclick="dlRes()">⬇️ تنزيل WAV</button>
-<div class="yh" style="font-size:.65rem;color:#6b7280;text-align:center;margin-top:8px">📤 YouTube Studio → <span data-i18n="dubbing">دبلجة</span></div>
-</div>
-</div>
-<div class="st i" id="dubSt" style="margin-top:12px" data-i18n="checkServer">تأكد سيرفر Render شغال ثم اضغط</div>
-</div>
+    <!-- قفل: الدبلجة -->
+    <div class="lock-overlay dub-lock" id="lock-dub">
+        <div class="lock-icon" id="lock-icon-dub">🔒</div>
+        <div class="lock-title" id="lock-title-dub">الدبلجة — مقفلة</div>
+        <div class="lock-free-badge" id="lock-free-dub" style="display:none">🎁 تجربة مجانية: أول 30 ثانية</div>
+        <div class="lock-uses-left" id="lock-uses-dub" style="display:none">متبقي <strong id="lock-left-dub">0</strong> من 6 استخدامات</div>
+        <div class="lock-sub" id="lock-sub-dub">سجّل للحصول على تجربة مجانية (30 ث) أو اشترِ للملف الكامل</div>
+        <button class="lock-buy-hint dub-btn" id="lock-action-dub" onclick="lockAction('dub')" data-i18n="lockSignup">👤 سجّل للاستخدام المجاني</button>
+    </div>
+    <div class="card">
+        <div class="card-header"><div class="card-icon">🎬</div><span class="card-title" data-i18n="dubLang">لغة الدبلجة</span></div>
+        <div class="lg" id="g2"></div>
+        <div class="ctrls" style="margin-bottom:0">
+            <div class="cg"><label data-i18n="speed">السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
+            <div class="cg"><label data-i18n="volume">الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"><div class="card-icon">📂</div><span class="card-title" data-i18n="srtFile">ملف SRT</span></div>
+        <div class="ua"><input type="file" accept=".srt,.txt" onchange="ldSRT(event)" aria-label="Upload SRT file"><div class="ui">📁</div><div class="ut" data-i18n="dragOrClick">اسحب أو اضغط</div><div class="us" data-i18n="srtOrTxt">.srt أو .txt</div></div>
+        <span class="lbl" data-i18n="orPaste">أو الصق المحتوى</span>
+        <textarea id="srtP" data-i18n-placeholder="pasteSRT" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
+        <button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" data-i18n="analyzeFile" onclick="prsPaste()">📥 تحليل الملف</button>
+        <div id="srtInfo" style="display:none;margin-top:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> <span data-i18n="sentences">جملة</span> · <span id="sDur">0:00:00</span></span>
+                <button class="btn bsm" style="padding:4px 8px;font-size:.65rem" data-i18n="copy" onclick="cpySRT()">📋</button>
+            </div>
+            <div class="sl" id="srtL"></div>
+        </div>
+    </div>
+    <div class="card" id="dubCard" style="display:none">
+        <div class="card-header"><div class="card-icon">⚡</div><span class="card-title" data-i18n="generate">التوليد</span></div>
+        <div class="ib">
+            <div class="ir">🔇 <span data-i18n="silentProcessing">معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
+            <div class="ir">⏱️ <span data-i18n="syncTiming">تزامن دقيق مع توقيتات SRT</span></div>
+            <div class="ir">📤 <span data-i18n="wavFile">ملف WAV لـ YouTube Dubbing</span></div>
+        </div>
+        <button class="gb" id="genBtn" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl" data-i18n="generateDub">توليد الدبلجة</span><span class="gs" data-i18n="requiresServer">يتطلب سيرفر Render شغال</span></button>
+        <div id="dubP" style="display:none">
+            <div class="ph"><div class="pd"></div><div class="pt" id="phTxt" data-i18n="processing">جارٍ...</div></div>
+            <div class="cb">
+                <div class="cr">
+                    <div class="ci"><div class="cl" data-i18n="remaining">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
+                    <div class="ci"><div class="cl" data-i18n="elapsed">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
+                    <div class="ci"><div class="cl" data-i18n="total">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
+                </div>
+                <div class="wv on" style="height:22px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+            </div>
+            <div class="pw"><div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div><div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div></div>
+            <div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px" data-i18n="processing">جارٍ...</div>
+            <div class="sc" id="sntC" style="text-align:center;font-size:.65rem;color:#4b5563;font-family:monospace;margin-bottom:10px"></div>
+            <button class="btn bsm" style="width:100%;justify-content:center" data-i18n="cancel" onclick="cnclDub()">⏹ إلغاء</button>
+        </div>
+        <div id="dubRes" style="display:none">
+            <div class="rb">
+                <div class="rt">🎉 <span data-i18n="ready">جاهز</span></div>
+                <audio id="dubAu" controls style="width:100%;margin-bottom:10px;border-radius:8px"></audio>
+                <button class="db" data-i18n="downloadWAV" onclick="dlRes()">⬇️ تنزيل WAV</button>
+                <div class="yh" style="font-size:.65rem;color:#6b7280;text-align:center;margin-top:8px">📤 YouTube Studio → <span data-i18n="dubbing">دبلجة</span></div>
+            </div>
+        </div>
+        <div class="st i" id="dubSt" style="margin-top:12px" data-i18n="checkServer">تأكد سيرفر Render شغال ثم اضغط</div>
+    </div>
 </div><!-- end zone-dub -->
 <div class="feature-zone" id="zone-srt">
-<!-- قفل: مترجم SRT -->
-<div class="lock-overlay srt-lock" id="lock-srt">
-<div class="lock-icon" id="lock-icon-srt">🔒</div>
-<div class="lock-title" id="lock-title-srt">مترجم SRT — مقفل</div>
-<div class="lock-free-badge" id="lock-free-srt" style="display:none">🎁 <span id="lock-free-count-srt">6</span> استخدامات مجانية</div>
-<div class="lock-uses-left" id="lock-uses-srt" style="display:none">متبقي <strong id="lock-left-srt">0</strong> من 6 استخدامات</div>
-<div class="lock-sub" id="lock-sub-srt">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
-<button class="lock-buy-hint srt-btn" id="lock-action-srt" onclick="lockAction('srt')" data-i18n="lockSignup">👤 سجّل للاستخدام المجاني</button>
-</div>
-<div class="card tp" style="border-top:4px solid #34d399">
-<div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div><span class="card-title" data-i18n="srtTranslator">مترجم SRT</span></div>
-<div class="lbl" data-i18n="selectTransLang">1. اختر لغة الترجمة</div>
-<div class="tg" id="transLangs"></div>
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="sourceText">2. النص المصدر (SRT)</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteSrc()">📋 لصق</button></div>
-<textarea id="srcSRT" data-i18n-placeholder="pasteSRTContent" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
-<button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" data-i18n="translate" onclick="guardedAction('srt', startTrans)">🚀 ترجمة</button>
-<div id="transRes" style="display:none;margin-top:14px">
-<div class="trs">
-<div class="trh"><span class="trt">✅ <span data-i18n="result">النتيجة</span></span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="copy" onclick="copyResult()">📋 نسخ</button></div>
-<div class="trc" id="transOut"></div>
-<button class="db" style="margin-top:10px" data-i18n="downloadSRT" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
-</div>
-</div>
-<div class="st i" id="transSt" style="margin-top:10px" data-i18n="ready">جاهز</div>
-</div>
-<div class="card" style="border-top:4px solid #fbbf24">
-<div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🧹</div><span class="card-title" data-i18n="cleanText">تنظيف النص من الفراغات</span></div>
-<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="pasteSRTOrText">الصق نص SRT أو أي نص</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteClean()">📋 لصق</button></div>
-<textarea id="cleanInput" data-i18n-placeholder="pasteTextHere" placeholder="الصق النص هنا..." style="min-height:80px;font-family:monospace;font-size:.75rem;margin-bottom:10px"></textarea>
-<div class="ctrls" style="margin-bottom:10px">
-<label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeNumbers" style="display:none" checked>📌 <span data-i18n="removeNumbers">حذف الأرقام</span></label>
-<label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeTime" style="display:none" checked>⏱️ <span data-i18n="removeTimestamps">حذف التوقيتات</span></label>
-<label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeEmpty" style="display:none" checked>🗑️ <span data-i18n="removeEmptyLines">حذف الأسطر الفارغة</span></label>
-</div>
-<button class="btn bs" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000" data-i18n="cleanTextBtn" onclick="cleanText()">🧹 تنظيف النص</button>
-<div id="cleanResult" style="display:none">
-<div class="clean-box">
-<div class="clean-title">✨ <span data-i18n="textAfterClean">النص بعد التنظيف</span></div>
-<div class="clean-output" id="cleanOutput"></div>
-<div class="br">
-<button class="btn bsm" style="flex:1;justify-content:center" data-i18n="copy" onclick="copyClean()">📋 نسخ</button>
-<button class="btn bsm" style="flex:1;justify-content:center" data-i18n="download" onclick="dlClean()">⬇️ تنزيل</button>
-</div>
-</div>
-</div>
-<div class="st i" id="cleanSt" style="margin-top:10px" data-i18n="pasteAndClean">الصق نصاً واضغط تنظيف</div>
-</div>
+    <!-- قفل: مترجم SRT -->
+    <div class="lock-overlay srt-lock" id="lock-srt">
+        <div class="lock-icon" id="lock-icon-srt">🔒</div>
+        <div class="lock-title" id="lock-title-srt">مترجم SRT — مقفل</div>
+        <div class="lock-free-badge" id="lock-free-srt" style="display:none">🎁 <span id="lock-free-count-srt">6</span> استخدامات مجانية</div>
+        <div class="lock-uses-left" id="lock-uses-srt" style="display:none">متبقي <strong id="lock-left-srt">0</strong> من 6 استخدامات</div>
+        <div class="lock-sub" id="lock-sub-srt">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
+        <button class="lock-buy-hint srt-btn" id="lock-action-srt" onclick="lockAction('srt')" data-i18n="lockSignup">👤 سجّل للاستخدام المجاني</button>
+    </div>
+    <div class="card tp" style="border-top:4px solid #34d399">
+        <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div><span class="card-title" data-i18n="srtTranslator">مترجم SRT</span></div>
+        <div class="lbl" data-i18n="selectTransLang">1. اختر لغة الترجمة</div>
+        <div class="tg" id="transLangs"></div>
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="sourceText">2. النص المصدر (SRT)</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteSrc()">📋 لصق</button></div>
+        <textarea id="srcSRT" data-i18n-placeholder="pasteSRTContent" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
+        <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" data-i18n="translate" onclick="guardedAction('srt', startTrans)">🚀 ترجمة</button>
+        <div id="transRes" style="display:none;margin-top:14px">
+            <div class="trs">
+                <div class="trh"><span class="trt">✅ <span data-i18n="result">النتيجة</span></span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="copy" onclick="copyResult()">📋 نسخ</button></div>
+                <div class="trc" id="transOut"></div>
+                <button class="db" style="margin-top:10px" data-i18n="downloadSRT" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
+            </div>
+        </div>
+        <div class="st i" id="transSt" style="margin-top:10px" data-i18n="ready">جاهز</div>
+    </div>
+    <div class="card" style="border-top:4px solid #fbbf24">
+        <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🧹</div><span class="card-title" data-i18n="cleanText">تنظيف النص من الفراغات</span></div>
+        <div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="pasteSRTOrText">الصق نص SRT أو أي نص</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" data-i18n="paste" onclick="pasteClean()">📋 لصق</button></div>
+        <textarea id="cleanInput" data-i18n-placeholder="pasteTextHere" placeholder="الصق النص هنا..." style="min-height:80px;font-family:monospace;font-size:.75rem;margin-bottom:10px"></textarea>
+        <div class="ctrls" style="margin-bottom:10px">
+            <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeNumbers" style="display:none" checked>📌 <span data-i18n="removeNumbers">حذف الأرقام</span></label>
+            <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeTime" style="display:none" checked>⏱️ <span data-i18n="removeTimestamps">حذف التوقيتات</span></label>
+            <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeEmpty" style="display:none" checked>🗑️ <span data-i18n="removeEmptyLines">حذف الأسطر الفارغة</span></label>
+        </div>
+        <button class="btn bs" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000" data-i18n="cleanTextBtn" onclick="cleanText()">🧹 تنظيف النص</button>
+        <div id="cleanResult" style="display:none">
+            <div class="clean-box">
+                <div class="clean-title">✨ <span data-i18n="textAfterClean">النص بعد التنظيف</span></div>
+                <div class="clean-output" id="cleanOutput"></div>
+                <div class="br">
+                    <button class="btn bsm" style="flex:1;justify-content:center" data-i18n="copy" onclick="copyClean()">📋 نسخ</button>
+                    <button class="btn bsm" style="flex:1;justify-content:center" data-i18n="download" onclick="dlClean()">⬇️ تنزيل</button>
+                </div>
+            </div>
+        </div>
+        <div class="st i" id="cleanSt" style="margin-top:10px" data-i18n="pasteAndClean">الصق نصاً واضغط تنظيف</div>
+    </div>
 </div><!-- end zone-srt -->
 </div><!-- end .wrap -->
 <footer>sl-Dubbing &amp; Translation <span>· GitHub + Render · gTTS · مجاني 100%</span></footer>
 <!-- ===== STRIPE PAYMENT MODAL ===== -->
 <div class="modal-overlay" id="paymentModal" role="dialog" aria-modal="true" aria-label="نافذة الدفع">
-<div class="modal-box">
-<div class="modal-title" id="modalTitle">💳 إتمام الشراء</div>
-<div class="modal-sub" id="modalSub">أدخل بيانات بطاقتك الائتمانية</div>
-<div id="card-element"></div>
-<div id="card-errors" role="alert"></div>
-<div class="modal-actions">
-<button class="modal-cancel" onclick="closeModal()">إلغاء</button>
-<button class="modal-pay" id="payBtn" onclick="submitPayment()">
-<div class="btn-spinner"></div>
-<span class="btn-text">💳 ادفع الآن</span>
-</button>
-</div>
-<div class="modal-secure">🔐 مشفّر بـ TLS · مدعوم بـ Stripe · بياناتك آمنة 100%</div>
-</div>
+    <div class="modal-box">
+        <div class="modal-title" id="modalTitle">💳 إتمام الشراء</div>
+        <div class="modal-sub" id="modalSub">أدخل بيانات بطاقتك الائتمانية</div>
+        <div id="card-element"></div>
+        <div id="card-errors" role="alert"></div>
+        <div class="modal-actions">
+            <button class="modal-cancel" onclick="closeModal()">إلغاء</button>
+            <button class="modal-pay" id="payBtn" onclick="submitPayment()">
+                <div class="btn-spinner"></div>
+                <span class="btn-text">💳 ادفع الآن</span>
+            </button>
+        </div>
+        <div class="modal-secure">🔐 مشفّر بـ TLS · مدعوم بـ Stripe · بياناتك آمنة 100%</div>
+    </div>
 </div>
 <script>
 // =============================================================
