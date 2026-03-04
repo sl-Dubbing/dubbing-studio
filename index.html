@@ -369,7 +369,7 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
                     <div class="auth-msg" id="login-msg"></div>
                 </div>
                 <div class="auth-form" id="form-register" style="display:none">
-                    <div class="auth-field"><label>البريد الإلكتروني</label><input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email"></div>
+                    <div class="auth-field"><label>البريد الإلكتروني (Gmail فقط ✉️)</label><input type="email" id="reg-email" placeholder="you@gmail.com" autocomplete="email"></div>
                     <div class="auth-field"><label>كلمة المرور</label><input type="password" id="reg-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password"></div>
                     <div class="auth-field"><label>تأكيد كلمة المرور</label><input type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password"></div>
                     <button class="auth-submit" id="registerBtn" onclick="doRegister()"><div class="btn-spinner"></div><span class="btn-text">🚀 إنشاء حساب مجاني</span></button>
@@ -707,6 +707,7 @@ function doRegister() {
     const pass  = document.getElementById('reg-pass').value;
     const pass2 = document.getElementById('reg-pass2').value;
     if (!email || !email.includes('@')) { showAuthMsg('register', '⚠️ أدخل بريدًا إلكترونيًا صحيحًا', 'er'); return; }
+    if (!email.endsWith('@gmail.com')) { showAuthMsg('register', '⚠️ مقبول فقط بريد Gmail (@gmail.com)', 'er'); return; }
     if (pass.length < 8) { showAuthMsg('register', '⚠️ كلمة المرور 8 أحرف على الأقل', 'er'); return; }
     if (pass !== pass2)  { showAuthMsg('register', '⚠️ كلمتا المرور غير متطابقتان', 'er'); return; }
     const users = getUsers();
