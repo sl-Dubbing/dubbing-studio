@@ -10,8 +10,6 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>sl-Dubbing & Translation</title>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-691108357486678" crossorigin="anonymous"></script>
-<!-- EmailJS SDK -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a0a1a;color:#e0e0ff;min-height:100vh;overflow-x:hidden}
@@ -251,24 +249,6 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 .lock-uses-left{font-size:.7rem;color:#6b7280;text-align:center;}
 .lock-uses-left strong{color:#fbbf24;}
 .adsense-container{grid-column:1/-1;margin:20px 0;text-align:center;min-height:90px;}
-
-/* Email Verification Styles */
-.verification-pending{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:12px;margin-top:10px;display:none;}
-.verification-pending.show{display:block;}
-.verification-icon{font-size:1.8rem;margin-bottom:8px;}
-.verification-title{color:#fbbf24;font-size:.85rem;font-weight:700;margin-bottom:6px;}
-.verification-text{color:#9ca3af;font-size:.7rem;line-height:1.5;margin-bottom:10px;}
-.verification-code-input{display:flex;gap:8px;justify-content:center;margin-bottom:10px;}
-.verification-code-input input{width:45px;height:50px;text-align:center;font-size:1.3rem;font-weight:700;background:rgba(0,0,0,.3);border:2px solid rgba(251,191,36,.3);border-radius:8px;color:#fbbf24;font-family:monospace;outline:none;transition:all .2s;}
-.verification-code-input input:focus{border-color:#fbbf24;box-shadow:0 0 0 3px rgba(251,191,36,.1);}
-.verify-btn{width:100%;padding:10px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:8px;color:white;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-bottom:8px;}
-.verify-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,158,11,.4);}
-.verify-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
-.resend-link{text-align:center;font-size:.65rem;color:#6b7280;}
-.resend-link button{background:none;border:none;color:#60a5fa;cursor:pointer;text-decoration:underline;font-family:inherit;padding:0;font-size:.65rem;}
-.resend-link button:hover{color:#818cf8;}
-.resend-link button:disabled{color:#4b5563;cursor:not-allowed;text-decoration:none;}
-
 @keyframes spin{to{transform:rotate(360deg);}}
 @media(max-width:600px){h1{font-size:1.4rem}.lg{grid-template-columns:repeat(3,1fr)}.sit{display:none}.cr{gap:10px}.cv{font-size:1rem}.tg{grid-template-columns:1fr}.lb{padding:8px 4px}}
 </style>
@@ -346,31 +326,6 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
                     <div class="auth-field"><label>تأكيد كلمة المرور</label><input type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password"></div>
                     <button class="auth-submit" id="registerBtn" onclick="doRegister()"><div class="btn-spinner"></div><span class="btn-text">🚀 إنشاء حساب مجاني</span></button>
                     <div class="auth-msg" id="register-msg"></div>
-                    
-                    <!-- Email Verification Panel -->
-                    <div class="verification-pending" id="verificationPanel">
-                        <div style="text-align:center">
-                            <div class="verification-icon">📧</div>
-                            <div class="verification-title">تحقق من بريدك الإلكتروني</div>
-                            <div class="verification-text">
-                                تم إرسال رمز التحقق المكون من 6 أرقام إلى<br>
-                                <strong id="verifyEmailDisplay"></strong>
-                            </div>
-                            <div class="verification-code-input" id="codeInputs">
-                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="code1" onkeyup="moveToNext(this, null)" onpaste="handlePaste(event)">
-                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="code2" onkeyup="moveToNext(this, 'code1')">
-                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="code3" onkeyup="moveToNext(this, 'code2')">
-                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="code4" onkeyup="moveToNext(this, 'code3')">
-                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="code5" onkeyup="moveToNext(this, 'code4')">
-                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="code6" onkeyup="moveToNext(this, 'code5')">
-                            </div>
-                            <button class="verify-btn" id="verifyCodeBtn" onclick="verifyEmailCode()">✅ تأكيد الرمز</button>
-                            <div class="resend-link">
-                                لم يصلك الرمز؟ <button id="resendBtn" onclick="resendVerificationCode()">إعادة إرسال</button>
-                                <span id="resendTimer"></span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -445,9 +400,183 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
         </div>
     </div>
 
-    <!-- Rest of the features (TTS, Dubbing, Translation) - keeping original code -->
+    <div class="adsense-container">
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-691108357486678" data-ad-slot="YOUR_AD_SLOT_2" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
     <div class="features-wrapper">
-        <!-- Keeping all original feature zones unchanged -->
+        <div class="feature-zone" id="zone-tts">
+            <div class="lock-overlay tts-lock" id="lock-tts">
+                <div class="lock-icon" id="lock-icon-tts">🔒</div>
+                <div class="lock-title" id="lock-title-tts">نطق النص — مقفل</div>
+                <div class="lock-free-badge" id="lock-free-tts" style="display:none">🎁 <span id="lock-free-count-tts">6</span> استخدامات مجانية</div>
+                <div class="lock-uses-left" id="lock-uses-tts" style="display:none">متبقي <strong id="lock-left-tts">0</strong> من 6 استخدامات</div>
+                <div class="lock-sub" id="lock-sub-tts">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
+                <button class="lock-buy-hint tts-btn" id="lock-action-tts" onclick="lockAction('tts')">👤 سجّل للاستخدام المجاني</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-icon">✏️</div><span class="card-title">نطق النص</span></div>
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">اختر اللغة</span></div>
+                <div class="lg" id="g1" style="margin-bottom:10px"></div>
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الصوت</span></div>
+                <select id="vs" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#e0e0ff;font-size:.75rem;margin-bottom:10px"></select>
+                <div class="tw"><textarea id="ti" placeholder="اكتب النص..." style="min-height:80px;font-size:.8rem"></textarea><span class="cc" id="cc">0</span></div>
+                <div class="ctrls" style="margin-bottom:10px">
+                    <div class="cg"><label style="font-size:.55rem">السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
+                    <div class="cg"><label style="font-size:.55rem">الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
+                    <div class="cg"><label style="font-size:.55rem">الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
+                </div>
+                <div class="wv" id="wv1" style="height:20px;margin:8px 0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+                <div class="br">
+                    <button class="btn bs" id="sb" onclick="guardedAction('tts', tSpeak)" style="padding:8px 12px;font-size:.75rem"><span id="si">▶</span><span id="st2">نطق</span></button>
+                    <button class="btn bsm" onclick="tPause()" style="padding:8px 10px;font-size:.75rem">⏸</button>
+                    <button class="btn bsm" onclick="clrTxt()" style="padding:8px 10px;font-size:.75rem">🗑</button>
+                </div>
+                <div class="st i" id="s1" style="margin-top:8px;font-size:.7rem">👋 اكتب نصاً واضغط نطق</div>
+            </div>
+            <div class="filters-card" id="filtersCard" style="display:none">
+                <div class="fc-title"><span>🎛️</span> الفلاتر الصوتية</div>
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">السرعة</span><span class="rv" id="speedVal">1.0x</span></div>
+                <input type="range" id="filterSpeed" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الطبقة</span><span class="rv" id="pitchVal">1.0</span></div>
+                <input type="range" id="filterPitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Bass</span><span class="rv" id="bassVal">0dB</span></div>
+                <input type="range" id="eqBass" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Mid</span><span class="rv" id="midVal">0dB</span></div>
+                <input type="range" id="eqMid" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Treble</span><span class="rv" id="trebleVal">0dB</span></div>
+                <input type="range" id="eqTreble" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+                <button class="btn bsm" style="width:100%;justify-content:center;margin-top:8px;font-size:.7rem;padding:6px" onclick="resetFilters()">🔄 إعادة تعيين</button>
+                <div class="sg">
+                    <button class="sbtn" onclick="applyPreset('male')">👨 رجالي</button>
+                    <button class="sbtn" onclick="applyPreset('radio')">📻 راديو</button>
+                    <button class="sbtn" onclick="applyPreset('warm')">🌟 دافئ</button>
+                    <button class="sbtn" onclick="applyPreset('fast')">⚡ سريع</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-zone" id="zone-dub">
+            <div class="lock-overlay dub-lock" id="lock-dub">
+                <div class="lock-icon" id="lock-icon-dub">🔒</div>
+                <div class="lock-title" id="lock-title-dub">الدبلجة — مقفلة</div>
+                <div class="lock-free-badge" id="lock-free-dub" style="display:none">🎁 تجربة مجانية: أول 30 ثانية</div>
+                <div class="lock-uses-left" id="lock-uses-dub" style="display:none">متبقي <strong id="lock-left-dub">0</strong> من 6 استخدامات</div>
+                <div class="lock-sub" id="lock-sub-dub">سجّل للحصول على تجربة مجانية (30 ث) أو اشترِ للملف الكامل</div>
+                <button class="lock-buy-hint dub-btn" id="lock-action-dub" onclick="lockAction('dub')">👤 سجّل للاستخدام المجاني</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-icon">🎬</div><span class="card-title">لغة الدبلجة</span></div>
+                <div class="lg" id="g2"></div>
+                <div class="ctrls" style="margin-bottom:0">
+                    <div class="cg"><label>السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
+                    <div class="cg"><label>الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-icon">📂</div><span class="card-title">ملف SRT</span></div>
+                <div class="ua"><input type="file" accept=".srt,.txt" onchange="ldSRT(event)" aria-label="Upload SRT file"><div class="ui">📁</div><div class="ut">اسحب أو اضغط</div><div class="us">.srt أو .txt</div></div>
+                <span class="lbl">أو الصق المحتوى</span>
+                <textarea id="srtP" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
+                <button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" onclick="prsPaste()">📥 تحليل الملف</button>
+                <div id="srtInfo" style="display:none;margin-top:12px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                        <span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> جملة · <span id="sDur">0:00:00</span></span>
+                        <button class="btn bsm" style="padding:4px 8px;font-size:.65rem" onclick="cpySRT()">📋</button>
+                    </div>
+                    <div class="sl" id="srtL"></div>
+                </div>
+            </div>
+            <div class="card" id="dubCard" style="display:none">
+                <div class="card-header"><div class="card-icon">⚡</div><span class="card-title">التوليد</span></div>
+                <div class="ib">
+                    <div class="ir">🔇 معالجة <strong>صامتة</strong> عبر سيرفر سحابي</div>
+                    <div class="ir">⏱️ تزامن دقيق مع توقيتات SRT</div>
+                    <div class="ir">📤 ملف WAV لـ YouTube Dubbing</div>
+                </div>
+                <button class="gb" id="genBtn" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl">توليد الدبلجة</span><span class="gs">يتطلب سيرفر Render شغال</span></button>
+                <div id="dubP" style="display:none">
+                    <div class="ph"><div class="pd"></div><div class="pt" id="phTxt">جارٍ...</div></div>
+                    <div class="cb">
+                        <div class="cr">
+                            <div class="ci"><div class="cl">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
+                            <div class="ci"><div class="cl">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
+                            <div class="ci"><div class="cl">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
+                        </div>
+                        <div class="wv on" style="height:22px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+                    </div>
+                    <div class="pw"><div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div><div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div></div>
+                    <div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px">جارٍ...</div>
+                    <div class="sc" id="sntC" style="text-align:center;font-size:.65rem;color:#4b5563;font-family:monospace;margin-bottom:10px"></div>
+                    <button class="btn bsm" style="width:100%;justify-content:center" onclick="cnclDub()">⏹ إلغاء</button>
+                </div>
+                <div id="dubRes" style="display:none">
+                    <div class="rb">
+                        <div class="rt">🎉 جاهز</div>
+                        <audio id="dubAu" controls style="width:100%;margin-bottom:10px;border-radius:8px"></audio>
+                        <button class="db" onclick="dlRes()">⬇️ تنزيل WAV</button>
+                        <div class="yh" style="font-size:.65rem;color:#6b7280;text-align:center;margin-top:8px">📤 YouTube Studio → دبلجة</div>
+                    </div>
+                </div>
+                <div class="st i" id="dubSt" style="margin-top:12px">تأكد سيرفر Render شغال ثم اضغط</div>
+            </div>
+        </div>
+
+        <div class="feature-zone" id="zone-srt">
+            <div class="lock-overlay srt-lock" id="lock-srt">
+                <div class="lock-icon" id="lock-icon-srt">🔒</div>
+                <div class="lock-title" id="lock-title-srt">مترجم SRT — مقفل</div>
+                <div class="lock-free-badge" id="lock-free-srt" style="display:none">🎁 <span id="lock-free-count-srt">6</span> استخدامات مجانية</div>
+                <div class="lock-uses-left" id="lock-uses-srt" style="display:none">متبقي <strong id="lock-left-srt">0</strong> من 6 استخدامات</div>
+                <div class="lock-sub" id="lock-sub-srt">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
+                <button class="lock-buy-hint srt-btn" id="lock-action-srt" onclick="lockAction('srt')">👤 سجّل للاستخدام المجاني</button>
+            </div>
+            <div class="card tp" style="border-top:4px solid #34d399">
+                <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div><span class="card-title">مترجم SRT</span></div>
+                <div class="lbl">1. اختر لغة الترجمة</div>
+                <div class="tg" id="transLangs"></div>
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">2. النص المصدر (SRT)</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteSrc()">📋 لصق</button></div>
+                <textarea id="srcSRT" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
+                <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="guardedAction('srt', startTrans)">🚀 ترجمة</button>
+                <div id="transRes" style="display:none;margin-top:14px">
+                    <div class="trs">
+                        <div class="trh"><span class="trt">✅ النتيجة</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="copyResult()">📋 نسخ</button></div>
+                        <div class="trc" id="transOut"></div>
+                        <button class="db" style="margin-top:10px" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
+                    </div>
+                </div>
+                <div class="st i" id="transSt" style="margin-top:10px">جاهز</div>
+            </div>
+            <div class="card" style="border-top:4px solid #fbbf24">
+                <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🧹</div><span class="card-title">تنظيف النص من الفراغات</span></div>
+                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الصق نص SRT أو أي نص</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteClean()">📋 لصق</button></div>
+                <textarea id="cleanInput" placeholder="الصق النص هنا..." style="min-height:80px;font-family:monospace;font-size:.75rem;margin-bottom:10px"></textarea>
+                <div class="ctrls" style="margin-bottom:10px">
+                    <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeNumbers" style="display:none" checked>📌 حذف الأرقام</label>
+                    <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeTime" style="display:none" checked>⏱️ حذف التوقيتات</label>
+                    <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeEmpty" style="display:none" checked>🗑️ حذف الأسطر الفارغة</label>
+                </div>
+                <button class="btn bs" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000" onclick="cleanText()">🧹 تنظيف النص</button>
+                <div id="cleanResult" style="display:none">
+                    <div class="clean-box">
+                        <div class="clean-title">✨ النص بعد التنظيف</div>
+                        <div class="clean-output" id="cleanOutput"></div>
+                        <div class="br">
+                            <button class="btn bsm" style="flex:1;justify-content:center" onclick="copyClean()">📋 نسخ</button>
+                            <button class="btn bsm" style="flex:1;justify-content:center" onclick="dlClean()">⬇️ تنزيل</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="st i" id="cleanSt" style="margin-top:10px">الصق نصاً واضغط تنظيف</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="adsense-container">
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-691108357486678" data-ad-slot="YOUR_AD_SLOT_4" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
 
 </div>
@@ -455,234 +584,7 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 
 <script>
 // =============================================================
-// EMAILJS CONFIGURATION
-// =============================================================
-// Initialize EmailJS with your public key
-(function(){
-    // Replace with your EmailJS public key from https://dashboard.emailjs.com/admin/account
-    emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // ⚠️ REPLACE THIS
-})();
-
-// EmailJS service configuration
-const EMAIL_CONFIG = {
-    SERVICE_ID: 'YOUR_SERVICE_ID',    // ⚠️ REPLACE: e.g., 'service_abc123'
-    TEMPLATE_ID: 'YOUR_TEMPLATE_ID',  // ⚠️ REPLACE: e.g., 'template_xyz789'
-};
-
-// =============================================================
-// EMAIL VERIFICATION SYSTEM
-// =============================================================
-const PENDING_KEY = 'alhashmi_pending';
-let currentVerificationCode = null;
-let resendTimer = null;
-let resendCountdown = 0;
-
-function generateVerificationCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
-}
-
-function getPendingUsers() {
-    try { return JSON.parse(localStorage.getItem(PENDING_KEY) || '{}'); } 
-    catch(e) { return {}; }
-}
-
-function savePendingUser(email, data) {
-    const pending = getPendingUsers();
-    pending[email] = data;
-    try { localStorage.setItem(PENDING_KEY, JSON.stringify(pending)); } 
-    catch(e) {}
-}
-
-function removePendingUser(email) {
-    const pending = getPendingUsers();
-    delete pending[email];
-    try { localStorage.setItem(PENDING_KEY, JSON.stringify(pending)); } 
-    catch(e) {}
-}
-
-async function sendVerificationEmail(email, code) {
-    try {
-        const templateParams = {
-            to_email: email,
-            to_name: email.split('@')[0],
-            verification_code: code,
-            app_name: 'sl-Dubbing & Translation',
-            year: new Date().getFullYear()
-        };
-
-        const response = await emailjs.send(
-            EMAIL_CONFIG.SERVICE_ID,
-            EMAIL_CONFIG.TEMPLATE_ID,
-            templateParams
-        );
-
-        return response.status === 200;
-    } catch (error) {
-        console.error('Email send error:', error);
-        return false;
-    }
-}
-
-function showVerificationPanel(email) {
-    document.getElementById('verificationPanel').classList.add('show');
-    document.getElementById('verifyEmailDisplay').textContent = email;
-    document.getElementById('code1').focus();
-    startResendTimer();
-}
-
-function hideVerificationPanel() {
-    document.getElementById('verificationPanel').classList.remove('show');
-    clearResendTimer();
-    // Clear code inputs
-    for(let i = 1; i <= 6; i++) {
-        document.getElementById('code' + i).value = '';
-    }
-}
-
-function moveToNext(current, prevId) {
-    const maxLength = 1;
-    const value = current.value;
-    
-    // Only allow numbers
-    if (value && !/^[0-9]$/.test(value)) {
-        current.value = '';
-        return;
-    }
-    
-    // Move to next input
-    if (value.length === maxLength) {
-        const nextInput = current.nextElementSibling;
-        if (nextInput && nextInput.tagName === 'INPUT') {
-            nextInput.focus();
-        }
-    }
-    
-    // Handle backspace
-    if (value.length === 0 && prevId) {
-        const prevInput = document.getElementById(prevId);
-        if (prevInput) prevInput.focus();
-    }
-}
-
-function handlePaste(e) {
-    e.preventDefault();
-    const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    
-    for(let i = 0; i < pasteData.length && i < 6; i++) {
-        const input = document.getElementById('code' + (i + 1));
-        if (input) input.value = pasteData[i];
-    }
-    
-    if (pasteData.length === 6) {
-        document.getElementById('code6').focus();
-    }
-}
-
-function getEnteredCode() {
-    let code = '';
-    for(let i = 1; i <= 6; i++) {
-        code += document.getElementById('code' + i).value;
-    }
-    return code;
-}
-
-function verifyEmailCode() {
-    const enteredCode = getEnteredCode();
-    
-    if (enteredCode.length !== 6) {
-        showAuthMsg('register', '⚠️ أدخل الرمز المكون من 6 أرقام', 'er');
-        return;
-    }
-    
-    const pending = getPendingUsers();
-    const email = Object.keys(pending).find(e => pending[e].code === enteredCode);
-    
-    if (!email) {
-        showAuthMsg('register', '❌ الرمز غير صحيح، حاول مرة أخرى', 'er');
-        // Clear inputs
-        for(let i = 1; i <= 6; i++) {
-            document.getElementById('code' + i).value = '';
-        }
-        document.getElementById('code1').focus();
-        return;
-    }
-    
-    // Verification successful!
-    const userData = pending[email];
-    const users = getUsers();
-    users[email] = {
-        hash: userData.hash,
-        usage: { tts:0, dub:0, srt:0 },
-        unlocked: {},
-        createdAt: Date.now(),
-        verified: true
-    };
-    saveUsers(users);
-    removePendingUser(email);
-    
-    hideVerificationPanel();
-    loginUser(email);
-    showAuthMsg('register', '🎉 تم التحقق بنجاح! مرحبًا بك', 'ok');
-    
-    setTimeout(() => {
-        closeAuthDropdown();
-        showToast('✅ حسابك جاهز! 6 استخدامات مجانية لكل ميزة', 'ok');
-    }, 1500);
-}
-
-function startResendTimer() {
-    resendCountdown = 60; // 60 seconds
-    const resendBtn = document.getElementById('resendBtn');
-    const resendTimer = document.getElementById('resendTimer');
-    
-    resendBtn.disabled = true;
-    
-    resendTimer = setInterval(() => {
-        resendCountdown--;
-        resendTimer.textContent = `(${resendCountdown}ث)`;
-        
-        if (resendCountdown <= 0) {
-            clearInterval(resendTimer);
-            resendBtn.disabled = false;
-            resendTimer.textContent = '';
-        }
-    }, 1000);
-}
-
-function clearResendTimer() {
-    if (resendTimer) {
-        clearInterval(resendTimer);
-        resendTimer = null;
-    }
-    resendCountdown = 0;
-    document.getElementById('resendTimer').textContent = '';
-    document.getElementById('resendBtn').disabled = false;
-}
-
-async function resendVerificationCode() {
-    const pending = getPendingUsers();
-    const email = Object.keys(pending)[0]; // Get the first pending email
-    
-    if (!email) return;
-    
-    const newCode = generateVerificationCode();
-    pending[email].code = newCode;
-    savePendingUser(email, pending[email]);
-    
-    showAuthMsg('register', '⏳ جارٍ إرسال الرمز...', 'i');
-    
-    const sent = await sendVerificationEmail(email, newCode);
-    
-    if (sent) {
-        showAuthMsg('register', '✅ تم إعادة إرسال الرمز', 'ok');
-        startResendTimer();
-    } else {
-        showAuthMsg('register', '❌ فشل الإرسال، حاول مرة أخرى', 'er');
-    }
-}
-
-// =============================================================
-// AUTH SYSTEM (Modified for Email Verification)
+// AUTH SYSTEM
 // =============================================================
 const FREE_LIMIT = 6;
 const AUTH_KEY   = 'alhashmi_users';
@@ -725,107 +627,45 @@ function consumeUse(feature) {
     return true;
 }
 
-async function doRegister() {
+function doRegister() {
     const email = document.getElementById('reg-email').value.trim().toLowerCase();
     const pass  = document.getElementById('reg-pass').value;
     const pass2 = document.getElementById('reg-pass2').value;
-    
-    if (!email || !email.includes('@')) { 
-        showAuthMsg('register', '⚠️ أدخل بريدًا إلكترونيًا صحيحًا', 'er'); 
-        return; 
-    }
-    if (!email.endsWith('@gmail.com')) { 
-        showAuthMsg('register', '⚠️ مقبول فقط بريد Gmail (@gmail.com)', 'er'); 
-        return; 
-    }
-    if (pass.length < 8) { 
-        showAuthMsg('register', '⚠️ كلمة المرور 8 أحرف على الأقل', 'er'); 
-        return; 
-    }
-    if (pass !== pass2) { 
-        showAuthMsg('register', '⚠️ كلمتا المرور غير متطابقتان', 'er'); 
-        return; 
-    }
-    
+    if (!email || !email.includes('@')) { showAuthMsg('register', '⚠️ أدخل بريدًا إلكترونيًا صحيحًا', 'er'); return; }
+    if (!email.endsWith('@gmail.com')) { showAuthMsg('register', '⚠️ مقبول فقط بريد Gmail (@gmail.com)', 'er'); return; }
+    if (pass.length < 8) { showAuthMsg('register', '⚠️ كلمة المرور 8 أحرف على الأقل', 'er'); return; }
+    if (pass !== pass2)  { showAuthMsg('register', '⚠️ كلمتا المرور غير متطابقتان', 'er'); return; }
     const users = getUsers();
-    if (users[email]) { 
-        showAuthMsg('register', '⚠️ البريد مسجّل مسبقًا', 'er'); 
-        return; 
-    }
-    
+    if (users[email]) { showAuthMsg('register', '⚠️ البريد مسجّل مسبقًا', 'er'); return; }
     const btn = document.getElementById('registerBtn');
-    btn.classList.add('loading'); 
-    btn.disabled = true;
-    
-    showAuthMsg('register', '📧 جارٍ إرسال رمز التحقق...', 'i');
-    
-    // Generate verification code
-    const verificationCode = generateVerificationCode();
-    
-    // Send verification email
-    const emailSent = await sendVerificationEmail(email, verificationCode);
-    
-    if (!emailSent) {
-        showAuthMsg('register', '❌ فشل إرسال البريد، تحقق من الإعدادات', 'er');
-        btn.classList.remove('loading'); 
-        btn.disabled = false;
-        return;
-    }
-    
-    // Save pending user
-    savePendingUser(email, {
-        hash: simpleHash(pass),
-        code: verificationCode,
-        timestamp: Date.now()
-    });
-    
-    showAuthMsg('register', '✅ تم الإرسال! تحقق من بريدك', 'ok');
-    showVerificationPanel(email);
-    
-    btn.classList.remove('loading'); 
-    btn.disabled = false;
+    btn.classList.add('loading'); btn.disabled = true;
+    setTimeout(() => {
+        users[email] = { hash: simpleHash(pass), usage: { tts:0, dub:0, srt:0 }, unlocked: {}, createdAt: Date.now() };
+        saveUsers(users);
+        loginUser(email);
+        showAuthMsg('register', '🎉 تم إنشاء الحساب! 6 استخدامات مجانية لكل ميزة', 'ok');
+        btn.classList.remove('loading'); btn.disabled = false;
+    }, 600);
 }
 
 function doLogin() {
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pass  = document.getElementById('login-pass').value;
-    
-    if (!email || !email.includes('@')) { 
-        showAuthMsg('login', '⚠️ أدخل البريد الإلكتروني', 'er'); 
-        return; 
-    }
-    if (!pass) { 
-        showAuthMsg('login', '⚠️ أدخل كلمة المرور', 'er'); 
-        return; 
-    }
-    
+    if (!email || !email.includes('@')) { showAuthMsg('login', '⚠️ أدخل البريد الإلكتروني', 'er'); return; }
+    if (!pass) { showAuthMsg('login', '⚠️ أدخل كلمة المرور', 'er'); return; }
     const btn = document.getElementById('loginBtn');
-    btn.classList.add('loading'); 
-    btn.disabled = true;
-    
+    btn.classList.add('loading'); btn.disabled = true;
     setTimeout(() => {
         const users = getUsers();
         const u = users[email];
-        
         if (!u || u.hash !== simpleHash(pass)) {
             showAuthMsg('login', '❌ البريد أو كلمة المرور غير صحيحة', 'er');
-            btn.classList.remove('loading'); 
-            btn.disabled = false;
+            btn.classList.remove('loading'); btn.disabled = false;
             return;
         }
-        
-        if (!u.verified) {
-            showAuthMsg('login', '⚠️ يجب تفعيل الحساب أولاً', 'er');
-            btn.classList.remove('loading'); 
-            btn.disabled = false;
-            return;
-        }
-        
         loginUser(email);
         showAuthMsg('login', '✅ مرحبًا بك!', 'ok');
-        btn.classList.remove('loading'); 
-        btn.disabled = false;
-        
+        btn.classList.remove('loading'); btn.disabled = false;
         setTimeout(() => closeAuthDropdown(), 900);
     }, 600);
 }
@@ -851,7 +691,6 @@ function renderAuthState() {
     const btn = document.getElementById('authToggleBtn');
     const svgIcon = btn.querySelector('svg:first-child');
     let avatarEl = btn.querySelector('.auth-avatar');
-    
     if (loggedIn) {
         if (!avatarEl) {
             avatarEl = document.createElement('span');
@@ -864,10 +703,8 @@ function renderAuthState() {
         if (avatarEl) avatarEl.remove();
         if (svgIcon) svgIcon.style.display = '';
     }
-    
     document.getElementById('userPanel').style.display = loggedIn ? 'block' : 'none';
     document.getElementById('authForms').style.display = loggedIn ? 'none' : 'block';
-    
     if (loggedIn) {
         document.getElementById('userEmailDisplay').textContent = currentUser.email;
         updateUsageUI();
@@ -879,7 +716,6 @@ function updateUsageUI() {
     const users = getUsers();
     const u = users[currentUser.email];
     if (!u) return;
-    
     FEATURES.forEach(f => {
         const unlimited = u.unlocked && u.unlocked[f];
         const used = (u.usage && u.usage[f]) || 0;
@@ -887,22 +723,13 @@ function updateUsageUI() {
         const pct  = unlimited ? 100 : (left / FREE_LIMIT) * 100;
         const ucEl = document.getElementById('uc-' + f);
         const ubEl = document.getElementById('ub-' + f);
-        
         if (ucEl) {
-            if (unlimited) { 
-                ucEl.textContent = '∞ مفتوح'; 
-                ucEl.className = 'usage-count unlimited'; 
-            } else if (left > 0) { 
-                ucEl.textContent = left + '/' + FREE_LIMIT; 
-                ucEl.className = 'usage-count has-uses'; 
-            } else { 
-                ucEl.textContent = '0/' + FREE_LIMIT + ' انتهت'; 
-                ucEl.className = 'usage-count no-uses'; 
-            }
+            if (unlimited) { ucEl.textContent = '∞ مفتوح'; ucEl.className = 'usage-count unlimited'; }
+            else if (left > 0) { ucEl.textContent = left + '/' + FREE_LIMIT; ucEl.className = 'usage-count has-uses'; }
+            else { ucEl.textContent = '0/' + FREE_LIMIT + ' انتهت'; ucEl.className = 'usage-count no-uses'; }
         }
         if (ubEl) ubEl.style.width = Math.max(0, pct) + '%';
     });
-    
     const anyUnlocked = FEATURES.some(f => u.unlocked && u.unlocked[f]);
     document.getElementById('userPlanBadge').textContent = anyUnlocked ? '✨ حساب مدفوع' : '🎁 خطة مجانية (6 استخدامات/ميزة)';
 }
@@ -912,17 +739,10 @@ function updateLockStates() {
         const zone = document.getElementById('zone-' + f);
         const lock = document.getElementById('lock-' + f);
         if (!zone || !lock) return;
-        
         const unlocked = getUnlocked();
-        if (unlocked[f]) { 
-            lock.classList.remove('active'); 
-            zone.classList.add('unlocked'); 
-            return; 
-        }
-        
+        if (unlocked[f]) { lock.classList.remove('active'); zone.classList.add('unlocked'); return; }
         if (!currentUser) {
-            lock.classList.add('active'); 
-            zone.classList.remove('unlocked');
+            lock.classList.add('active'); zone.classList.remove('unlocked');
             document.getElementById('lock-icon-'  + f).textContent = '🔒';
             document.getElementById('lock-title-' + f).textContent = getLockTitle(f);
             document.getElementById('lock-sub-'   + f).textContent = f==='dub' ? 'سجّل للتجربة المجانية (30 ث) أو اشترِ للملف الكامل' : 'سجّل دخولك للحصول على 6 استخدامات مجانية';
@@ -934,14 +754,11 @@ function updateLockStates() {
             ab.onclick = () => openAuthDropdown();
             return;
         }
-        
         const left = getUsageLeft(currentUser.email, f);
         if (left === Infinity || left > 0) {
-            lock.classList.remove('active'); 
-            zone.classList.add('unlocked');
+            lock.classList.remove('active'); zone.classList.add('unlocked');
         } else {
-            lock.classList.add('active'); 
-            zone.classList.remove('unlocked');
+            lock.classList.add('active'); zone.classList.remove('unlocked');
             document.getElementById('lock-icon-'  + f).textContent = '⛔';
             document.getElementById('lock-title-' + f).textContent = 'انتهت الاستخدامات المجانية';
             document.getElementById('lock-sub-'   + f).textContent = 'اشترِ الميزة للاستمرار بدون قيود';
@@ -955,48 +772,19 @@ function updateLockStates() {
     });
 }
 
-function getLockTitle(f) { 
-    return { 
-        tts:'نطق النص — مقفل', 
-        dub:'الدبلجة — مقفلة', 
-        srt:'مترجم SRT — مقفل' 
-    }[f]; 
-}
-
-function getBuyLabel(f) { 
-    return { 
-        tts:'💎 اشترِ مقابل $10', 
-        dub:'🚀 اشترِ مقابل $50', 
-        srt:'🌍 اشترِ مقابل $10' 
-    }[f]; 
-}
+function getLockTitle(f) { return { tts:'نطق النص — مقفل', dub:'الدبلجة — مقفلة', srt:'مترجم SRT — مقفل' }[f]; }
+function getBuyLabel(f)  { return { tts:'💎 اشترِ مقابل $10', dub:'🚀 اشترِ مقابل $50', srt:'🌍 اشترِ مقابل $10' }[f]; }
 
 function guardedAction(feature, action) {
-    if (!currentUser) { 
-        openAuthDropdown(); 
-        return false; 
-    }
-    
+    if (!currentUser) { openAuthDropdown(); return false; }
     const left = getUsageLeft(currentUser.email, feature);
-    if (left === Infinity) { 
-        action(); 
-        return true; 
-    }
-    if (left <= 0) { 
-        updateLockStates(); 
-        return false; 
-    }
-    
+    if (left === Infinity) { action(); return true; }
+    if (left <= 0) { updateLockStates(); return false; }
     consumeUse(feature);
     action();
-    
     const newLeft = getUsageLeft(currentUser.email, feature);
-    if (newLeft <= 2 && newLeft > 0) {
-        showToast('⚠️ تبقّى ' + newLeft + ' استخدام مجاني فقط!', 'wn');
-    } else if (newLeft === 0) {
-        setTimeout(() => updateLockStates(), 500);
-    }
-    
+    if (newLeft <= 2 && newLeft > 0) showToast('⚠️ تبقّى ' + newLeft + ' استخدام مجاني فقط!', 'wn');
+    else if (newLeft === 0) setTimeout(() => updateLockStates(), 500);
     return true;
 }
 
@@ -1004,62 +792,40 @@ function toggleAuthDropdown() {
     document.getElementById('authDropdown').classList.toggle('show');
     document.getElementById('langDropdown').classList.remove('show');
 }
-
 function openAuthDropdown() {
     document.getElementById('authDropdown').classList.add('show');
     document.getElementById('langDropdown').classList.remove('show');
 }
-
-function closeAuthDropdown() { 
-    document.getElementById('authDropdown').classList.remove('show'); 
-}
-
-function lockAction(f) { 
-    if (!currentUser) openAuthDropdown(); 
-    else startCheckout(f); 
-}
+function closeAuthDropdown() { document.getElementById('authDropdown').classList.remove('show'); }
+function lockAction(f) { if (!currentUser) openAuthDropdown(); else startCheckout(f); }
 
 function switchAuthTab(tab) {
     document.getElementById('form-login').style.display    = tab==='login'    ? 'block':'none';
     document.getElementById('form-register').style.display = tab==='register' ? 'block':'none';
     document.getElementById('tab-login').classList.toggle('on',    tab==='login');
     document.getElementById('tab-register').classList.toggle('on', tab==='register');
-    hideVerificationPanel(); // Hide verification when switching tabs
 }
-
 function showAuthMsg(form, msg, type) {
     const el = document.getElementById(form+'-msg');
     if (!el) return;
-    el.textContent = msg; 
-    el.className = 'auth-msg '+type;
+    el.textContent = msg; el.className = 'auth-msg '+type;
 }
-
 function showToast(msg, type) {
-    const colors = { 
-        ok:'#059669,#10b981', 
-        er:'#dc2626,#ef4444', 
-        wn:'#d97706,#f59e0b' 
-    };
+    const colors = { ok:'#059669,#10b981', er:'#dc2626,#ef4444', wn:'#d97706,#f59e0b' };
     const c = colors[type]||colors.ok;
     const n = document.createElement('div');
     n.style.cssText = `position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,${c});color:white;padding:11px 22px;border-radius:12px;font-weight:700;font-size:.82rem;box-shadow:0 8px 30px rgba(0,0,0,.4);transition:opacity .5s;white-space:nowrap`;
     n.textContent = msg;
     document.body.appendChild(n);
-    setTimeout(() => { 
-        n.style.opacity='0'; 
-        setTimeout(()=>n.remove(),500); 
-    }, 2800);
+    setTimeout(() => { n.style.opacity='0'; setTimeout(()=>n.remove(),500); }, 2800);
 }
 
 function initAuth() {
     const s = getSession();
     if (s && s.email) {
         const users = getUsers();
-        if (users[s.email] && users[s.email].verified) {
-            currentUser = { email: s.email, initial: s.email[0].toUpperCase() };
-        } else {
-            clearSession();
-        }
+        if (users[s.email]) currentUser = { email: s.email, initial: s.email[0].toUpperCase() };
+        else clearSession();
     }
     renderAuthState();
     updateLockStates();
@@ -1068,27 +834,15 @@ function initAuth() {
 document.addEventListener('click', function(e) {
     const sw = document.getElementById('authSwitcher');
     if (sw && !sw.contains(e.target)) closeAuthDropdown();
-    
     const langSwitcher = document.querySelector('.lang-switcher');
-    if (langSwitcher && !langSwitcher.contains(e.target)) {
-        document.getElementById('langDropdown').classList.remove('show');
-    }
+    if (langSwitcher && !langSwitcher.contains(e.target)) document.getElementById('langDropdown').classList.remove('show');
 });
-
 document.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
         const ld = document.getElementById('authDropdown');
         if (!ld.classList.contains('show')) return;
-        
-        const verificationVisible = document.getElementById('verificationPanel').classList.contains('show');
-        if (verificationVisible) {
-            verifyEmailCode();
-            return;
-        }
-        
         const loginActive = document.getElementById('form-login').style.display !== 'none';
-        if (loginActive) doLogin(); 
-        else doRegister();
+        if (loginActive) doLogin(); else doRegister();
     }
 });
 
@@ -1109,21 +863,8 @@ function startCheckout(product) {
 // UNLOCK SYSTEM
 // =============================================================
 const UNLOCK_KEY = 'alhashmi_unlocked';
-function getUnlocked() { 
-    try { 
-        return JSON.parse(localStorage.getItem(UNLOCK_KEY)||'{}'); 
-    } catch(e) { 
-        return {}; 
-    } 
-}
-
-function saveUnlocked(product) { 
-    const u=getUnlocked(); 
-    u[product]=true; 
-    try { 
-        localStorage.setItem(UNLOCK_KEY, JSON.stringify(u)); 
-    } catch(e) {} 
-}
+function getUnlocked() { try { return JSON.parse(localStorage.getItem(UNLOCK_KEY)||'{}'); } catch(e) { return {}; } }
+function saveUnlocked(product) { const u=getUnlocked(); u[product]=true; try { localStorage.setItem(UNLOCK_KEY, JSON.stringify(u)); } catch(e) {} }
 
 function applyUnlockStates() {
     const u = getUnlocked();
@@ -1131,55 +872,201 @@ function applyUnlockStates() {
     if (u.dub) unlockZone('dub', false);
     if (u.srt) unlockZone('srt', false);
 }
-
 function unlockZone(product, animate=true) {
     const zone = document.getElementById('zone-'+product);
     const lock = document.getElementById('lock-'+product);
     if (!zone||!lock) return;
-    
     lock.classList.remove('active');
     zone.classList.add('unlocked');
-    
-    if (animate) { 
-        zone.querySelectorAll('.card').forEach((c,i) => { 
-            c.style.animationDelay=(i*0.08)+'s'; 
-        }); 
-    }
-    
+    if (animate) { zone.querySelectorAll('.card').forEach((c,i) => { c.style.animationDelay=(i*0.08)+'s'; }); }
     const btn = document.getElementById('btn-'+product);
-    if (btn) { 
-        btn.style.background='linear-gradient(135deg,#059669,#10b981)'; 
-        btn.innerHTML='<span class="btn-text">✅ مفعّل مدى الحياة</span>'; 
-        btn.disabled=true; 
-    }
+    if (btn) { btn.style.background='linear-gradient(135deg,#059669,#10b981)'; btn.innerHTML='<span class="btn-text">✅ مفعّل مدى الحياة</span>'; btn.disabled=true; }
 }
-
 function showPaymentSuccess(product) {
     saveUnlocked(product);
-    
     if (currentUser) {
         const users = getUsers();
-        if (users[currentUser.email]) { 
-            users[currentUser.email].unlocked=users[currentUser.email].unlocked||{}; 
-            users[currentUser.email].unlocked[product]=true; 
-            saveUsers(users); 
-            updateUsageUI(); 
-        }
+        if (users[currentUser.email]) { users[currentUser.email].unlocked=users[currentUser.email].unlocked||{}; users[currentUser.email].unlocked[product]=true; saveUsers(users); updateUsageUI(); }
     }
-    
     unlockZone(product, true);
     updateLockStates();
     showToast('🎉 تم الدفع بنجاح! الميزة مفعّلة مدى الحياة.', 'ok');
 }
 
 // =============================================================
-// REST OF THE ORIGINAL CODE (Languages, TTS, SRT functions, etc.)
+// LANGUAGES DATA
 // =============================================================
-// [Keep all your original code here - langs, buildLangGrid, tSpeak, etc.]
+const langs = [
+    {c:'ar',f:'🇸🇦',n:'العربية',v:'ar'},{c:'en',f:'🇺🇸',n:'English',v:'en'},
+    {c:'ru',f:'🇷🇺',n:'Русский',v:'ru'},{c:'tr',f:'🇹🇷',n:'Türkçe',v:'tr'},
+    {c:'fr',f:'🇫🇷',n:'Français',v:'fr'},{c:'de',f:'🇩🇪',n:'Deutsch',v:'de'},
+    {c:'es',f:'🇪🇸',n:'Español',v:'es'},{c:'zh',f:'🇨🇳',n:'中文',v:'zh'},
+    {c:'hi',f:'🇮🇳',n:'हिन्दी',v:'hi'},{c:'fa',f:'🇮🇷',n:'فارسی',v:'fa'},
+    {c:'it',f:'🇮🇹',n:'Italiano',v:'it'},{c:'nl',f:'🇳🇱',n:'Nederlands',v:'nl'},
+    {c:'sv',f:'🇸🇪',n:'Svenska',v:'sv'},
+];
+let selLang='ar', selDubLang='ar', selTransLang='en';
+let srtData=[], dubCancel=false, dubBlob=null;
+let curUtter=null, speaking=false;
+
+function buildLangGrid(id, sel, onPick) {
+    const g = document.getElementById(id); if (!g) return;
+    g.innerHTML = langs.map(l=>`<button class="lb${l.c===sel?' on':''}" onclick="${onPick}('${l.c}')"><span class="lf">${l.f}</span><span class="lang-text">${l.n}</span></button>`).join('');
+}
+function pickLang(c)      { selLang=c;      buildLangGrid('g1',c,'pickLang');      buildVoices(); }
+function pickDubLang(c)   { selDubLang=c;   buildLangGrid('g2',c,'pickDubLang'); }
+function pickTransLang(c) { selTransLang=c; buildTransGrid(); }
+
+function buildTransGrid() {
+    const g = document.getElementById('transLangs'); if (!g) return;
+    g.innerHTML = langs.map(l=>`<button class="tbtn${l.c===selTransLang?' on':''}" onclick="pickTransLang('${l.c}')">${l.f} ${l.n}</button>`).join('');
+}
+
+function buildVoices() {
+    const vs = document.getElementById('vs'); if (!vs) return;
+    const voices = speechSynthesis.getVoices().filter(v=>v.lang.startsWith(selLang));
+    vs.innerHTML = voices.length ? voices.map((v,i)=>`<option value="${i}">${v.name}</option>`).join('') : `<option>افتراضي</option>`;
+}
+
+function tSpeak() {
+    const txt = document.getElementById('ti').value.trim();
+    if (!txt) { setSt('s1','⚠️ أدخل نصاً أولاً','er'); return; }
+    if (speechSynthesis.speaking) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(txt);
+    const voices = speechSynthesis.getVoices().filter(v=>v.lang.startsWith(selLang));
+    const vi = parseInt(document.getElementById('vs').value)||0;
+    if (voices[vi]) u.voice = voices[vi];
+    u.rate=parseFloat(document.getElementById('rr1').value);
+    u.pitch=parseFloat(document.getElementById('pr1').value);
+    u.volume=parseFloat(document.getElementById('vr1').value);
+    u.lang=selLang;
+    u.onstart=()=>{ speaking=true; setSt('s1','🔊 جارٍ النطق...','i'); document.getElementById('wv1').classList.add('on'); };
+    u.onend=()=>{ speaking=false; setSt('s1','✅ اكتمل','ok'); document.getElementById('wv1').classList.remove('on'); };
+    u.onerror=()=>{ speaking=false; setSt('s1','❌ خطأ في النطق','er'); document.getElementById('wv1').classList.remove('on'); };
+    speechSynthesis.speak(u); curUtter=u;
+}
+function tPause() { if (speechSynthesis.speaking) speechSynthesis.cancel(); }
+function clrTxt() { document.getElementById('ti').value=''; document.getElementById('cc').textContent='0'; setSt('s1','👋 اكتب نصاً واضغط نطق','i'); }
+
+function ldSRT(e) {
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=ev=>{ document.getElementById('srtP').value=ev.target.result; prsPaste(); };
+    r.readAsText(f,'UTF-8');
+}
+function prsPaste() {
+    const raw=document.getElementById('srtP').value.trim();
+    if(!raw){ setSt('dubSt','⚠️ لا يوجد محتوى','er'); return; }
+    srtData=parseSRT(raw);
+    if(!srtData.length){ setSt('dubSt','❌ تعذّر تحليل الملف','er'); return; }
+    showSRTInfo();
+    document.getElementById('dubCard').style.display='block';
+    setSt('dubSt','✅ '+srtData.length+' جملة — اضغط توليد','ok');
+}
+function parseSRT(txt) {
+    const blocks=txt.trim().split(/\n\s*\n/), out=[];
+    blocks.forEach(b=>{ const lines=b.trim().split('\n'); if(lines.length<2) return;
+        const tLine=lines.find(l=>/-->/.test(l)); if(!tLine) return;
+        const [st,et]=tLine.split('-->').map(s=>s.trim());
+        const text=lines.filter(l=>!/-->/.test(l)&&!/^\d+$/.test(l.trim())).join(' ').trim();
+        if(text) out.push({start:toSec(st),end:toSec(et),text}); });
+    return out;
+}
+function toSec(s) { const m=s.match(/(\d+):(\d+):(\d+)[,.](\d+)/); if(!m) return 0; return parseInt(m[1])*3600+parseInt(m[2])*60+parseInt(m[3])+parseInt(m[4])/1000; }
+function fmtTime(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60); return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+function showSRTInfo() {
+    document.getElementById('srtInfo').style.display='block';
+    document.getElementById('sCnt').textContent=srtData.length;
+    const maxE=srtData.reduce((a,b)=>b.end>a?b.end:a,0);
+    document.getElementById('sDur').textContent=fmtTime(maxE);
+    const sl=document.getElementById('srtL');
+    sl.innerHTML=srtData.map((s,i)=>`<div class="si"><span class="sin">${i+1}</span><span class="sit">${fmtTime(s.start)}</span><span class="sit2">${s.text}</span></div>`).join('');
+}
+function cpySRT() { navigator.clipboard.writeText(srtData.map(s=>s.text).join('\n')).then(()=>showToast('✅ تم النسخ','ok')); }
+
+async function stDub() { setSt('dubSt','⚠️ يتطلب سيرفر backend','wn'); }
+function cnclDub() { dubCancel=true; }
+function dlRes() { if(dubBlob){const a=document.createElement('a');a.href=URL.createObjectURL(dubBlob);a.download='dubbing.wav';a.click();} }
+
+async function startTrans() {
+    const src=document.getElementById('srcSRT').value.trim();
+    if(!src){ setSt('transSt','⚠️ الصق محتوى SRT أولاً','er'); return; }
+    setSt('transSt','⏳ جارٍ الترجمة...','i');
+    document.getElementById('transRes').style.display='none';
+    const blocks=src.trim().split(/\n\s*\n/), translated=[];
+    for(const b of blocks){
+        const lines=b.trim().split('\n');
+        const tLine=lines.find(l=>/-->/.test(l)); if(!tLine) continue;
+        const text=lines.filter(l=>!/-->/.test(l)&&!/^\d+$/.test(l.trim())).join(' ').trim();
+        const num=lines.find(l=>/^\d+$/.test(l.trim()))||'';
+        translated.push({num,time:tLine,text});
+    }
+    const out=translated.map((b,i)=>`${i+1}\n${b.time}\n${b.text}`).join('\n\n');
+    document.getElementById('transOut').textContent=out;
+    document.getElementById('transRes').style.display='block';
+    setSt('transSt','✅ تمت الترجمة (stub — يتطلب backend)','ok');
+}
+function copyResult() { navigator.clipboard.writeText(document.getElementById('transOut').textContent).then(()=>showToast('✅ تم النسخ','ok')); }
+function dlTransSRT() { const txt=document.getElementById('transOut').textContent; const a=document.createElement('a'); a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt); a.download='translated.srt'; a.click(); }
+function pasteSrc() { navigator.clipboard.readText().then(t=>{ document.getElementById('srcSRT').value=t; }).catch(()=>{}); }
+
+function cleanText() {
+    let txt=document.getElementById('cleanInput').value;
+    if(!txt.trim()){ setSt('cleanSt','⚠️ الصق نصاً أولاً','er'); return; }
+    if(document.getElementById('removeNumbers').checked) txt=txt.replace(/^\d+\s*$/gm,'');
+    if(document.getElementById('removeTime').checked) txt=txt.replace(/\d{1,2}:\d{2}:\d{2}[,\.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,\.]\d{3}/g,'');
+    if(document.getElementById('removeEmpty').checked) txt=txt.replace(/\n{2,}/g,'\n').trim();
+    document.getElementById('cleanOutput').textContent=txt;
+    document.getElementById('cleanResult').style.display='block';
+    setSt('cleanSt','✅ تم التنظيف','ok');
+}
+function copyClean() { navigator.clipboard.writeText(document.getElementById('cleanOutput').textContent).then(()=>showToast('✅ تم النسخ','ok')); }
+function dlClean() { const txt=document.getElementById('cleanOutput').textContent; const a=document.createElement('a'); a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt); a.download='cleaned.txt'; a.click(); }
+function pasteClean() { navigator.clipboard.readText().then(t=>{ document.getElementById('cleanInput').value=t; }).catch(()=>{}); }
+
+function updateFilters() {
+    document.getElementById('speedVal').textContent=parseFloat(document.getElementById('filterSpeed').value).toFixed(1)+'x';
+    document.getElementById('pitchVal').textContent=parseFloat(document.getElementById('filterPitch').value).toFixed(1);
+    document.getElementById('bassVal').textContent=document.getElementById('eqBass').value+'dB';
+    document.getElementById('midVal').textContent=document.getElementById('eqMid').value+'dB';
+    document.getElementById('trebleVal').textContent=document.getElementById('eqTreble').value+'dB';
+}
+function resetFilters() {
+    ['filterSpeed','filterPitch'].forEach(id=>document.getElementById(id).value=1);
+    ['eqBass','eqMid','eqTreble'].forEach(id=>document.getElementById(id).value=0);
+    updateFilters();
+}
+function applyPreset(p) {
+    const presets={male:{pitch:.7,speed:1},radio:{pitch:1.1,speed:1.1},warm:{pitch:.9,speed:.9},fast:{pitch:1,speed:1.6}};
+    const pr=presets[p]; if(!pr) return;
+    document.getElementById('filterPitch').value=pr.pitch;
+    document.getElementById('filterSpeed').value=pr.speed;
+    updateFilters();
+}
+
+document.getElementById('rr1').oninput=function(){document.getElementById('rv1').textContent=parseFloat(this.value).toFixed(1)+'x';}
+document.getElementById('pr1').oninput=function(){document.getElementById('pv1').textContent=parseFloat(this.value).toFixed(1);}
+document.getElementById('vr1').oninput=function(){document.getElementById('vv1').textContent=Math.round(this.value*100)+'%';}
+document.getElementById('rr2').oninput=function(){document.getElementById('rv2').textContent=parseFloat(this.value).toFixed(1)+'x';}
+document.getElementById('vr2').oninput=function(){document.getElementById('vv2').textContent=parseFloat(this.value).toFixed(1);}
+document.getElementById('ti').oninput=function(){document.getElementById('cc').textContent=this.value.length;}
+
+function setSt(id,msg,cls){ const el=document.getElementById(id); if(!el)return; el.textContent=msg; el.className='st '+cls; }
+function toggleLang() { document.getElementById('langDropdown').classList.toggle('show'); }
+function setLang(l) {
+    document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===l));
+    document.getElementById('currentLang').textContent={ar:'العربية',en:'English',ru:'Русский',tr:'Türkçe',fr:'Français',de:'Deutsch',es:'Español'}[l]||l;
+    document.getElementById('langDropdown').classList.remove('show');
+    document.documentElement.lang=l;
+    document.documentElement.dir=['ar','fa','he'].includes(l)?'rtl':'ltr';
+}
 
 window.addEventListener('DOMContentLoaded', () => {
-    // buildLangGrid('g1', selLang, 'pickLang');
-    // ... rest of your initialization
+    buildLangGrid('g1', selLang,    'pickLang');
+    buildLangGrid('g2', selDubLang, 'pickDubLang');
+    buildTransGrid();
+    buildVoices();
+    speechSynthesis.onvoiceschanged = buildVoices;
     applyUnlockStates();
     initAuth();
 });
