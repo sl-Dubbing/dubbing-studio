@@ -252,6 +252,27 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 .adsense-container{grid-column:1/-1;margin:20px 0;text-align:center;min-height:90px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 @media(max-width:600px){h1{font-size:1.4rem}.lg{grid-template-columns:repeat(3,1fr)}.sit{display:none}.cr{gap:10px}.cv{font-size:1rem}.tg{grid-template-columns:1fr}.lb{padding:8px 4px}}
+
+/* OTP Modal Styles */
+.otp-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);animation:modalFadeIn 0.3s ease}
+.otp-modal-content{background:linear-gradient(135deg, #1a0533, #0a0a1a);border:2px solid #a78bfa;border-radius:20px;padding:40px;max-width:450px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(167,139,250,0.3);animation:modalPop 0.3s ease}
+.otp-icon{font-size:4rem;margin-bottom:20px;display:block}
+.otp-title{color:#a78bfa;margin-bottom:10px;font-size:1.8rem}
+.otp-desc{color:#9ca3af;margin-bottom:20px;line-height:1.6}
+.otp-email{color:#60a5fa;font-weight:700;word-break:break-all}
+.otp-input{width:100%;padding:15px;font-size:1.5rem;text-align:center;letter-spacing:10px;border:2px solid rgba(167,139,250,0.3);border-radius:12px;background:rgba(255,255,255,0.05);color:#e0e0ff;font-family:monospace;outline:none;transition:border-color 0.3s;margin-bottom:20px}
+.otp-input:focus{border-color:#a78bfa}
+.otp-timer{background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:10px;padding:12px;margin-bottom:20px;color:#fbbf24;font-weight:600}
+.otp-timer-countdown{font-weight:700;font-family:monospace}
+.otp-btn-verify{width:100%;padding:15px;background:linear-gradient(135deg, #7c3aed, #2563eb);border:none;border-radius:12px;color:white;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:10px;transition:transform 0.2s}
+.otp-btn-verify:hover{transform:translateY(-2px)}
+.otp-btn-resend{width:100%;padding:12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:#9ca3af;font-size:0.9rem;cursor:not-allowed;transition:all 0.3s}
+.otp-btn-resend:enabled{cursor:pointer;background:rgba(167,139,250,0.2);color:#a78bfa;border-color:#a78bfa}
+.otp-btn-cancel{margin-top:15px;background:none;border:none;color:#6b7280;cursor:pointer;font-size:0.85rem}
+@keyframes modalPop{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes modalFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.otp-input.error{border-color:#f87171;animation:shake 0.5s}
 </style>
 </head>
 <body>
@@ -280,7 +301,7 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 </div>
 <button class="auth-btn" id="authToggleBtn" onclick="toggleAuthDropdown()">
 <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-<span id="authBtnLabel" data-i18n="login">تسجيل الدخول</span>
+<span id="authBtnLabel">تسجيل الدخول</span>
 <svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
 </button>
 <div class="auth-dropdown" id="authDropdown">
@@ -290,23 +311,23 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 <div class="user-avatar-lg" id="userAvatarLg">?</div>
 <div class="user-details">
 <div class="user-email" id="userEmailDisplay">—</div>
-<div class="user-plan" id="userPlanBadge" data-i18n="freePlan">خطة مجانية</div>
+<div class="user-plan" id="userPlanBadge">خطة مجانية</div>
 </div>
 </div>
-<div class="usage-title" data-i18n="usageTitle">📊 الاستخدام المجاني المتبقي</div>
+<div class="usage-title">📊 الاستخدام المجاني المتبقي</div>
 <div class="usage-item">
-<div class="usage-row"><span class="usage-label" data-i18n="usageTTS">✏️ نطق النص</span><span class="usage-count" id="uc-tts">6/6</span></div>
+<div class="usage-row"><span class="usage-label">✏️ نطق النص</span><span class="usage-count" id="uc-tts">6/6</span></div>
 <div class="usage-bar-bg"><div class="usage-bar-fill tts" id="ub-tts" style="width:100%"></div></div>
 </div>
 <div class="usage-item">
-<div class="usage-row"><span class="usage-label" data-i18n="usageDub">🎬 الدبلجة</span><span class="usage-count" id="uc-dub">⏱️ 30 ث مجانية</span></div>
+<div class="usage-row"><span class="usage-label">🎬 الدبلجة</span><span class="usage-count" id="uc-dub">⏱️ 30 ث مجانية</span></div>
 <div class="usage-bar-bg"><div class="usage-bar-fill dub" id="ub-dub" style="width:100%"></div></div>
 </div>
 <div class="usage-item">
-<div class="usage-row"><span class="usage-label" data-i18n="usageSRT">🌐 مترجم SRT</span><span class="usage-count" id="uc-srt">6/6</span></div>
+<div class="usage-row"><span class="usage-label">🌐 مترجم SRT</span><span class="usage-count" id="uc-srt">6/6</span></div>
 <div class="usage-bar-bg"><div class="usage-bar-fill srt" id="ub-srt" style="width:100%"></div></div>
 </div>
-<button class="user-logout" onclick="logoutUser()" data-i18n="logout">🚪 تسجيل الخروج</button>
+<button class="user-logout" onclick="logoutUser()">🚪 تسجيل الخروج</button>
 </div>
 </div>
 <div id="authForms">
@@ -315,15 +336,15 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')" data-i18n="register">إنشاء حساب</button>
 </div>
 <div class="auth-form" id="form-login">
-<div class="auth-field"><label data-i18n="email">البريد الإلكتروني</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"></div>
-<div class="auth-field"><label data-i18n="password">كلمة المرور</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
+<div class="auth-field"><label data-i18n="email">البريد الإلكتروني</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" data-i18n-placeholder="email"></div>
+<div class="auth-field"><label data-i18n="password">كلمة المرور</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" data-i18n-placeholder="password"></div>
 <button class="auth-submit" id="loginBtn" onclick="doLogin()"><div class="btn-spinner"></div><span class="btn-text" data-i18n="submitLogin">🔐 دخول</span></button>
 <div class="auth-msg" id="login-msg"></div>
 </div>
 <div class="auth-form" id="form-register" style="display:none">
-<div class="auth-field"><label data-i18n="email">البريد الإلكتروني (Gmail فقط ✉️)</label><input type="email" id="reg-email" placeholder="you@gmail.com" autocomplete="email"></div>
-<div class="auth-field"><label data-i18n="password">كلمة المرور</label><input type="password" id="reg-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password"></div>
-<div class="auth-field"><label data-i18n="confirmPass">تأكيد كلمة المرور</label><input type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password"></div>
+<div class="auth-field"><label data-i18n="email">البريد الإلكتروني (Gmail فقط ✉️)</label><input type="email" id="reg-email" placeholder="you@gmail.com" autocomplete="email" data-i18n-placeholder="email"></div>
+<div class="auth-field"><label data-i18n="password">كلمة المرور</label><input type="password" id="reg-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password" data-i18n-placeholder="password"></div>
+<div class="auth-field"><label data-i18n="confirmPass">تأكيد كلمة المرور</label><input type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password" data-i18n-placeholder="confirmPass"></div>
 <button class="auth-submit" id="registerBtn" onclick="doRegister()"><div class="btn-spinner"></div><span class="btn-text" data-i18n="submitRegister">🚀 إنشاء حساب مجاني</span></button>
 <div class="auth-msg" id="register-msg"></div>
 </div>
@@ -353,12 +374,12 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 <span class="payment-badge tts" data-i18n="usageTTS">✏️ نطق النص</span>
 <span class="payment-icon">🎙️</span>
 <div class="payment-title" data-i18n="buyTTS">تفعيل النطق مدى الحياة</div>
-<div class="payment-desc">نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود</div>
+<div class="payment-desc" data-i18n="ttsDesc">نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود</div>
 <ul class="payment-features">
-<li>أصوات متعددة اللغات (13+ لغة)</li>
-<li>تحكم في السرعة والطبقة والصوت</li>
-<li>فلاتر صوتية متقدمة</li>
-<li>دفعة واحدة · بدون اشتراك</li>
+<li data-i18n="ttsFeat1">أصوات متعددة اللغات (13+ لغة)</li>
+<li data-i18n="ttsFeat2">تحكم في السرعة والطبقة والصوت</li>
+<li data-i18n="ttsFeat3">فلاتر صوتية متقدمة</li>
+<li data-i18n="ttsFeat4">دفعة واحدة · بدون اشتراك</li>
 </ul>
 <div class="price-display"><span class="price-amount tts">$10</span><span class="price-label" data-i18n="priceLabel">مدى الحياة</span></div>
 <button class="buy-btn tts" id="btn-tts" onclick="startCheckout('tts')"><span class="btn-text" data-i18n="buyBtn">💳 شراء الآن</span></button>
@@ -368,12 +389,12 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 <span class="payment-badge dub" data-i18n="usageDub">🎬 دبلجة</span>
 <span class="payment-icon">🚀</span>
 <div class="payment-title" data-i18n="buyDub">فتح الدبلجة مدى الحياة</div>
-<div class="payment-desc">دبلجة SRT كاملة بلا حدود — التجربة المجانية: أول 30 ثانية فقط</div>
+<div class="payment-desc" data-i18n="dubDesc">دبلجة SRT كاملة بلا حدود — التجربة المجانية: أول 30 ثانية فقط</div>
 <ul class="payment-features">
-<li>دبلجة SRT بالكامل مع التزامن</li>
-<li>تصدير WAV لـ YouTube Dubbing</li>
-<li>معالجة سحابية صامتة</li>
-<li>دفعة واحدة · بدون اشتراك</li>
+<li data-i18n="dubFeat1">دبلجة SRT بالكامل مع التزامن</li>
+<li data-i18n="dubFeat2">تصدير WAV لـ YouTube Dubbing</li>
+<li data-i18n="dubFeat3">معالجة سحابية صامتة</li>
+<li data-i18n="dubFeat4">دفعة واحدة · بدون اشتراك</li>
 </ul>
 <div class="price-display"><span class="price-amount dub">$50</span><span class="price-label" data-i18n="priceLabel">مدى الحياة</span></div>
 <button class="buy-btn dub" id="btn-dub" onclick="startCheckout('dub')"><span class="btn-text" data-i18n="buyBtn">💳 شراء الآن</span></button>
@@ -383,12 +404,12 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 <span class="payment-badge srt" data-i18n="usageSRT">🌐 مترجم</span>
 <span class="payment-icon">🌍</span>
 <div class="payment-title" data-i18n="buySRT">شراء المترجم مدى الحياة</div>
-<div class="payment-desc">ترجمة ملفات SRT إلى أكثر من 13 لغة بنقرة واحدة</div>
+<div class="payment-desc" data-i18n="srtDesc">ترجمة ملفات SRT إلى أكثر من 13 لغة بنقرة واحدة</div>
 <ul class="payment-features">
-<li>ترجمة لـ 13+ لغة عالمية</li>
-<li>تنزيل SRT مترجم جاهز</li>
-<li>تنظيف النص التلقائي</li>
-<li>دفعة واحدة · بدون اشتراك</li>
+<li data-i18n="srtFeat1">ترجمة لـ 13+ لغة عالمية</li>
+<li data-i18n="srtFeat2">تنزيل SRT مترجم جاهز</li>
+<li data-i18n="srtFeat3">تنظيف النص التلقائي</li>
+<li data-i18n="srtFeat4">دفعة واحدة · بدون اشتراك</li>
 </ul>
 <div class="price-display"><span class="price-amount srt">$10</span><span class="price-label" data-i18n="priceLabel">مدى الحياة</span></div>
 <button class="buy-btn srt" id="btn-srt" onclick="startCheckout('srt')"><span class="btn-text" data-i18n="buyBtn">💳 شراء الآن</span></button>
@@ -571,98 +592,399 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 </div>
 </div>
 <footer data-i18n="footer">sl-Dubbing &amp; Translation <span>· GitHub + Render · gTTS · مجاني 100%</span></footer>
+
 <script>
 // =============================================================
 // 🌍 I18N - قاموس الترجمات الكامل
 // =============================================================
 const I18N = {
   ar: {
-    login: 'تسجيل الدخول', register: 'إنشاء حساب', email: 'البريد الإلكتروني', password: 'كلمة المرور',
-    confirmPass: 'تأكيد كلمة المرور', submitLogin: '🔐 دخول', submitRegister: '🚀 إنشاء حساب مجاني',
-    logout: '🚪 تسجيل الخروج', myAccount: 'حسابي', freePlan: '🎁 خطة مجانية (6 استخدامات/ميزة)',
-    proPlan: '✨ حساب مدفوع', usageTitle: '📊 الاستخدام المجاني المتبقي', usageTTS: '✏️ نطق النص',
-    usageDub: '🎬 الدبلجة', usageSRT: '🌐 مترجم SRT', unlimited: '∞ مفتوح', used: 'انتهت',
-    ttsTitle: 'نطق النص', selectLang: 'اختر اللغة', voice: 'الصوت', typeText: 'اكتب النص...',
-    speed: 'السرعة', pitch: 'الطبقة', volume: 'الصوت', speak: 'نطق', pause: '⏸', clear: '🗑',
-    statusIdle: '👋 اكتب نصاً واضغط نطق', statusSpeaking: '🔊 جارٍ النطق...', statusDone: '✅ اكتمل',
-    statusError: '❌ خطأ في النطق', dubTitle: 'لغة الدبلجة', srtTitle: 'ملف SRT',
-    dragDrop: 'اسحب أو اضغط', srtFormat: '.srt أو .txt', pasteLabel: 'أو الصق المحتوى',
-    parseBtn: '📥 تحليل الملف', sentences: 'جملة', duration: 'المدة', copySRT: '📋',
-    genTitle: 'التوليد', genDesc1: '🔇 معالجة <strong>صامتة</strong> عبر سيرفر سحابي',
-    genDesc2: '⏱️ تزامن دقيق مع توقيتات SRT', genDesc3: '📤 ملف WAV لـ YouTube Dubbing',
-    genBtn: 'توليد الدبلجة', genNote: 'يتطلب سيرفر Render شغال', processing: 'جارٍ...',
-    remaining: 'المتبقي', elapsed: 'مضى', total: 'المجموع', cancel: '⏹ إلغاء',
-    ready: '🎉 جاهز', download: '⬇️ تنزيل WAV', youtubeTip: '📤 YouTube Studio → دبلجة',
-    dubStatus: 'تأكد سيرفر Render شغال ثم اضغط', srtTransTitle: 'مترجم SRT',
-    selectTransLang: '1. اختر لغة الترجمة', sourceText: '2. النص المصدر (SRT)',
-    pasteSrc: '📋 لصق', translateBtn: '🚀 ترجمة', result: '✅ النتيجة',
-    copyResult: '📋 نسخ', downloadSRT: '⬇️ تنزيل SRT', transStatus: 'جاهز',
-    cleanTitle: 'تنظيف النص من الفراغات', pasteClean: '📋 لصق',
-    removeNumbers: 'حذف الأرقام', removeTime: 'حذف التوقيتات', removeEmpty: 'حذف الأسطر الفارغة',
-    cleanBtn: '🧹 تنظيف النص', cleanOutput: '✨ النص بعد التنظيف', copyClean: '📋 نسخ',
-    dlClean: '⬇️ تنزيل', cleanStatus: 'الصق نصاً واضغط تنظيف',
+    login: 'تسجيل الدخول',
+    register: 'إنشاء حساب',
+    email: 'البريد الإلكتروني',
+    password: 'كلمة المرور',
+    confirmPass: 'تأكيد كلمة المرور',
+    submitLogin: '🔐 دخول',
+    submitRegister: '🚀 إنشاء حساب مجاني',
+    logout: '🚪 تسجيل الخروج',
+    myAccount: 'حسابي',
+    freePlan: '🎁 خطة مجانية (6 استخدامات/ميزة)',
+    proPlan: '✨ حساب مدفوع',
+    usageTitle: '📊 الاستخدام المجاني المتبقي',
+    usageTTS: '✏️ نطق النص',
+    usageDub: '🎬 الدبلجة',
+    usageSRT: '🌐 مترجم SRT',
+    unlimited: '∞ مفتوح',
+    used: 'انتهت',
+    ttsTitle: 'نطق النص',
+    selectLang: 'اختر اللغة',
+    voice: 'الصوت',
+    typeText: 'اكتب النص...',
+    speed: 'السرعة',
+    pitch: 'الطبقة',
+    volume: 'الصوت',
+    speak: 'نطق',
+    pause: '⏸',
+    clear: '🗑',
+    statusIdle: '👋 اكتب نصاً واضغط نطق',
+    statusSpeaking: '🔊 جارٍ النطق...',
+    statusDone: '✅ اكتمل',
+    statusError: '❌ خطأ في النطق',
+    dubTitle: 'لغة الدبلجة',
+    srtTitle: 'ملف SRT',
+    dragDrop: 'اسحب أو اضغط',
+    srtFormat: '.srt أو .txt',
+    pasteLabel: 'أو الصق المحتوى',
+    parseBtn: '📥 تحليل الملف',
+    sentences: 'جملة',
+    duration: 'المدة',
+    copySRT: '📋',
+    genTitle: 'التوليد',
+    genDesc1: '🔇 معالجة <strong>صامتة</strong> عبر سيرفر سحابي',
+    genDesc2: '⏱️ تزامن دقيق مع توقيتات SRT',
+    genDesc3: '📤 ملف WAV لـ YouTube Dubbing',
+    genBtn: 'توليد الدبلجة',
+    genNote: 'يتطلب سيرفر Render شغال',
+    processing: 'جارٍ...',
+    remaining: 'المتبقي',
+    elapsed: 'مضى',
+    total: 'المجموع',
+    cancel: '⏹ إلغاء',
+    ready: '🎉 جاهز',
+    download: '⬇️ تنزيل WAV',
+    youtubeTip: '📤 YouTube Studio → دبلجة',
+    dubStatus: 'تأكد سيرفر Render شغال ثم اضغط',
+    srtTransTitle: 'مترجم SRT',
+    selectTransLang: '1. اختر لغة الترجمة',
+    sourceText: '2. النص المصدر (SRT)',
+    pasteSrc: '📋 لصق',
+    translateBtn: '🚀 ترجمة',
+    result: '✅ النتيجة',
+    copyResult: '📋 نسخ',
+    downloadSRT: '⬇️ تنزيل SRT',
+    transStatus: 'جاهز',
+    cleanTitle: 'تنظيف النص من الفراغات',
+    pasteClean: '📋 لصق',
+    removeNumbers: 'حذف الأرقام',
+    removeTime: 'حذف التوقيتات',
+    removeEmpty: 'حذف الأسطر الفارغة',
+    cleanBtn: '🧹 تنظيف النص',
+    cleanOutput: '✨ النص بعد التنظيف',
+    copyClean: '📋 نسخ',
+    dlClean: '⬇️ تنزيل',
+    cleanStatus: 'الصق نصاً واضغط تنظيف',
     storeTitle: '🛒 المتجر — ترقية الحساب',
     storeDesc: 'ادفع مرة واحدة واستمتع مدى الحياة · مدعوم بـ Lemon Squeezy',
-    buyTTS: 'تفعيل النطق مدى الحياة', buyDub: 'فتح الدبلجة مدى الحياة',
-    buySRT: 'شراء المترجم مدى الحياة', priceLabel: 'مدى الحياة', buyBtn: '💳 شراء الآن',
-    securePay: '🔒 دفع آمن عبر Lemon Squeezy', lockTTS: 'نطق النص — مقفل',
-    lockDub: 'الدبلجة — مقفلة', lockSRT: 'مترجم SRT — مقفل',
+    buyTTS: 'تفعيل النطق مدى الحياة',
+    buyDub: 'فتح الدبلجة مدى الحياة',
+    buySRT: 'شراء المترجم مدى الحياة',
+    ttsDesc: 'نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود',
+    dubDesc: 'دبلجة SRT كاملة بلا حدود — التجربة المجانية: أول 30 ثانية فقط',
+    srtDesc: 'ترجمة ملفات SRT إلى أكثر من 13 لغة بنقرة واحدة',
+    ttsFeat1: 'أصوات متعددة اللغات (13+ لغة)',
+    ttsFeat2: 'تحكم في السرعة والطبقة والصوت',
+    ttsFeat3: 'فلاتر صوتية متقدمة',
+    ttsFeat4: 'دفعة واحدة · بدون اشتراك',
+    dubFeat1: 'دبلجة SRT بالكامل مع التزامن',
+    dubFeat2: 'تصدير WAV لـ YouTube Dubbing',
+    dubFeat3: 'معالجة سحابية صامتة',
+    dubFeat4: 'دفعة واحدة · بدون اشتراك',
+    srtFeat1: 'ترجمة لـ 13+ لغة عالمية',
+    srtFeat2: 'تنزيل SRT مترجم جاهز',
+    srtFeat3: 'تنظيف النص التلقائي',
+    srtFeat4: 'دفعة واحدة · بدون اشتراك',
+    priceLabel: 'مدى الحياة',
+    buyBtn: '💳 شراء الآن',
+    securePay: '🔒 دفع آمن عبر Lemon Squeezy',
+    lockTTS: 'نطق النص — مقفل',
+    lockDub: 'الدبلجة — مقفلة',
+    lockSRT: 'مترجم SRT — مقفل',
     lockSubGuest: 'سجّل دخولك للحصول على 6 استخدامات مجانية',
     lockSubDubGuest: 'سجّل للتجربة المجانية (30 ث) أو اشترِ للملف الكامل',
-    lockSubUsed: 'اشترِ الميزة للاستمرار بدون قيود', lockActionGuest: '👤 سجّل للاستخدام المجاني',
-    lockActionBuy: '💎 اشترِ مقابل $10', lockActionBuyDub: '🚀 اشترِ مقابل $50',
-    filtersTitle: '🎛️ الفلاتر الصوتية', bass: 'Bass', mid: 'Mid', treble: 'Treble',
-    resetFilters: '🔄 إعادة تعيين', presetMale: '👨 رجالي', presetRadio: '📻 راديو',
-    presetWarm: '🌟 دافئ', presetFast: '⚡ سريع',
-    toastCopied: '✅ تم النسخ', toastWarnUses: '⚠️ تبقّى {n} استخدام مجاني فقط!',
-    footer: 'sl-Dubbing & Translation · GitHub + Render · gTTS · مجاني 100%'
+    lockSubUsed: 'اشترِ الميزة للاستمرار بدون قيود',
+    lockActionGuest: '👤 سجّل للاستخدام المجاني',
+    lockActionBuy: '💎 اشترِ مقابل $10',
+    lockActionBuyDub: '🚀 اشترِ مقابل $50',
+    filtersTitle: '🎛️ الفلاتر الصوتية',
+    bass: 'Bass',
+    mid: 'Mid',
+    treble: 'Treble',
+    resetFilters: '🔄 إعادة تعيين',
+    presetMale: '👨 رجالي',
+    presetRadio: '📻 راديو',
+    presetWarm: '🌟 دافئ',
+    presetFast: '⚡ سريع',
+    toastCopied: '✅ تم النسخ',
+    toastWarnUses: '⚠️ تبقّى {n} استخدام مجاني فقط!',
+    footer: 'sl-Dubbing & Translation · GitHub + Render · gTTS · مجاني 100%',
+    otpTitle: '📧 تفعيل الحساب',
+    otpDesc: 'أدخل كود التفعيل المرسل إلى',
+    otpCode: 'كود التفعيل',
+    otpVerify: '✅ تفعيل',
+    otpResend: '📩 إعادة إرسال',
+    otpTimer: 'يمكنك إعادة الإرسال بعد',
+    otpSuccess: '✅ تم التفعيل بنجاح!',
+    otpWrong: '❌ كود خاطئ، حاول مرة أخرى'
   },
   en: {
-    login: 'Sign In', register: 'Create Account', email: 'Email Address', password: 'Password',
-    confirmPass: 'Confirm Password', submitLogin: '🔐 Sign In', submitRegister: '🚀 Create Free Account',
-    logout: '🚪 Sign Out', myAccount: 'My Account', freePlan: '🎁 Free Plan (6 uses/feature)',
-    proPlan: '✨ Pro Account', usageTitle: '📊 Remaining Free Usage', usageTTS: '✏️ Text-to-Speech',
-    usageDub: '🎬 Dubbing', usageSRT: '🌐 SRT Translator', unlimited: '∞ Unlimited', used: 'Used up',
-    ttsTitle: 'Text-to-Speech', selectLang: 'Select Language', voice: 'Voice', typeText: 'Type your text...',
-    speed: 'Speed', pitch: 'Pitch', volume: 'Volume', speak: 'Speak', pause: '⏸', clear: '🗑',
-    statusIdle: '👋 Type text and press Speak', statusSpeaking: '🔊 Speaking...', statusDone: '✅ Done',
-    statusError: '❌ Speech error', dubTitle: 'Dubbing Language', srtTitle: 'SRT File',
-    dragDrop: 'Drag & Drop or Click', srtFormat: '.srt or .txt', pasteLabel: 'Or paste content',
-    parseBtn: '📥 Parse File', sentences: 'sentences', duration: 'Duration', copySRT: '📋',
-    genTitle: 'Generate', genDesc1: '🔇 <strong>Silent</strong> cloud processing',
-    genDesc2: '⏱️ Precise sync with SRT timestamps', genDesc3: '📤 WAV file for YouTube Dubbing',
-    genBtn: 'Generate Dubbing', genNote: 'Requires active Render backend', processing: 'Processing...',
-    remaining: 'Remaining', elapsed: 'Elapsed', total: 'Total', cancel: '⏹ Cancel',
-    ready: '🎉 Ready', download: '⬇️ Download WAV', youtubeTip: '📤 YouTube Studio → Dubbing',
-    dubStatus: 'Ensure Render server is running, then click', srtTransTitle: 'SRT Translator',
-    selectTransLang: '1. Select Target Language', sourceText: '2. Source Text (SRT)',
-    pasteSrc: '📋 Paste', translateBtn: '🚀 Translate', result: '✅ Result',
-    copyResult: '📋 Copy', downloadSRT: '⬇️ Download SRT', transStatus: 'Ready',
-    cleanTitle: 'Clean Text from Extras', pasteClean: '📋 Paste',
-    removeNumbers: 'Remove Numbers', removeTime: 'Remove Timestamps', removeEmpty: 'Remove Empty Lines',
-    cleanBtn: '🧹 Clean Text', cleanOutput: '✨ Cleaned Text', copyClean: '📋 Copy',
-    dlClean: '⬇️ Download', cleanStatus: 'Paste text and click Clean',
+    login: 'Sign In',
+    register: 'Create Account',
+    email: 'Email Address',
+    password: 'Password',
+    confirmPass: 'Confirm Password',
+    submitLogin: '🔐 Sign In',
+    submitRegister: '🚀 Create Free Account',
+    logout: '🚪 Sign Out',
+    myAccount: 'My Account',
+    freePlan: '🎁 Free Plan (6 uses/feature)',
+    proPlan: '✨ Pro Account',
+    usageTitle: '📊 Remaining Free Usage',
+    usageTTS: '✏️ Text-to-Speech',
+    usageDub: '🎬 Dubbing',
+    usageSRT: '🌐 SRT Translator',
+    unlimited: '∞ Unlimited',
+    used: 'Used up',
+    ttsTitle: 'Text-to-Speech',
+    selectLang: 'Select Language',
+    voice: 'Voice',
+    typeText: 'Type your text...',
+    speed: 'Speed',
+    pitch: 'Pitch',
+    volume: 'Volume',
+    speak: 'Speak',
+    pause: '⏸',
+    clear: '🗑',
+    statusIdle: '👋 Type text and press Speak',
+    statusSpeaking: '🔊 Speaking...',
+    statusDone: '✅ Done',
+    statusError: '❌ Speech error',
+    dubTitle: 'Dubbing Language',
+    srtTitle: 'SRT File',
+    dragDrop: 'Drag & Drop or Click',
+    srtFormat: '.srt or .txt',
+    pasteLabel: 'Or paste content',
+    parseBtn: '📥 Parse File',
+    sentences: 'sentences',
+    duration: 'Duration',
+    copySRT: '📋',
+    genTitle: 'Generate',
+    genDesc1: '🔇 <strong>Silent</strong> cloud processing',
+    genDesc2: '⏱️ Precise sync with SRT timestamps',
+    genDesc3: '📤 WAV file for YouTube Dubbing',
+    genBtn: 'Generate Dubbing',
+    genNote: 'Requires active Render backend',
+    processing: 'Processing...',
+    remaining: 'Remaining',
+    elapsed: 'Elapsed',
+    total: 'Total',
+    cancel: '⏹ Cancel',
+    ready: '🎉 Ready',
+    download: '⬇️ Download WAV',
+    youtubeTip: '📤 YouTube Studio → Dubbing',
+    dubStatus: 'Ensure Render server is running, then click',
+    srtTransTitle: 'SRT Translator',
+    selectTransLang: '1. Select Target Language',
+    sourceText: '2. Source Text (SRT)',
+    pasteSrc: '📋 Paste',
+    translateBtn: '🚀 Translate',
+    result: '✅ Result',
+    copyResult: '📋 Copy',
+    downloadSRT: '⬇️ Download SRT',
+    transStatus: 'Ready',
+    cleanTitle: 'Clean Text from Extras',
+    pasteClean: '📋 Paste',
+    removeNumbers: 'Remove Numbers',
+    removeTime: 'Remove Timestamps',
+    removeEmpty: 'Remove Empty Lines',
+    cleanBtn: '🧹 Clean Text',
+    cleanOutput: '✨ Cleaned Text',
+    copyClean: '📋 Copy',
+    dlClean: '⬇️ Download',
+    cleanStatus: 'Paste text and click Clean',
     storeTitle: '🛒 Store — Upgrade Account',
     storeDesc: 'One-time payment, lifetime access · Powered by Lemon Squeezy',
-    buyTTS: 'Unlock TTS Lifetime', buyDub: 'Unlock Dubbing Lifetime',
-    buySRT: 'Unlock Translator Lifetime', priceLabel: 'Lifetime', buyBtn: '💳 Buy Now',
-    securePay: '🔒 Secure payment via Lemon Squeezy', lockTTS: 'Text-to-Speech — Locked',
-    lockDub: 'Dubbing — Locked', lockSRT: 'SRT Translator — Locked',
+    buyTTS: 'Unlock TTS Lifetime',
+    buyDub: 'Unlock Dubbing Lifetime',
+    buySRT: 'Unlock Translator Lifetime',
+    ttsDesc: 'Unlimited text-to-speech with multi-language voices',
+    dubDesc: 'Full SRT dubbing with sync — Free trial: First 30s only',
+    srtDesc: 'Translate SRT files to 13+ languages with one click',
+    ttsFeat1: 'Multi-language voices (13+ languages)',
+    ttsFeat2: 'Control speed, pitch, and volume',
+    ttsFeat3: 'Advanced audio filters',
+    ttsFeat4: 'One-time payment · No subscription',
+    dubFeat1: 'Full SRT dubbing with synchronization',
+    dubFeat2: 'Export WAV for YouTube Dubbing',
+    dubFeat3: 'Silent cloud processing',
+    dubFeat4: 'One-time payment · No subscription',
+    srtFeat1: 'Translation to 13+ languages',
+    srtFeat2: 'Download ready translated SRT',
+    srtFeat3: 'Automatic text cleaning',
+    srtFeat4: 'One-time payment · No subscription',
+    priceLabel: 'Lifetime',
+    buyBtn: '💳 Buy Now',
+    securePay: '🔒 Secure payment via Lemon Squeezy',
+    lockTTS: 'Text-to-Speech — Locked',
+    lockDub: 'Dubbing — Locked',
+    lockSRT: 'SRT Translator — Locked',
     lockSubGuest: 'Sign in to get 6 free uses',
     lockSubDubGuest: 'Sign in for free trial (30s) or buy for full file',
-    lockSubUsed: 'Purchase feature to continue without limits', lockActionGuest: '👤 Sign in for free uses',
-    lockActionBuy: '💎 Buy for $10', lockActionBuyDub: '🚀 Buy for $50',
-    filtersTitle: '🎛️ Audio Filters', bass: 'Bass', mid: 'Mid', treble: 'Treble',
-    resetFilters: '🔄 Reset', presetMale: '👨 Male', presetRadio: '📻 Radio',
-    presetWarm: '🌟 Warm', presetFast: '⚡ Fast',
-    toastCopied: '✅ Copied', toastWarnUses: '⚠️ Only {n} free uses remaining!',
-    footer: 'sl-Dubbing & Translation · GitHub + Render · gTTS · 100% Free'
+    lockSubUsed: 'Purchase feature to continue without limits',
+    lockActionGuest: '👤 Sign in for free uses',
+    lockActionBuy: '💎 Buy for $10',
+    lockActionBuyDub: '🚀 Buy for $50',
+    filtersTitle: '🎛️ Audio Filters',
+    bass: 'Bass',
+    mid: 'Mid',
+    treble: 'Treble',
+    resetFilters: '🔄 Reset',
+    presetMale: '👨 Male',
+    presetRadio: '📻 Radio',
+    presetWarm: '🌟 Warm',
+    presetFast: '⚡ Fast',
+    toastCopied: '✅ Copied',
+    toastWarnUses: '⚠️ Only {n} free uses remaining!',
+    footer: 'sl-Dubbing & Translation · GitHub + Render · gTTS · 100% Free',
+    otpTitle: '📧 Activate Account',
+    otpDesc: 'Enter verification code sent to',
+    otpCode: 'Verification Code',
+    otpVerify: '✅ Verify',
+    otpResend: '📩 Resend Code',
+    otpTimer: 'You can resend after',
+    otpSuccess: '✅ Verified successfully!',
+    otpWrong: '❌ Wrong code, try again'
+  },
+  fr: {
+    login: 'Se Connecter',
+    register: 'Créer un Compte',
+    email: 'Adresse Email',
+    password: 'Mot de Passe',
+    confirmPass: 'Confirmer le Mot de Passe',
+    submitLogin: '🔐 Connexion',
+    submitRegister: '🚀 Créer un Compte Gratuit',
+    logout: '🚪 Déconnexion',
+    myAccount: 'Mon Compte',
+    freePlan: '🎁 Plan Gratuit (6 utilisations/fonction)',
+    proPlan: '✨ Compte Pro',
+    usageTitle: '📊 Utilisation Gratuite Restante',
+    usageTTS: '✏️ Synthèse Vocale',
+    usageDub: '🎬 Doublage',
+    usageSRT: '🌐 Traducteur SRT',
+    unlimited: '∞ Illimité',
+    used: 'Épuisé',
+    ttsTitle: 'Synthèse Vocale',
+    selectLang: 'Choisir la Langue',
+    voice: 'Voix',
+    typeText: 'Tapez votre texte...',
+    speed: 'Vitesse',
+    pitch: 'Hauteur',
+    volume: 'Volume',
+    speak: 'Parler',
+    pause: '⏸',
+    clear: '🗑',
+    statusIdle: '👋 Tapez un texte et appuyez sur Parler',
+    statusSpeaking: '🔊 En cours...',
+    statusDone: '✅ Terminé',
+    statusError: '❌ Erreur',
+    dubTitle: 'Langue de Doublage',
+    srtTitle: 'Fichier SRT',
+    dragDrop: 'Glisser-Déposer ou Cliquer',
+    srtFormat: '.srt ou .txt',
+    pasteLabel: 'Ou coller le contenu',
+    parseBtn: '📥 Analyser',
+    sentences: 'phrases',
+    duration: 'Durée',
+    copySRT: '📋',
+    genTitle: 'Générer',
+    genDesc1: '🔇 Traitement <strong>silencieux</strong> cloud',
+    genDesc2: '⏱️ Synchronisation précise avec SRT',
+    genDesc3: '📤 Fichier WAV pour YouTube Dubbing',
+    genBtn: 'Générer le Doublage',
+    genNote: 'Nécessite un serveur Render actif',
+    processing: 'En cours...',
+    remaining: 'Restant',
+    elapsed: 'Écoulé',
+    total: 'Total',
+    cancel: '⏹ Annuler',
+    ready: '🎉 Prêt',
+    download: '⬇️ Télécharger WAV',
+    youtubeTip: '📤 YouTube Studio → Doublage',
+    dubStatus: 'Assurez-vous que Render fonctionne',
+    srtTransTitle: 'Traducteur SRT',
+    selectTransLang: '1. Choisissez la langue',
+    sourceText: '2. Texte source (SRT)',
+    pasteSrc: '📋 Coller',
+    translateBtn: '🚀 Traduire',
+    result: '✅ Résultat',
+    copyResult: '📋 Copier',
+    downloadSRT: '⬇️ Télécharger SRT',
+    transStatus: 'Prêt',
+    cleanTitle: 'Nettoyer le Texte',
+    pasteClean: '📋 Coller',
+    removeNumbers: 'Supprimer les nombres',
+    removeTime: 'Supprimer les timestamps',
+    removeEmpty: 'Supprimer lignes vides',
+    cleanBtn: '🧹 Nettoyer',
+    cleanOutput: '✨ Texte nettoyé',
+    copyClean: '📋 Copier',
+    dlClean: '⬇️ Télécharger',
+    cleanStatus: 'Collez et cliquez Nettoyer',
+    storeTitle: '🛒 Boutique — Mettre à niveau',
+    storeDesc: 'Paiement unique, accès à vie · Lemon Squeezy',
+    buyTTS: 'Débloquer TTS à vie',
+    buyDub: 'Débloquer Doublage à vie',
+    buySRT: 'Débloquer Traducteur à vie',
+    ttsDesc: 'Synthèse vocale illimitée multi-langues',
+    dubDesc: 'Doublage SRT complet — Essai gratuit: 30s',
+    srtDesc: 'Traduisez les fichiers SRT en 13+ langues',
+    ttsFeat1: 'Voix multi-langues (13+ langues)',
+    ttsFeat2: 'Contrôle vitesse, hauteur, volume',
+    ttsFeat3: 'Filtres audio avancés',
+    ttsFeat4: 'Paiement unique · Sans abonnement',
+    dubFeat1: 'Doublage SRT complet synchronisé',
+    dubFeat2: 'Export WAV pour YouTube',
+    dubFeat3: 'Traitement cloud silencieux',
+    dubFeat4: 'Paiement unique · Sans abonnement',
+    srtFeat1: 'Traduction en 13+ langues',
+    srtFeat2: 'Téléchargement SRT traduit',
+    srtFeat3: 'Nettoyage automatique',
+    srtFeat4: 'Paiement unique · Sans abonnement',
+    priceLabel: 'À vie',
+    buyBtn: '💳 Acheter',
+    securePay: '🔒 Paiement sécurisé Lemon Squeezy',
+    lockTTS: 'Synthèse Vocale — Verrouillé',
+    lockDub: 'Doublage — Verrouillé',
+    lockSRT: 'Traducteur SRT — Verrouillé',
+    lockSubGuest: 'Connectez-vous pour 6 utilisations gratuites',
+    lockSubDubGuest: 'Connectez-vous pour essai gratuit (30s)',
+    lockSubUsed: 'Achetez pour continuer sans limites',
+    lockActionGuest: '👤 Connexion gratuite',
+    lockActionBuy: '💎 Acheter $10',
+    lockActionBuyDub: '🚀 Acheter $50',
+    filtersTitle: '🎛️ Filtres Audio',
+    bass: 'Basses',
+    mid: 'Médiums',
+    treble: 'Aigus',
+    resetFilters: '🔄 Réinitialiser',
+    presetMale: '👨 Masculin',
+    presetRadio: '📻 Radio',
+    presetWarm: '🌟 Chaud',
+    presetFast: '⚡ Rapide',
+    toastCopied: '✅ Copié',
+    toastWarnUses: '⚠️ Plus que {n} utilisations!',
+    footer: 'sl-Dubbing & Translation · GitHub + Render · gTTS · 100% Gratuit',
+    otpTitle: '📧 Activer le Compte',
+    otpDesc: 'Entrez le code envoyé à',
+    otpCode: 'Code de Vérification',
+    otpVerify: '✅ Vérifier',
+    otpResend: '📩 Renvoyer',
+    otpTimer: 'Vous pouvez renvoyer après',
+    otpSuccess: '✅ Vérifié avec succès!',
+    otpWrong: '❌ Code incorrect, réessayez'
   }
 };
 
-// =============================================================
-// 🌍 دوال الترجمة
-// =============================================================
+// 🌍 دالة تطبيق الترجمة على عنصر واحد
 function applyTranslation(el, key, lang) {
   if (!el || !I18N[lang] || !I18N[lang][key]) return;
   if (el.dataset.i18nHtml === 'true') {
@@ -672,6 +994,7 @@ function applyTranslation(el, key, lang) {
   }
 }
 
+// 🌍 دالة تطبيق الترجمة على كل العناصر
 function applyAllTranslations(lang) {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     applyTranslation(el, el.dataset.i18n, lang);
@@ -684,6 +1007,7 @@ function applyAllTranslations(lang) {
   updateDynamicText(lang);
 }
 
+// تحديث النصوص الديناميكية
 function updateDynamicText(lang) {
   const t = I18N[lang];
   if (!t) return;
@@ -697,791 +1021,7 @@ function updateDynamicText(lang) {
   }
 }
 
-// =============================================================
-// 🎁 تتبع استخدام الضيوف (6 محاولات مجانية لكل ميزة)
-// =============================================================
-const GUEST_LIMIT = 6;
-const GUEST_USAGE_KEY = 'sl_guest_usage';
-
-function getGuestUsage() {
-  try { return JSON.parse(localStorage.getItem(GUEST_USAGE_KEY) || '{}'); }
-  catch { return {tts:0, dub:0, srt:0}; }
-}
-function saveGuestUsage(u) {
-  try { localStorage.setItem(GUEST_USAGE_KEY, JSON.stringify(u)); } catch {}
-}
-function getGuestUsesLeft(feature) {
-  const u = getGuestUsage();
-  return Math.max(0, GUEST_LIMIT - (u[feature] || 0));
-}
-function consumeGuestUse(feature) {
-  const u = getGuestUsage();
-  u[feature] = (u[feature] || 0) + 1;
-  saveGuestUsage(u);
-  return getGuestUsesLeft(feature);
-}
-
-// =============================================================
-// CONFIG
-// =============================================================
-const BACKEND_URL = 'https://dubbing-api-v2.onrender.com';
-// =============================================================
-// SIMPLE AUTH + LOCAL USERS
-// =============================================================
-const FREE_LIMIT = 6;
-const AUTH_KEY = 'alhashmi_users';
-const SESSION_KEY = 'alhashmi_session';
-const UNLOCK_KEY = 'alhashmi_unlocked';
-const FEATURES = ['tts', 'dub', 'srt'];
-function getUsers()   { try { return JSON.parse(localStorage.getItem(AUTH_KEY) || '{}'); } catch(e) { return {}; } }
-function saveUsers(u) { try { localStorage.setItem(AUTH_KEY, JSON.stringify(u)); } catch(e) {} }
-function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch(e) { return null; } }
-function saveSession(s) { try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch(e) {} }
-function clearSession() { try { localStorage.removeItem(SESSION_KEY); } catch(e) {} }
-function getUnlocked() { try { return JSON.parse(localStorage.getItem(UNLOCK_KEY) || '{}'); } catch(e) { return {}; } }
-function setUnlockedState(u) { try { localStorage.setItem(UNLOCK_KEY, JSON.stringify(u || {})); } catch(e) {} }
-function clearUnlocked() { try { localStorage.removeItem(UNLOCK_KEY); } catch(e) {} }
-let currentUser = null;
-function simpleHash(str) {
-let h = 0;
-for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
-return h.toString(36);
-}
-function getUserData(email) { const users = getUsers(); return users[email] || null; }
-function getUsageLeft(email, feature) {
-const u = getUserData(email);
-if (!u) return 0;
-const localUnlocked = getUnlocked();
-if ((u.unlocked && u.unlocked[feature]) || localUnlocked[feature]) return Infinity;
-return Math.max(0, FREE_LIMIT - ((u.usage && u.usage[feature]) || 0));
-}
-function consumeUse(feature) {
-if (!currentUser) return false;
-const users = getUsers();
-const u = users[currentUser.email];
-if (!u) return false;
-const localUnlocked = getUnlocked();
-if ((u.unlocked && u.unlocked[feature]) || localUnlocked[feature]) return true;
-u.usage = u.usage || {};
-u.usage[feature] = (u.usage[feature] || 0) + 1;
-saveUsers(users);
-updateUsageUI();
-return true;
-}
-function showAuthMsg(form, msg, type) {
-const el = document.getElementById(form + '-msg');
-if (!el) return;
-el.textContent = msg;
-el.className = 'auth-msg ' + type;
-}
-function showToast(msg, type) {
-const colors = {
-ok:'#059669,#10b981',
-er:'#dc2626,#ef4444',
-wn:'#d97706,#f59e0b'
-};
-const c = colors[type] || colors.ok;
-const n = document.createElement('div');
-n.style.cssText = `position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,${c});color:white;padding:11px 22px;border-radius:12px;font-weight:700;font-size:.82rem;box-shadow:0 8px 30px rgba(0,0,0,.4);transition:opacity .5s;white-space:nowrap`;
-n.textContent = msg;
-document.body.appendChild(n);
-setTimeout(() => {
-n.style.opacity='0';
-setTimeout(()=>n.remove(),500);
-}, 2800);
-}
-function switchAuthTab(tab) {
-document.getElementById('form-login').style.display    = tab === 'login' ? 'block' : 'none';
-document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
-document.getElementById('tab-login').classList.toggle('on', tab === 'login');
-document.getElementById('tab-register').classList.toggle('on', tab === 'register');
-}
-function toggleAuthDropdown() {
-document.getElementById('authDropdown').classList.toggle('show');
-document.getElementById('langDropdown').classList.remove('show');
-}
-function openAuthDropdown() {
-document.getElementById('authDropdown').classList.add('show');
-document.getElementById('langDropdown').classList.remove('show');
-}
-function closeAuthDropdown() {
-document.getElementById('authDropdown').classList.remove('show');
-}
-function doRegister() {
-const email = document.getElementById('reg-email').value.trim().toLowerCase();
-const pass  = document.getElementById('reg-pass').value;
-const pass2 = document.getElementById('reg-pass2').value;
-if (!email || !email.includes('@')) {
-showAuthMsg('register', '⚠️ أدخل بريدًا إلكترونيًا صحيحًا', 'er');
-return;
-}
-if (!email.endsWith('@gmail.com')) {
-showAuthMsg('register', '⚠️ مقبول فقط بريد Gmail (@gmail.com)', 'er');
-return;
-}
-if (pass.length < 8) {
-showAuthMsg('register', '⚠️ كلمة المرور 8 أحرف على الأقل', 'er');
-return;
-}
-if (pass !== pass2) {
-showAuthMsg('register', '⚠️ كلمتا المرور غير متطابقتان', 'er');
-return;
-}
-const users = getUsers();
-if (users[email]) {
-showAuthMsg('register', '⚠️ البريد مسجّل مسبقًا', 'er');
-return;
-}
-const btn = document.getElementById('registerBtn');
-btn.classList.add('loading');
-btn.disabled = true;
-setTimeout(() => {
-const token = Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
-users[email] = {
-hash: simpleHash(pass),
-usage: { tts:0, dub:0, srt:0 },
-unlocked: { tts:false, dub:false, srt:false },
-createdAt: Date.now(),
-verified: false,
-token: token
-};
-saveUsers(users);
-const verifyLink = `${window.location.origin}${window.location.pathname}?verify=${token}`;
-console.log('📧 رابط التفعيل:', verifyLink);
-showAuthMsg('register', '✅ تم التسجيل! افتح Console أو Alert للحصول على رابط التفعيل', 'ok');
-setTimeout(() => {
-const alertMsg =
-`🎉 تم إنشاء حسابك بنجاح!
-` +
-`📧 رابط التفعيل:
-${verifyLink}
-` +
-`⚠️ هذه نسخة تطوير. في الإنتاج أرسل الرابط بالإيميل.
-` +
-`انسخ الرابط وافتحه في المتصفح.`;
-alert(alertMsg);
-}, 400);
-btn.classList.remove('loading');
-btn.disabled = false;
-}, 600);
-}
-function checkVerificationToken() {
-const urlParams = new URLSearchParams(window.location.search);
-const token = urlParams.get('verify');
-if (!token) return;
-const users = getUsers();
-let verified = false;
-let verifiedEmail = '';
-for (let email in users) {
-if (users[email].token === token && !users[email].verified) {
-users[email].verified = true;
-delete users[email].token;
-saveUsers(users);
-verified = true;
-verifiedEmail = email;
-break;
-}
-}
-if (verified) {
-showToast('🎉 تم تفعيل حساب ' + verifiedEmail + ' بنجاح! يمكنك الآن تسجيل الدخول', 'ok');
-setTimeout(() => {
-openAuthDropdown();
-switchAuthTab('login');
-document.getElementById('login-email').value = verifiedEmail;
-}, 900);
-} else {
-showToast('❌ رابط التفعيل غير صالح أو مستخدم مسبقًا', 'er');
-}
-window.history.replaceState({}, document.title, window.location.pathname);
-}
-async function doLogin() {
-const email = document.getElementById('login-email').value.trim().toLowerCase();
-const pass  = document.getElementById('login-pass').value;
-if (!email || !email.includes('@')) {
-showAuthMsg('login', '⚠️ أدخل البريد الإلكتروني', 'er');
-return;
-}
-if (!pass) {
-showAuthMsg('login', '⚠️ أدخل كلمة المرور', 'er');
-return;
-}
-const btn = document.getElementById('loginBtn');
-btn.classList.add('loading');
-btn.disabled = true;
-setTimeout(async () => {
-const users = getUsers();
-const u = users[email];
-if (!u || u.hash !== simpleHash(pass)) {
-showAuthMsg('login', '❌ البريد أو كلمة المرور غير صحيحة', 'er');
-btn.classList.remove('loading');
-btn.disabled = false;
-return;
-}
-if (!u.verified) {
-showAuthMsg('login', '⚠️ يجب تفعيل الحساب أولاً', 'er');
-btn.classList.remove('loading');
-btn.disabled = false;
-return;
-}
-await loginUser(email);
-showAuthMsg('login', '✅ مرحبًا بك!', 'ok');
-btn.classList.remove('loading');
-btn.disabled = false;
-setTimeout(() => closeAuthDropdown(), 900);
-}, 600);
-}
-async function loginUser(email) {
-saveSession({ email });
-currentUser = { email, initial: email[0].toUpperCase() };
-const users = getUsers();
-if (users[email] && users[email].unlocked) {
-setUnlockedState(users[email].unlocked);
-}
-renderAuthState();
-syncUIFromUnlockedState();
-updateLockStates();
-updateUsageUI();
-await refreshEntitlements();
-}
-function logoutUser() {
-clearSession();
-currentUser = null;
-clearUnlocked();
-renderAuthState();
-updateLockStates();
-closeAuthDropdown();
-}
-function renderAuthState() {
-const loggedIn = !!currentUser;
-document.getElementById('authBtnLabel').textContent = loggedIn ? currentUser.email.split('@')[0] : 'تسجيل الدخول';
-const btn = document.getElementById('authToggleBtn');
-const svgIcon = btn.querySelector('svg:first-child');
-let avatarEl = btn.querySelector('.auth-avatar');
-if (loggedIn) {
-if (!avatarEl) {
-avatarEl = document.createElement('span');
-avatarEl.className = 'auth-avatar';
-btn.insertBefore(avatarEl, btn.firstChild);
-if (svgIcon) svgIcon.style.display = 'none';
-}
-avatarEl.textContent = currentUser.initial;
-document.getElementById('userAvatarLg').textContent = currentUser.initial;
-} else {
-if (avatarEl) avatarEl.remove();
-if (svgIcon) svgIcon.style.display = '';
-}
-document.getElementById('userPanel').style.display = loggedIn ? 'block' : 'none';
-document.getElementById('authForms').style.display = loggedIn ? 'none' : 'block';
-if (loggedIn) {
-document.getElementById('userEmailDisplay').textContent = currentUser.email;
-updateUsageUI();
-}
-}
-function updateUsageUI() {
-if (!currentUser) return;
-const users = getUsers();
-const u = users[currentUser.email];
-if (!u) return;
-const localUnlocked = getUnlocked();
-FEATURES.forEach(f => {
-const unlimited = (u.unlocked && u.unlocked[f]) || localUnlocked[f];
-const used = (u.usage && u.usage[f]) || 0;
-const left = unlimited ? Infinity : Math.max(0, FREE_LIMIT - used);
-const pct = unlimited ? 100 : (left / FREE_LIMIT) * 100;
-const ucEl = document.getElementById('uc-' + f);
-const ubEl = document.getElementById('ub-' + f);
-if (ucEl) {
-if (unlimited) {
-ucEl.textContent = '∞ مفتوح';
-ucEl.className = 'usage-count unlimited';
-} else if (left > 0) {
-ucEl.textContent = left + '/' + FREE_LIMIT;
-ucEl.className = 'usage-count has-uses';
-} else {
-ucEl.textContent = '0/' + FREE_LIMIT + ' انتهت';
-ucEl.className = 'usage-count no-uses';
-}
-}
-if (ubEl) ubEl.style.width = Math.max(0, pct) + '%';
-});
-const anyUnlocked = FEATURES.some(f => (u.unlocked && u.unlocked[f]) || localUnlocked[f]);
-document.getElementById('userPlanBadge').textContent = anyUnlocked ? '✨ حساب مدفوع' : '🎁 خطة مجانية (6 استخدامات/ميزة)';
-}
-function getLockTitle(f) {
-return {
-tts:'نطق النص — مقفل',
-dub:'الدبلجة — مقفلة',
-srt:'مترجم SRT — مقفل'
-}[f];
-}
-function getBuyLabel(f) {
-return {
-tts:'💎 اشترِ مقابل $10',
-dub:'🚀 اشترِ مقابل $50',
-srt:'🌍 اشترِ مقابل $10'
-}[f];
-}
-function lockAction(f) {
-if (!currentUser) openAuthDropdown();
-else startCheckout(f);
-}
-function updateLockStates() {
-FEATURES.forEach(f => {
-const zone = document.getElementById('zone-' + f);
-const lock = document.getElementById('lock-' + f);
-if (!zone || !lock) return;
-const unlocked = getUnlocked();
-if (unlocked[f]) {
-lock.classList.remove('active');
-zone.classList.add('unlocked');
-return;
-}
-if (!currentUser) {
-lock.classList.add('active');
-zone.classList.remove('unlocked');
-document.getElementById('lock-icon-'  + f).textContent = '🔒';
-document.getElementById('lock-title-' + f).textContent = getLockTitle(f);
-const lang = localStorage.getItem('sl_lang') || 'ar';
-document.getElementById('lock-sub-'   + f).textContent = 
-  f === 'dub' ? (I18N[lang]?.lockSubDubGuest || 'Sign in for free trial (30s)') 
-              : (I18N[lang]?.lockSubGuest || 'Sign in to get 6 free uses');
-document.getElementById('lock-free-'  + f).style.display = 'none';
-document.getElementById('lock-uses-'  + f).style.display = 'none';
-const ab = document.getElementById('lock-action-' + f);
-ab.textContent = I18N[lang]?.lockActionGuest || '👤 Sign in for free uses';
-ab.className = 'lock-buy-hint ' + f + '-btn';
-ab.onclick = () => openAuthDropdown();
-return;
-}
-const left = getUsageLeft(currentUser.email, f);
-if (left === Infinity || left > 0) {
-lock.classList.remove('active');
-zone.classList.add('unlocked');
-} else {
-lock.classList.add('active');
-zone.classList.remove('unlocked');
-document.getElementById('lock-icon-'  + f).textContent = '⛔';
-document.getElementById('lock-title-' + f).textContent = 'انتهت الاستخدامات المجانية';
-const lang = localStorage.getItem('sl_lang') || 'ar';
-document.getElementById('lock-sub-'   + f).textContent = I18N[lang]?.lockSubUsed || 'Purchase feature to continue without limits';
-document.getElementById('lock-free-'  + f).style.display = 'none';
-document.getElementById('lock-uses-'  + f).style.display = 'none';
-const ab = document.getElementById('lock-action-' + f);
-ab.textContent = I18N[lang]?.lockActionBuy || '💎 Buy for $10';
-ab.className = 'lock-buy-hint ' + f + '-btn';
-ab.onclick = () => startCheckout(f);
-}
-});
-}
-
-// ✅ دالة guardedAction المعدلة لدعم الضيوف (6 محاولات مجانية)
-function guardedAction(feature, action) {
-  // إذا ضيف (غير مسجّل)
-  if (!currentUser) {
-    const left = getGuestUsesLeft(feature);
-    if (left <= 0) {
-      openAuthDropdown();
-      const lang = localStorage.getItem('sl_lang') || 'ar';
-      showToast(I18N[lang]?.lockActionGuest || '👤 Sign in for free uses', 'wn');
-      return false;
-    }
-    // خصم استخدام ضيف وتنفيذ الإجراء
-    const newLeft = consumeGuestUse(feature);
-    action();
-    if (newLeft <= 2 && newLeft > 0) {
-      const lang = localStorage.getItem('sl_lang') || 'ar';
-      showToast((I18N[lang]?.toastWarnUses || '⚠️ Only {n} free uses remaining!').replace('{n}', newLeft), 'wn');
-    }
-    return true;
-  }
-  
-  // إذا مسجّل دخول (الكود الأصلي)
-  const left = getUsageLeft(currentUser.email, feature);
-  if (left === Infinity) {
-    action();
-    return true;
-  }
-  if (left <= 0) {
-    updateLockStates();
-    return false;
-  }
-  consumeUse(feature);
-  action();
-  const newLeft = getUsageLeft(currentUser.email, feature);
-  if (newLeft <= 2 && newLeft > 0) {
-    const lang = localStorage.getItem('sl_lang') || 'ar';
-    showToast((I18N[lang]?.toastWarnUses || '⚠️ Only {n} free uses remaining!').replace('{n}', newLeft), 'wn');
-  } else if (newLeft === 0) {
-    setTimeout(() => updateLockStates(), 500);
-  }
-  return true;
-}
-
-async function initAuth() {
-const s = getSession();
-if (s && s.email) {
-const users = getUsers();
-if (users[s.email] && users[s.email].verified) {
-currentUser = { email: s.email, initial: s.email[0].toUpperCase() };
-if (users[s.email].unlocked) {
-setUnlockedState(users[s.email].unlocked);
-}
-} else {
-clearSession();
-}
-}
-renderAuthState();
-syncUIFromUnlockedState();
-updateLockStates();
-if (currentUser) {
-await refreshEntitlements();
-}
-}
-document.addEventListener('click', function(e) {
-const sw = document.getElementById('authSwitcher');
-if (sw && !sw.contains(e.target)) closeAuthDropdown();
-const langSwitcher = document.querySelector('.lang-switcher');
-if (langSwitcher && !langSwitcher.contains(e.target)) {
-document.getElementById('langDropdown').classList.remove('show');
-}
-});
-document.addEventListener('keydown', e => {
-if (e.key === 'Enter') {
-const ld = document.getElementById('authDropdown');
-if (!ld.classList.contains('show')) return;
-const loginActive = document.getElementById('form-login').style.display !== 'none';
-if (loginActive) doLogin();
-else doRegister();
-}
-});
-// =============================================================
-// LEMON SQUEEZY + BACKEND ENTITLEMENTS
-// =============================================================
-const LS_URLS = {
-tts: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/63c47294-0068-4206-a439-b0fca724b098',
-dub: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/f92d46fb-65a6-4e53-bf13-5527cffa4e93',
-srt: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/7e1f55d2-6e06-4525-954f-2306b9b3a20f'
-};
-function startCheckout(product) {
-const baseUrl = LS_URLS[product];
-if (!baseUrl) {
-showToast('❌ منتج غير معروف', 'er');
-return;
-}
-const url = new URL(baseUrl);
-if (currentUser?.email) {
-url.searchParams.set('checkout[email]', currentUser.email);
-url.searchParams.set('checkout[custom][app_user_email]', currentUser.email);
-}
-url.searchParams.set('checkout[custom][feature_hint]', product);
-url.searchParams.set('checkout[custom][source]', 'sl-dubbing-web');
-window.open(url.toString(), '_blank');
-}
-async function refreshEntitlements() {
-if (!currentUser?.email) return;
-try {
-const res = await fetch(
-`${BACKEND_URL}/api/entitlements?email=${encodeURIComponent(currentUser.email)}`,
-{ method: 'GET' }
-);
-if (!res.ok) throw new Error('Failed to load entitlements');
-const data = await res.json();
-const unlocked = data?.unlocked || {};
-setUnlockedState(unlocked);
-const users = getUsers();
-if (users[currentUser.email]) {
-users[currentUser.email].unlocked = { ...(users[currentUser.email].unlocked || {}), ...unlocked };
-saveUsers(users);
-}
-syncUIFromUnlockedState();
-updateLockStates();
-updateUsageUI();
-} catch (err) {
-console.error('refreshEntitlements error:', err);
-}
-}
-function saveUnlocked(product) {
-const u = getUnlocked();
-u[product] = true;
-setUnlockedState(u);
-}
-function applyUnlockStates() {
-const u = getUnlocked();
-if (u.tts) unlockZone('tts', false);
-if (u.dub) unlockZone('dub', false);
-if (u.srt) unlockZone('srt', false);
-}
-function unlockZone(product, animate = true) {
-const zone = document.getElementById('zone-' + product);
-const lock = document.getElementById('lock-' + product);
-if (!zone || !lock) return;
-lock.classList.remove('active');
-zone.classList.add('unlocked');
-if (animate) {
-zone.querySelectorAll('.card').forEach((c, i) => {
-c.style.animationDelay = (i * 0.08) + 's';
-});
-}
-const btn = document.getElementById('btn-' + product);
-if (btn) {
-btn.style.background='linear-gradient(135deg,#059669,#10b981)';
-btn.innerHTML='<span class="btn-text">✅ مفعّل مدى الحياة</span>';
-btn.disabled=true;
-}
-}
-function resetZoneButton(product) {
-const btn = document.getElementById('btn-' + product);
-if (!btn) return;
-btn.disabled = false;
-btn.innerHTML = '<span class="btn-text">💳 شراء الآن</span>';
-if (product === 'tts') btn.style.background = 'linear-gradient(135deg,#4f46e5,#6366f1)';
-if (product === 'dub') btn.style.background = 'linear-gradient(135deg,#d97706,#f59e0b)';
-if (product === 'srt') btn.style.background = 'linear-gradient(135deg,#059669,#10b981)';
-}
-function syncUIFromUnlockedState() {
-const u = getUnlocked();
-['tts', 'dub', 'srt'].forEach(product => {
-const zone = document.getElementById('zone-' + product);
-const lock = document.getElementById('lock-' + product);
-if (!zone || !lock) return;
-if (u[product]) {
-lock.classList.remove('active');
-zone.classList.add('unlocked');
-unlockZone(product, false);
-} else {
-zone.classList.remove('unlocked');
-resetZoneButton(product);
-}
-});
-}
-function showPaymentSuccess(product) {
-saveUnlocked(product);
-if (currentUser) {
-const users = getUsers();
-if (users[currentUser.email]) {
-users[currentUser.email].unlocked = users[currentUser.email].unlocked || {};
-users[currentUser.email].unlocked[product] = true;
-saveUsers(users);
-}
-}
-unlockZone(product, true);
-updateLockStates();
-updateUsageUI();
-showToast('🎉 تم الدفع بنجاح! الميزة مفعّلة مدى الحياة.', 'ok');
-}
-// =============================================================
-// APP LOGIC
-// =============================================================
-const langs = [
-{c:'ar',f:'🇸🇦',n:'العربية',v:'ar'},{c:'en',f:'🇺🇸',n:'English',v:'en'},
-{c:'ru',f:'🇷🇺',n:'Русский',v:'ru'},{c:'tr',f:'🇹🇷',n:'Türkçe',v:'tr'},
-{c:'fr',f:'🇫🇷',n:'Français',v:'fr'},{c:'de',f:'🇩🇪',n:'Deutsch',v:'de'},
-{c:'es',f:'🇪🇸',n:'Español',v:'es'},{c:'zh',f:'🇨🇳',n:'中文',v:'zh'},
-{c:'hi',f:'🇮🇳',n:'हिन्दी',v:'hi'},{c:'fa',f:'🇮🇷',n:'فارسی',v:'fa'},
-{c:'it',f:'🇮🇹',n:'Italiano',v:'it'},{c:'nl',f:'🇳🇱',n:'Nederlands',v:'nl'},
-{c:'sv',f:'🇸🇪',n:'Svenska',v:'sv'},
-];
-let selLang='ar', selDubLang='ar', selTransLang='en';
-let srtData=[], dubCancel=false, dubBlob=null;
-let curUtter=null, speaking=false;
-function buildLangGrid(id, sel, onPick) {
-const g = document.getElementById(id);
-if (!g) return;
-g.innerHTML = langs.map(l => `<button class="lb${l.c===sel?' on':''}" onclick="${onPick}('${l.c}')"><span class="lf">${l.f}</span><span class="lang-text">${l.n}</span></button>`).join('');
-}
-function pickLang(c)      { selLang=c;      buildLangGrid('g1',c,'pickLang');      buildVoices(); }
-function pickDubLang(c)   { selDubLang=c;   buildLangGrid('g2',c,'pickDubLang'); }
-function pickTransLang(c) { selTransLang=c; buildTransGrid(); }
-function buildTransGrid() {
-const g = document.getElementById('transLangs');
-if (!g) return;
-g.innerHTML = langs.map(l => `<button class="tbtn${l.c===selTransLang?' on':''}" onclick="pickTransLang('${l.c}')">${l.f} ${l.n}</button>`).join('');
-}
-function buildVoices() {
-const vs = document.getElementById('vs');
-if (!vs) return;
-const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith(selLang));
-vs.innerHTML = voices.length ? voices.map((v,i)=>`<option value="${i}">${v.name}</option>`).join('') : `<option>افتراضي</option>`;
-}
-function tSpeak() {
-const txt = document.getElementById('ti').value.trim();
-if (!txt) { setSt('s1','⚠️ أدخل نصاً أولاً','er'); return; }
-if (speechSynthesis.speaking) speechSynthesis.cancel();
-const u = new SpeechSynthesisUtterance(txt);
-const voices = speechSynthesis.getVoices().filter(v=>v.lang.startsWith(selLang));
-const vi = parseInt(document.getElementById('vs').value) || 0;
-if (voices[vi]) u.voice = voices[vi];
-u.rate = parseFloat(document.getElementById('rr1').value);
-u.pitch = parseFloat(document.getElementById('pr1').value);
-u.volume = parseFloat(document.getElementById('vr1').value);
-u.lang = selLang;
-u.onstart = () => {
-speaking = true;
-setSt('s1','🔊 جارٍ النطق...','i');
-document.getElementById('wv1').classList.add('on');
-};
-u.onend = () => {
-speaking = false;
-setSt('s1','✅ اكتمل','ok');
-document.getElementById('wv1').classList.remove('on');
-};
-u.onerror = () => {
-speaking = false;
-setSt('s1','❌ خطأ في النطق','er');
-document.getElementById('wv1').classList.remove('on');
-};
-speechSynthesis.speak(u);
-curUtter = u;
-}
-function tPause() { if (speechSynthesis.speaking) speechSynthesis.cancel(); }
-function clrTxt() {
-document.getElementById('ti').value='';
-document.getElementById('cc').textContent='0';
-setSt('s1','👋 اكتب نصاً واضغط نطق','i');
-}
-function ldSRT(e) {
-const f = e.target.files[0];
-if (!f) return;
-const r = new FileReader();
-r.onload = ev => {
-document.getElementById('srtP').value = ev.target.result;
-prsPaste();
-};
-r.readAsText(f,'UTF-8');
-}
-function prsPaste() {
-const raw = document.getElementById('srtP').value.trim();
-if (!raw) { setSt('dubSt','⚠️ لا يوجد محتوى','er'); return; }
-srtData = parseSRT(raw);
-if (!srtData.length) { setSt('dubSt','❌ تعذّر تحليل الملف','er'); return; }
-showSRTInfo();
-document.getElementById('dubCard').style.display='block';
-setSt('dubSt','✅ ' + srtData.length + ' جملة — اضغط توليد','ok');
-}
-function parseSRT(txt) {
-const blocks = txt.trim().split(/\n\s*\n/), out = [];
-blocks.forEach(b => {
-const lines = b.trim().split('\n');
-if (lines.length < 2) return;
-const tLine = lines.find(l => /-->/.test(l));
-if (!tLine) return;
-const [st, et] = tLine.split('-->').map(s=>s.trim());
-const text = lines.filter(l => !/-->/.test(l) && !/^\d+$/.test(l.trim())).join(' ').trim();
-if (text) out.push({ start: toSec(st), end: toSec(et), text });
-});
-return out;
-}
-function toSec(s) {
-const m = s.match(/(\d+):(\d+):(\d+)[,.](\d+)/);
-if (!m) return 0;
-return parseInt(m[1])*3600 + parseInt(m[2])*60 + parseInt(m[3]) + parseInt(m[4])/1000;
-}
-function fmtTime(s) {
-const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60);
-return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-}
-function showSRTInfo() {
-document.getElementById('srtInfo').style.display='block';
-document.getElementById('sCnt').textContent=srtData.length;
-const maxE=srtData.reduce((a,b)=>b.end>a?b.end:a,0);
-document.getElementById('sDur').textContent=fmtTime(maxE);
-const sl=document.getElementById('srtL');
-sl.innerHTML=srtData.map((s,i)=>`<div class="si"><span class="sin">${i+1}</span><span class="sit">${fmtTime(s.start)}</span><span class="sit2">${s.text}</span></div>`).join('');
-}
-function cpySRT() { navigator.clipboard.writeText(srtData.map(s=>s.text).join('\n')).then(()=>showToast('✅ تم النسخ','ok')); }
-async function stDub() {
-setSt('dubSt','⚠️ يتطلب سيرفر backend','wn');
-}
-function cnclDub() { dubCancel=true; }
-function dlRes() {
-if (dubBlob) {
-const a=document.createElement('a');
-a.href=URL.createObjectURL(dubBlob);
-a.download='dubbing.wav';
-a.click();
-}
-}
-async function startTrans() {
-const src=document.getElementById('srcSRT').value.trim();
-if(!src){ setSt('transSt','⚠️ الصق محتوى SRT أولاً','er'); return; }
-setSt('transSt','⏳ جارٍ الترجمة...','i');
-document.getElementById('transRes').style.display='none';
-const blocks=src.trim().split(/\n\s*\n/), translated=[];
-for(const b of blocks){
-const lines=b.trim().split('\n');
-const tLine=lines.find(l=>/-->/.test(l));
-if(!tLine) continue;
-const text=lines.filter(l=>!/-->/.test(l)&&!/^\d+$/.test(l.trim())).join(' ').trim();
-translated.push({time:tLine,text});
-}
-const out=translated.map((b,i)=>`${i+1}\n${b.time}\n${b.text}`).join('\n');
-document.getElementById('transOut').textContent=out;
-document.getElementById('transRes').style.display='block';
-setSt('transSt','✅ تمت الترجمة (stub — يتطلب backend)','ok');
-}
-function copyResult() { navigator.clipboard.writeText(document.getElementById('transOut').textContent).then(()=>showToast('✅ تم النسخ','ok')); }
-function dlTransSRT() {
-const txt=document.getElementById('transOut').textContent;
-const a=document.createElement('a');
-a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
-a.download='translated.srt';
-a.click();
-}
-function pasteSrc() { navigator.clipboard.readText().then(t=>{ document.getElementById('srcSRT').value=t; }).catch(()=>{}); }
-function cleanText() {
-let txt=document.getElementById('cleanInput').value;
-if(!txt.trim()){ setSt('cleanSt','⚠️ الصق نصاً أولاً','er'); return; }
-if(document.getElementById('removeNumbers').checked) txt=txt.replace(/^\d+\s*$/gm,'');
-if(document.getElementById('removeTime').checked) txt=txt.replace(/\d{1,2}:\d{2}:\d{2}[,\.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,\.]\d{3}/g,'');
-if(document.getElementById('removeEmpty').checked) txt=txt.replace(/\n{2,}/g,'\n').trim();
-document.getElementById('cleanOutput').textContent=txt;
-document.getElementById('cleanResult').style.display='block';
-setSt('cleanSt','✅ تم التنظيف','ok');
-}
-function copyClean() { navigator.clipboard.writeText(document.getElementById('cleanOutput').textContent).then(()=>showToast('✅ تم النسخ','ok')); }
-function dlClean() {
-const txt=document.getElementById('cleanOutput').textContent;
-const a=document.createElement('a');
-a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
-a.download='cleaned.txt';
-a.click();
-}
-function pasteClean() { navigator.clipboard.readText().then(t=>{ document.getElementById('cleanInput').value=t; }).catch(()=>{}); }
-function updateFilters() {
-document.getElementById('speedVal').textContent=parseFloat(document.getElementById('filterSpeed').value).toFixed(1)+'x';
-document.getElementById('pitchVal').textContent=parseFloat(document.getElementById('filterPitch').value).toFixed(1);
-document.getElementById('bassVal').textContent=document.getElementById('eqBass').value+'dB';
-document.getElementById('midVal').textContent=document.getElementById('eqMid').value+'dB';
-document.getElementById('trebleVal').textContent=document.getElementById('eqTreble').value+'dB';
-}
-function resetFilters() {
-['filterSpeed','filterPitch'].forEach(id=>document.getElementById(id).value=1);
-['eqBass','eqMid','eqTreble'].forEach(id=>document.getElementById(id).value=0);
-updateFilters();
-}
-function applyPreset(p) {
-const presets={male:{pitch:.7,speed:1},radio:{pitch:1.1,speed:1.1},warm:{pitch:.9,speed:.9},fast:{pitch:1,speed:1.6}};
-const pr=presets[p];
-if(!pr) return;
-document.getElementById('filterPitch').value=pr.pitch;
-document.getElementById('filterSpeed').value=pr.speed;
-updateFilters();
-}
-document.getElementById('rr1').oninput=function(){document.getElementById('rv1').textContent=parseFloat(this.value).toFixed(1)+'x';}
-document.getElementById('pr1').oninput=function(){document.getElementById('pv1').textContent=parseFloat(this.value).toFixed(1);}
-document.getElementById('vr1').oninput=function(){document.getElementById('vv1').textContent=Math.round(this.value*100)+'%';}
-document.getElementById('rr2').oninput=function(){document.getElementById('rv2').textContent=parseFloat(this.value).toFixed(1)+'x';}
-document.getElementById('vr2').oninput=function(){document.getElementById('vv2').textContent=parseFloat(this.value).toFixed(1);}
-document.getElementById('ti').oninput=function(){document.getElementById('cc').textContent=this.value.length;}
-function setSt(id,msg,cls){
-const el=document.getElementById(id);
-if(!el)return;
-el.textContent=msg;
-el.className='st '+cls;
-}
-function toggleLang() { document.getElementById('langDropdown').classList.toggle('show'); }
-
-// ✅ دالة setLang المعدلة لتطبيق الترجمة على كل الواجهة
+// 🌍 دالة تغيير اللغة
 function setLang(l) {
   document.querySelectorAll('.lang-option').forEach(o => 
     o.classList.toggle('active', o.dataset.lang === l)
@@ -1491,34 +1031,528 @@ function setLang(l) {
   document.getElementById('langDropdown').classList.remove('show');
   document.documentElement.lang = l;
   document.documentElement.dir = ['ar','fa','he'].includes(l) ? 'rtl' : 'ltr';
-  // 🔥 تطبيق الترجمات على كل العناصر
   applyAllTranslations(l);
-  // حفظ التفضيل
   localStorage.setItem('sl_lang', l);
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
-checkVerificationToken();
-buildLangGrid('g1', selLang, 'pickLang');
-buildLangGrid('g2', selDubLang, 'pickDubLang');
-buildTransGrid();
-buildVoices();
-speechSynthesis.onvoiceschanged = buildVoices;
-syncUIFromUnlockedState();
-await initAuth();
-// 🔥 تحميل اللغة المحفوظة وتطبيقها
-const savedLang = localStorage.getItem('sl_lang') || 'ar';
-setLang(savedLang);
-const urlParams = new URLSearchParams(window.location.search);
-const paid = urlParams.get('paid');
-const feature = urlParams.get('feature');
-if (paid === '1' && feature && ['tts', 'dub', 'srt'].includes(feature)) {
-showToast('✅ تم استلام العودة من صفحة الدفع', 'ok');
-if (currentUser) await refreshEntitlements();
-window.history.replaceState({}, document.title, window.location.pathname);
+// ⏰ نظام OTP مع العد التنازلي
+let otpTimer = null;
+let otpCode = '';
+let currentOTPEmail = '';
+
+function showOTPModal(email) {
+  currentOTPEmail = email;
+  otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  localStorage.setItem('otp_' + email, otpCode);
+  localStorage.setItem('otp_time_' + email, Date.now());
+  console.log('📧 كود التفعيل لـ ' + email + ': ' + otpCode);
+  
+  const lang = localStorage.getItem('sl_lang') || 'ar';
+  const t = I18N[lang] || I18N.ar;
+  
+  const modal = document.createElement('div');
+  modal.id = 'otpModal';
+  modal.className = 'otp-modal';
+  modal.innerHTML = `
+    <div class="otp-modal-content">
+      <span class="otp-icon">📧</span>
+      <h2 class="otp-title" data-i18n="otpTitle">${t.otpTitle}</h2>
+      <p class="otp-desc">
+        <span data-i18n="otpDesc">${t.otpDesc}</span><br>
+        <strong class="otp-email">${email}</strong>
+      </p>
+      <input type="text" id="otpInput" class="otp-input" maxlength="6" placeholder="000000" data-i18n-placeholder="otpCode">
+      <div class="otp-timer">
+        <span data-i18n="otpTimer">${t.otpTimer}</span>: <span id="countdown" class="otp-timer-countdown">05:00</span>
+      </div>
+      <button onclick="verifyOTP()" class="otp-btn-verify" data-i18n="otpVerify">${t.otpVerify}</button>
+      <button onclick="resendOTP()" id="resendBtn" class="otp-btn-resend" disabled data-i18n="otpResend">${t.otpResend}</button>
+      <button onclick="closeOTP()" class="otp-btn-cancel">❌ إلغاء</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  startOTPCountdown(300);
+  setTimeout(() => document.getElementById('otpInput').focus(), 100);
 }
+
+function startOTPCountdown(seconds) {
+  let remaining = seconds;
+  const timerEl = document.getElementById('countdown');
+  const resendBtn = document.getElementById('resendBtn');
+  const lang = localStorage.getItem('sl_lang') || 'ar';
+  const t = I18N[lang] || I18N.ar;
+  
+  if (otpTimer) clearInterval(otpTimer);
+  
+  otpTimer = setInterval(() => {
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    timerEl.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    
+    if (remaining <= 0) {
+      clearInterval(otpTimer);
+      resendBtn.disabled = false;
+      resendBtn.removeAttribute('disabled');
+    }
+    remaining--;
+  }, 1000);
+}
+
+function verifyOTP() {
+  const input = document.getElementById('otpInput').value;
+  const savedOTP = localStorage.getItem('otp_' + currentOTPEmail);
+  const lang = localStorage.getItem('sl_lang') || 'ar';
+  const t = I18N[lang] || I18N.ar;
+  
+  if (input === savedOTP) {
+    const users = getUsers();
+    if (users[currentOTPEmail]) {
+      users[currentOTPEmail].verified = true;
+      saveUsers(users);
+    }
+    localStorage.removeItem('otp_' + currentOTPEmail);
+    localStorage.removeItem('otp_time_' + currentOTPEmail);
+    closeOTP();
+    showToast('✅ ' + t.otpSuccess, 'ok');
+    setTimeout(() => {
+      document.getElementById('login-email').value = currentOTPEmail;
+      doLogin();
+    }, 1000);
+  } else {
+    const inputEl = document.getElementById('otpInput');
+    inputEl.classList.add('error');
+    setTimeout(() => inputEl.classList.remove('error'), 500);
+    showToast(t.otpWrong, 'er');
+  }
+}
+
+function resendOTP() {
+  otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  localStorage.setItem('otp_' + currentOTPEmail, otpCode);
+  localStorage.setItem('otp_time_' + currentOTPEmail, Date.now());
+  console.log('📧 كود التفعيل الجديد: ' + otpCode);
+  startOTPCountdown(300);
+  showToast('📩 تم إرسال كود جديد!', 'ok');
+  document.getElementById('otpInput').value = '';
+  document.getElementById('otpInput').focus();
+}
+
+function closeOTP() {
+  if (otpTimer) clearInterval(otpTimer);
+  const modal = document.getElementById('otpModal');
+  if (modal) {
+    modal.style.animation = 'modalFadeOut 0.3s ease';
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+// =============================================================
+// باقي الكود الأصلي (CONFIG + AUTH + APP LOGIC)
+// =============================================================
+const BACKEND_URL = 'https://YOUR-BACKEND-ON-RENDER.onrender.com';
+const FREE_LIMIT = 6;
+const AUTH_KEY = 'alhashmi_users';
+const SESSION_KEY = 'alhashmi_session';
+const UNLOCK_KEY = 'alhashmi_unlocked';
+const FEATURES = ['tts', 'dub', 'srt'];
+
+function getUsers()   { try { return JSON.parse(localStorage.getItem(AUTH_KEY) || '{}'); } catch(e) { return {}; } }
+function saveUsers(u) { try { localStorage.setItem(AUTH_KEY, JSON.stringify(u)); } catch(e) {} }
+function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch(e) { return null; } }
+function saveSession(s) { try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch(e) {} }
+function clearSession() { try { localStorage.removeItem(SESSION_KEY); } catch(e) {} }
+function getUnlocked() { try { return JSON.parse(localStorage.getItem(UNLOCK_KEY) || '{}'); } catch(e) { return {}; } }
+function setUnlockedState(u) { try { localStorage.setItem(UNLOCK_KEY, JSON.stringify(u || {})); } catch(e) {} }
+function clearUnlocked() { try { localStorage.removeItem(UNLOCK_KEY); } catch(e) {} }
+
+let currentUser = null;
+
+function simpleHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+  return h.toString(36);
+}
+
+function getUserData(email) { const users = getUsers(); return users[email] || null; }
+
+function getUsageLeft(email, feature) {
+  const u = getUserData(email);
+  if (!u) return 0;
+  const localUnlocked = getUnlocked();
+  if ((u.unlocked && u.unlocked[feature]) || localUnlocked[feature]) return Infinity;
+  return Math.max(0, FREE_LIMIT - ((u.usage && u.usage[feature]) || 0));
+}
+
+function consumeUse(feature) {
+  if (!currentUser) return false;
+  const users = getUsers();
+  const u = users[currentUser.email];
+  if (!u) return false;
+  const localUnlocked = getUnlocked();
+  if ((u.unlocked && u.unlocked[feature]) || localUnlocked[feature]) return true;
+  u.usage = u.usage || {};
+  u.usage[feature] = (u.usage[feature] || 0) + 1;
+  saveUsers(users);
+  updateUsageUI();
+  return true;
+}
+
+function showAuthMsg(form, msg, type) {
+  const el = document.getElementById(form + '-msg');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'auth-msg ' + type;
+}
+
+function showToast(msg, type) {
+  const colors = {ok:'#059669,#10b981',er:'#dc2626,#ef4444',wn:'#d97706,#f59e0b'};
+  const c = colors[type] || colors.ok;
+  const n = document.createElement('div');
+  n.style.cssText = `position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,${c});color:white;padding:11px 22px;border-radius:12px;font-weight:700;font-size:.82rem;box-shadow:0 8px 30px rgba(0,0,0,.4);transition:opacity .5s;white-space:nowrap`;
+  n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(() => {n.style.opacity='0';setTimeout(()=>n.remove(),500);}, 2800);
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('on', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('on', tab === 'register');
+}
+
+function toggleAuthDropdown() {
+  document.getElementById('authDropdown').classList.toggle('show');
+  document.getElementById('langDropdown').classList.remove('show');
+}
+
+function openAuthDropdown() {
+  document.getElementById('authDropdown').classList.add('show');
+  document.getElementById('langDropdown').classList.remove('show');
+}
+
+function closeAuthDropdown() {
+  document.getElementById('authDropdown').classList.remove('show');
+}
+
+function doRegister() {
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const lang = localStorage.getItem('sl_lang') || 'ar';
+  const t = I18N[lang] || I18N.ar;
+  
+  if (!email || !email.includes('@')) {showAuthMsg('register', '⚠️ ' + t.email, 'er');return;}
+  if (!email.endsWith('@gmail.com')) {showAuthMsg('register', '⚠️ Gmail only', 'er');return;}
+  if (pass.length < 8) {showAuthMsg('register', '⚠️ 8 chars min', 'er');return;}
+  if (pass !== pass2) {showAuthMsg('register', '⚠️ ' + t.confirmPass, 'er');return;}
+  
+  const users = getUsers();
+  if (users[email]) {showAuthMsg('register', '⚠️ Exists', 'er');return;}
+  
+  const btn = document.getElementById('registerBtn');
+  btn.classList.add('loading');btn.disabled = true;
+  
+  setTimeout(() => {
+    const token = Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
+    users[email] = {hash: simpleHash(pass),usage: { tts:0, dub:0, srt:0 },unlocked: { tts:false, dub:false, srt:false },createdAt: Date.now(),verified: false,token: token};
+    saveUsers(users);
+    btn.classList.remove('loading');btn.disabled = false;
+    showOTPModal(email);
+  }, 600);
+}
+
+function checkVerificationToken() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('verify');
+  if (!token) return;
+  const users = getUsers();
+  let verified = false;let verifiedEmail = '';
+  for (let email in users) {
+    if (users[email].token === token && !users[email].verified) {
+      users[email].verified = true;delete users[email].token;saveUsers(users);
+      verified = true;verifiedEmail = email;break;
+    }
+  }
+  if (verified) {showToast('🎉 ' + verifiedEmail, 'ok');setTimeout(() => {openAuthDropdown();switchAuthTab('login');document.getElementById('login-email').value = verifiedEmail;}, 900);}
+  else {showToast('❌ Invalid', 'er');}
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('login-pass').value;
+  if (!email || !email.includes('@')) {showAuthMsg('login', '⚠️ Email', 'er');return;}
+  if (!pass) {showAuthMsg('login', '⚠️ Password', 'er');return;}
+  const btn = document.getElementById('loginBtn');
+  btn.classList.add('loading');btn.disabled = true;
+  setTimeout(async () => {
+    const users = getUsers();const u = users[email];
+    if (!u || u.hash !== simpleHash(pass)) {showAuthMsg('login', '❌ Wrong', 'er');btn.classList.remove('loading');btn.disabled = false;return;}
+    if (!u.verified) {showAuthMsg('login', '⚠️ Verify first', 'er');btn.classList.remove('loading');btn.disabled = false;return;}
+    await loginUser(email);showAuthMsg('login', '✅ Welcome!', 'ok');
+    btn.classList.remove('loading');btn.disabled = false;
+    setTimeout(() => closeAuthDropdown(), 900);
+  }, 600);
+}
+
+async function loginUser(email) {
+  saveSession({ email });currentUser = { email, initial: email[0].toUpperCase() };
+  const users = getUsers();if (users[email] && users[email].unlocked) {setUnlockedState(users[email].unlocked);}
+  renderAuthState();syncUIFromUnlockedState();updateLockStates();updateUsageUI();
+  await refreshEntitlements();
+}
+
+function logoutUser() {clearSession();currentUser = null;clearUnlocked();renderAuthState();updateLockStates();closeAuthDropdown();}
+
+function renderAuthState() {
+  const loggedIn = !!currentUser;
+  document.getElementById('authBtnLabel').textContent = loggedIn ? currentUser.email.split('@')[0] : 'تسجيل الدخول';
+  const btn = document.getElementById('authToggleBtn');const svgIcon = btn.querySelector('svg:first-child');
+  let avatarEl = btn.querySelector('.auth-avatar');
+  if (loggedIn) {
+    if (!avatarEl) {avatarEl = document.createElement('span');avatarEl.className = 'auth-avatar';btn.insertBefore(avatarEl, btn.firstChild);if (svgIcon) svgIcon.style.display = 'none';}
+    avatarEl.textContent = currentUser.initial;document.getElementById('userAvatarLg').textContent = currentUser.initial;
+  } else {if (avatarEl) avatarEl.remove();if (svgIcon) svgIcon.style.display = '';}
+  document.getElementById('userPanel').style.display = loggedIn ? 'block' : 'none';
+  document.getElementById('authForms').style.display = loggedIn ? 'none' : 'block';
+  if (loggedIn) {document.getElementById('userEmailDisplay').textContent = currentUser.email;updateUsageUI();}
+}
+
+function updateUsageUI() {
+  if (!currentUser) return;
+  const users = getUsers();const u = users[currentUser.email];if (!u) return;
+  const localUnlocked = getUnlocked();
+  FEATURES.forEach(f => {
+    const unlimited = (u.unlocked && u.unlocked[f]) || localUnlocked[f];
+    const used = (u.usage && u.usage[f]) || 0;const left = unlimited ? Infinity : Math.max(0, FREE_LIMIT - used);
+    const pct = unlimited ? 100 : (left / FREE_LIMIT) * 100;
+    const ucEl = document.getElementById('uc-' + f);const ubEl = document.getElementById('ub-' + f);
+    if (ucEl) {if (unlimited) {ucEl.textContent = '∞ مفتوح';ucEl.className = 'usage-count unlimited';} else if (left > 0) {ucEl.textContent = left + '/' + FREE_LIMIT;ucEl.className = 'usage-count has-uses';} else {ucEl.textContent = '0/' + FREE_LIMIT + ' انتهت';ucEl.className = 'usage-count no-uses';}}
+    if (ubEl) ubEl.style.width = Math.max(0, pct) + '%';
+  });
+  const anyUnlocked = FEATURES.some(f => (u.unlocked && u.unlocked[f]) || localUnlocked[f]);
+  document.getElementById('userPlanBadge').textContent = anyUnlocked ? '✨ حساب مدفوع' : '🎁 خطة مجانية (6 استخدامات/ميزة)';
+}
+
+function getLockTitle(f) {return {tts:'نطق النص — مقفل',dub:'الدبلجة — مقفلة',srt:'مترجم SRT — مقفل'}[f];}
+function getBuyLabel(f) {return {tts:'💎 اشترِ مقابل $10',dub:'🚀 اشترِ مقابل $50',srt:'🌍 اشترِ مقابل $10'}[f];}
+function lockAction(f) {if (!currentUser) openAuthDropdown();else startCheckout(f);}
+
+function updateLockStates() {
+  FEATURES.forEach(f => {
+    const zone = document.getElementById('zone-' + f);const lock = document.getElementById('lock-' + f);
+    if (!zone || !lock) return;
+    const unlocked = getUnlocked();
+    if (unlocked[f]) {lock.classList.remove('active');zone.classList.add('unlocked');return;}
+    if (!currentUser) {
+      lock.classList.add('active');zone.classList.remove('unlocked');
+      document.getElementById('lock-icon-'  + f).textContent = '🔒';
+      document.getElementById('lock-title-' + f).textContent = getLockTitle(f);
+      document.getElementById('lock-sub-'   + f).textContent = f === 'dub' ? 'سجّل للتجربة المجانية (30 ث) أو اشترِ للملف الكامل' : 'سجّل دخولك للحصول على 6 استخدامات مجانية';
+      document.getElementById('lock-free-'  + f).style.display = 'none';
+      document.getElementById('lock-uses-'  + f).style.display = 'none';
+      const ab = document.getElementById('lock-action-' + f);ab.textContent = '👤 سجّل للاستخدام المجاني';ab.className = 'lock-buy-hint ' + f + '-btn';ab.onclick = () => openAuthDropdown();
+      return;
+    }
+    const left = getUsageLeft(currentUser.email, f);
+    if (left === Infinity || left > 0) {lock.classList.remove('active');zone.classList.add('unlocked');}
+    else {
+      lock.classList.add('active');zone.classList.remove('unlocked');
+      document.getElementById('lock-icon-'  + f).textContent = '⛔';
+      document.getElementById('lock-title-' + f).textContent = 'انتهت الاستخدامات المجانية';
+      document.getElementById('lock-sub-'   + f).textContent = 'اشترِ الميزة للاستمرار بدون قيود';
+      document.getElementById('lock-free-'  + f).style.display = 'none';
+      document.getElementById('lock-uses-'  + f).style.display = 'none';
+      const ab = document.getElementById('lock-action-' + f);ab.textContent = getBuyLabel(f);ab.className = 'lock-buy-hint ' + f + '-btn';ab.onclick = () => startCheckout(f);
+    }
+  });
+}
+
+function guardedAction(feature, action) {
+  if (!currentUser) {openAuthDropdown();return false;}
+  const left = getUsageLeft(currentUser.email, feature);
+  if (left === Infinity) {action();return true;}
+  if (left <= 0) {updateLockStates();return false;}
+  consumeUse(feature);action();
+  const newLeft = getUsageLeft(currentUser.email, feature);
+  if (newLeft <= 2 && newLeft > 0) {showToast('⚠️ تبقّى ' + newLeft + ' استخدام مجاني فقط!', 'wn');}
+  else if (newLeft === 0) {setTimeout(() => updateLockStates(), 500);}
+  return true;
+}
+
+async function initAuth() {
+  const s = getSession();
+  if (s && s.email) {const users = getUsers();if (users[s.email] && users[s.email].verified) {currentUser = { email: s.email, initial: s.email[0].toUpperCase() };if (users[s.email].unlocked) {setUnlockedState(users[s.email].unlocked);}} else {clearSession();}}
+  renderAuthState();syncUIFromUnlockedState();updateLockStates();
+  if (currentUser) {await refreshEntitlements();}
+}
+
+document.addEventListener('click', function(e) {
+  const sw = document.getElementById('authSwitcher');if (sw && !sw.contains(e.target)) closeAuthDropdown();
+  const langSwitcher = document.querySelector('.lang-switcher');if (langSwitcher && !langSwitcher.contains(e.target)) {document.getElementById('langDropdown').classList.remove('show');}
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {const ld = document.getElementById('authDropdown');if (!ld.classList.contains('show')) return;const loginActive = document.getElementById('form-login').style.display !== 'none';if (loginActive) doLogin();else doRegister();}
+});
+
+const LS_URLS = {tts: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/63c47294-0068-4206-a439-b0fca724b098',dub: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/f92d46fb-65a6-4e53-bf13-5527cffa4e93',srt: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/7e1f55d2-6e06-4525-954f-2306b9b3a20f'};
+
+function startCheckout(product) {
+  const baseUrl = LS_URLS[product];if (!baseUrl) {showToast('❌ منتج غير معروف', 'er');return;}
+  const url = new URL(baseUrl);
+  if (currentUser?.email) {url.searchParams.set('checkout[email]', currentUser.email);url.searchParams.set('checkout[custom][app_user_email]', currentUser.email);}
+  url.searchParams.set('checkout[custom][feature_hint]', product);url.searchParams.set('checkout[custom][source]', 'sl-dubbing-web');
+  window.open(url.toString(), '_blank');
+}
+
+async function refreshEntitlements() {
+  if (!currentUser?.email) return;
+  try {const res = await fetch(`${BACKEND_URL}/api/entitlements?email=${encodeURIComponent(currentUser.email)}`, { method: 'GET' });if (!res.ok) throw new Error('Failed');const data = await res.json();const unlocked = data?.unlocked || {};setUnlockedState(unlocked);const users = getUsers();if (users[currentUser.email]) {users[currentUser.email].unlocked = { ...(users[currentUser.email].unlocked || {}), ...unlocked };saveUsers(users);}syncUIFromUnlockedState();updateLockStates();updateUsageUI();}
+  catch (err) {console.error('refreshEntitlements error:', err);}
+}
+
+function saveUnlocked(product) {const u = getUnlocked();u[product] = true;setUnlockedState(u);}
+function applyUnlockStates() {const u = getUnlocked();if (u.tts) unlockZone('tts', false);if (u.dub) unlockZone('dub', false);if (u.srt) unlockZone('srt', false);}
+
+function unlockZone(product, animate = true) {
+  const zone = document.getElementById('zone-' + product);const lock = document.getElementById('lock-' + product);
+  if (!zone || !lock) return;
+  lock.classList.remove('active');zone.classList.add('unlocked');
+  if (animate) {zone.querySelectorAll('.card').forEach((c, i) => {c.style.animationDelay = (i * 0.08) + 's';});}
+  const btn = document.getElementById('btn-' + product);
+  if (btn) {btn.style.background='linear-gradient(135deg,#059669,#10b981)';btn.innerHTML='<span class="btn-text">✅ مفعّل مدى الحياة</span>';btn.disabled=true;}
+}
+
+function resetZoneButton(product) {
+  const btn = document.getElementById('btn-' + product);if (!btn) return;
+  btn.disabled = false;btn.innerHTML = '<span class="btn-text">💳 شراء الآن</span>';
+  if (product === 'tts') btn.style.background = 'linear-gradient(135deg,#4f46e5,#6366f1)';
+  if (product === 'dub') btn.style.background = 'linear-gradient(135deg,#d97706,#f59e0b)';
+  if (product === 'srt') btn.style.background = 'linear-gradient(135deg,#059669,#10b981)';
+}
+
+function syncUIFromUnlockedState() {
+  const u = getUnlocked();
+  ['tts', 'dub', 'srt'].forEach(product => {
+    const zone = document.getElementById('zone-' + product);const lock = document.getElementById('lock-' + product);
+    if (!zone || !lock) return;
+    if (u[product]) {lock.classList.remove('active');zone.classList.add('unlocked');unlockZone(product, false);}
+    else {zone.classList.remove('unlocked');resetZoneButton(product);}
+  });
+}
+
+function showPaymentSuccess(product) {
+  saveUnlocked(product);
+  if (currentUser) {const users = getUsers();if (users[currentUser.email]) {users[currentUser.email].unlocked = users[currentUser.email].unlocked || {};users[currentUser.email].unlocked[product] = true;saveUsers(users);}}
+  unlockZone(product, true);updateLockStates();updateUsageUI();
+  showToast('🎉 تم الدفع بنجاح! الميزة مفعّلة مدى الحياة.', 'ok');
+}
+
+const langs = [{c:'ar',f:'🇸🇦',n:'العربية',v:'ar'},{c:'en',f:'🇺🇸',n:'English',v:'en'},{c:'ru',f:'🇷🇺',n:'Русский',v:'ru'},{c:'tr',f:'🇹🇷',n:'Türkçe',v:'tr'},{c:'fr',f:'🇫🇷',n:'Français',v:'fr'},{c:'de',f:'🇩🇪',n:'Deutsch',v:'de'},{c:'es',f:'🇪🇸',n:'Español',v:'es'},{c:'zh',f:'🇨🇳',n:'中文',v:'zh'},{c:'hi',f:'🇮🇳',n:'हिन्दी',v:'hi'},{c:'fa',f:'🇮🇷',n:'فارسی',v:'fa'},{c:'it',f:'🇮🇹',n:'Italiano',v:'it'},{c:'nl',f:'🇳🇱',n:'Nederlands',v:'nl'},{c:'sv',f:'🇸🇪',n:'Svenska',v:'sv'}];
+let selLang='ar', selDubLang='ar', selTransLang='en';
+let srtData=[], dubCancel=false, dubBlob=null;
+let curUtter=null, speaking=false;
+
+function buildLangGrid(id, sel, onPick) {const g = document.getElementById(id);if (!g) return;g.innerHTML = langs.map(l => `<button class="lb${l.c===sel?' on':''}" onclick="${onPick}('${l.c}')"><span class="lf">${l.f}</span><span class="lang-text">${l.n}</span></button>`).join('');}
+function pickLang(c)      { selLang=c;      buildLangGrid('g1',c,'pickLang');      buildVoices(); }
+function pickDubLang(c)   { selDubLang=c;   buildLangGrid('g2',c,'pickDubLang'); }
+function pickTransLang(c) { selTransLang=c; buildTransGrid(); }
+function buildTransGrid() {const g = document.getElementById('transLangs');if (!g) return;g.innerHTML = langs.map(l => `<button class="tbtn${l.c===selTransLang?' on':''}" onclick="pickTransLang('${l.c}')">${l.f} ${l.n}</button>`).join('');}
+function buildVoices() {const vs = document.getElementById('vs');if (!vs) return;const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith(selLang));vs.innerHTML = voices.length ? voices.map((v,i)=>`<option value="${i}">${v.name}</option>`).join('') : `<option>افتراضي</option>`;}
+
+function tSpeak() {
+  const txt = document.getElementById('ti').value.trim();if (!txt) { setSt('s1','⚠️ أدخل نصاً أولاً','er'); return; }
+  if (speechSynthesis.speaking) speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(txt);const voices = speechSynthesis.getVoices().filter(v=>v.lang.startsWith(selLang));
+  const vi = parseInt(document.getElementById('vs').value) || 0;if (voices[vi]) u.voice = voices[vi];
+  u.rate = parseFloat(document.getElementById('rr1').value);u.pitch = parseFloat(document.getElementById('pr1').value);u.volume = parseFloat(document.getElementById('vr1').value);u.lang = selLang;
+  u.onstart = () => {speaking = true;setSt('s1','🔊 جارٍ النطق...','i');document.getElementById('wv1').classList.add('on');};
+  u.onend = () => {speaking = false;setSt('s1','✅ اكتمل','ok');document.getElementById('wv1').classList.remove('on');};
+  u.onerror = () => {speaking = false;setSt('s1','❌ خطأ في النطق','er');document.getElementById('wv1').classList.remove('on');};
+  speechSynthesis.speak(u);curUtter = u;
+}
+
+function tPause() { if (speechSynthesis.speaking) speechSynthesis.cancel(); }
+function clrTxt() {document.getElementById('ti').value='';document.getElementById('cc').textContent='0';setSt('s1','👋 اكتب نصاً واضغط نطق','i');}
+function ldSRT(e) {const f = e.target.files[0];if (!f) return;const r = new FileReader();r.onload = ev => {document.getElementById('srtP').value = ev.target.result;prsPaste();};r.readAsText(f,'UTF-8');}
+
+function prsPaste() {
+  const raw = document.getElementById('srtP').value.trim();if (!raw) { setSt('dubSt','⚠️ لا يوجد محتوى','er'); return; }
+  srtData = parseSRT(raw);if (!srtData.length) { setSt('dubSt','❌ تعذّر تحليل الملف','er'); return; }
+  showSRTInfo();document.getElementById('dubCard').style.display='block';setSt('dubSt','✅ ' + srtData.length + ' جملة — اضغط توليد','ok');
+}
+
+function parseSRT(txt) {const blocks = txt.trim().split(/\n\s*\n/), out = [];blocks.forEach(b => {const lines = b.trim().split('\n');if (lines.length < 2) return;const tLine = lines.find(l => /-->/.test(l));if (!tLine) return;const [st, et] = tLine.split('-->').map(s=>s.trim());const text = lines.filter(l => !/-->/.test(l) && !/^\d+$/.test(l.trim())).join(' ').trim();if (text) out.push({ start: toSec(st), end: toSec(et), text });});return out;}
+function toSec(s) {const m = s.match(/(\d+):(\d+):(\d+)[,.](\d+)/);if (!m) return 0;return parseInt(m[1])*3600 + parseInt(m[2])*60 + parseInt(m[3]) + parseInt(m[4])/1000;}
+function fmtTime(s) {const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60);return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+
+function showSRTInfo() {
+  document.getElementById('srtInfo').style.display='block';document.getElementById('sCnt').textContent=srtData.length;
+  const maxE=srtData.reduce((a,b)=>b.end>a?b.end:a,0);document.getElementById('sDur').textContent=fmtTime(maxE);
+  const sl=document.getElementById('srtL');sl.innerHTML=srtData.map((s,i)=>`<div class="si"><span class="sin">${i+1}</span><span class="sit">${fmtTime(s.start)}</span><span class="sit2">${s.text}</span></div>`).join('');
+}
+
+function cpySRT() { navigator.clipboard.writeText(srtData.map(s=>s.text).join('\n')).then(()=>showToast('✅ تم النسخ','ok')); }
+async function stDub() {setSt('dubSt','⚠️ يتطلب سيرفر backend','wn');}
+function cnclDub() { dubCancel=true; }
+function dlRes() {if (dubBlob) {const a=document.createElement('a');a.href=URL.createObjectURL(dubBlob);a.download='dubbing.wav';a.click();}}
+
+async function startTrans() {
+  const src=document.getElementById('srcSRT').value.trim();if(!src){ setSt('transSt','⚠️ الصق محتوى SRT أولاً','er'); return; }
+  setSt('transSt','⏳ جارٍ الترجمة...','i');document.getElementById('transRes').style.display='none';
+  const blocks=src.trim().split(/\n\s*\n/), translated=[];for(const b of blocks){const lines=b.trim().split('\n');const tLine=lines.find(l=>/-->/.test(l));if(!tLine) continue;const text=lines.filter(l=>!/-->/.test(l)&&!/^\d+$/.test(l.trim())).join(' ').trim();translated.push({time:tLine,text});}
+  const out=translated.map((b,i)=>`${i+1}\n${b.time}\n${b.text}`).join('\n');
+  document.getElementById('transOut').textContent=out;document.getElementById('transRes').style.display='block';
+  setSt('transSt','✅ تمت الترجمة (stub — يتطلب backend)','ok');
+}
+
+function copyResult() { navigator.clipboard.writeText(document.getElementById('transOut').textContent).then(()=>showToast('✅ تم النسخ','ok')); }
+function dlTransSRT() {const txt=document.getElementById('transOut').textContent;const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);a.download='translated.srt';a.click();}
+function pasteSrc() { navigator.clipboard.readText().then(t=>{ document.getElementById('srcSRT').value=t; }).catch(()=>{}); }
+
+function cleanText() {
+  let txt=document.getElementById('cleanInput').value;if(!txt.trim()){ setSt('cleanSt','⚠️ الصق نصاً أولاً','er'); return; }
+  if(document.getElementById('removeNumbers').checked) txt=txt.replace(/^\d+\s*$/gm,'');
+  if(document.getElementById('removeTime').checked) txt=txt.replace(/\d{1,2}:\d{2}:\d{2}[,\.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,\.]\d{3}/g,'');
+  if(document.getElementById('removeEmpty').checked) txt=txt.replace(/\n{2,}/g,'\n').trim();
+  document.getElementById('cleanOutput').textContent=txt;document.getElementById('cleanResult').style.display='block';
+  setSt('cleanSt','✅ تم التنظيف','ok');
+}
+
+function copyClean() { navigator.clipboard.writeText(document.getElementById('cleanOutput').textContent).then(()=>showToast('✅ تم النسخ','ok')); }
+function dlClean() {const txt=document.getElementById('cleanOutput').textContent;const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);a.download='cleaned.txt';a.click();}
+function pasteClean() { navigator.clipboard.readText().then(t=>{ document.getElementById('cleanInput').value=t; }).catch(()=>{}); }
+
+function updateFilters() {
+  document.getElementById('speedVal').textContent=parseFloat(document.getElementById('filterSpeed').value).toFixed(1)+'x';
+  document.getElementById('pitchVal').textContent=parseFloat(document.getElementById('filterPitch').value).toFixed(1);
+  document.getElementById('bassVal').textContent=document.getElementById('eqBass').value+'dB';
+  document.getElementById('midVal').textContent=document.getElementById('eqMid').value+'dB';
+  document.getElementById('trebleVal').textContent=document.getElementById('eqTreble').value+'dB';
+}
+
+function resetFilters() {['filterSpeed','filterPitch'].forEach(id=>document.getElementById(id).value=1);['eqBass','eqMid','eqTreble'].forEach(id=>document.getElementById(id).value=0);updateFilters();}
+function applyPreset(p) {const presets={male:{pitch:.7,speed:1},radio:{pitch:1.1,speed:1.1},warm:{pitch:.9,speed:.9},fast:{pitch:1,speed:1.6}};const pr=presets[p];if(!pr) return;document.getElementById('filterPitch').value=pr.pitch;document.getElementById('filterSpeed').value=pr.speed;updateFilters();}
+
+document.getElementById('rr1').oninput=function(){document.getElementById('rv1').textContent=parseFloat(this.value).toFixed(1)+'x';}
+document.getElementById('pr1').oninput=function(){document.getElementById('pv1').textContent=parseFloat(this.value).toFixed(1);}
+document.getElementById('vr1').oninput=function(){document.getElementById('vv1').textContent=Math.round(this.value*100)+'%';}
+document.getElementById('rr2').oninput=function(){document.getElementById('rv2').textContent=parseFloat(this.value).toFixed(1)+'x';}
+document.getElementById('vr2').oninput=function(){document.getElementById('vv2').textContent=parseFloat(this.value).toFixed(1);}
+document.getElementById('ti').oninput=function(){document.getElementById('cc').textContent=this.value.length;}
+
+function setSt(id,msg,cls){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className='st '+cls;}
+function toggleLang() { document.getElementById('langDropdown').classList.toggle('show'); }
+
+window.addEventListener('DOMContentLoaded', async () => {
+  checkVerificationToken();buildLangGrid('g1', selLang, 'pickLang');buildLangGrid('g2', selDubLang, 'pickDubLang');buildTransGrid();buildVoices();
+  speechSynthesis.onvoiceschanged = buildVoices;syncUIFromUnlockedState();await initAuth();
+  const savedLang = localStorage.getItem('sl_lang') || 'ar';setLang(savedLang);
+  const urlParams = new URLSearchParams(window.location.search);const paid = urlParams.get('paid');const feature = urlParams.get('feature');
+  if (paid === '1' && feature && ['tts', 'dub', 'srt'].includes(feature)) {showToast('✅ تم استلام العودة من صفحة الدفع', 'ok');if (currentUser) await refreshEntitlements();window.history.replaceState({}, document.title, window.location.pathname);}
 });
 </script>
 </body>
 </html>
-
