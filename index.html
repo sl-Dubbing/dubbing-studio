@@ -1724,12 +1724,415 @@ window.addEventListener('DOMContentLoaded', () => {
     </div>
 </div>
     <!-- ============================================ -->
+
 <script>
+// ========================================
+// localStorage و User Management
+// ========================================
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://dubbing-api-v2.onrender.com';
+
 // حفظ تسجيل الدخول
 function saveLogin(userData) {
     localStorage.setItem('user', JSON.stringify(userData));
+    loadUserUI();
 }
 
 // استعادة تسجيل الدخول
 function restoreLogin() {
-    const user = localStorage.getIt
+    const user = localStorage.getItem('user');
+    if (user) {
+        try {
+            const userData = JSON.parse(user);
+            loadUserUI();
+            return userData;
+        } catch (e) {
+            localStorage.removeItem('user');
+        }
+    }
+    return null;
+}
+
+function logout() {
+    localStorage.removeItem('user');
+    window.location.reload();
+}
+
+// ========================================
+// Authentication Functions
+// ========================================
+function openAuth() {
+    const authPanel = document.getElementById('authPanel');
+    if (authPanel) authPanel.style.display = 'block';
+}
+
+function closeAuth() {
+    const authPanel = document.getElementById('authPanel');
+    if (authPanel) authPanel.style.display = 'none';
+}
+
+async function registerUser() {
+    const email = document.getElementById('regEmail')?.value;
+    const password = document.getElementById('regPassword')?.value;
+    
+    if (!email || !password) {
+        alert('يرجى ملء جميع الحقول');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            alert('تم التسجيل بنجاح! تحقق من بريدك الإلكتروني');
+            saveLogin({ email, password });
+            closeAuth();
+        } else {
+            alert('خطأ: ' + (data.error || 'فشل التسجيل'));
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        alert('خطأ في الاتصال بالخادم');
+    }
+}
+
+async function loginUser() {
+    const email = document.getElementById('logEmail')?.value;
+    const password = document.getElementById('logPassword')?.value;
+    
+    if (!email || !password) {
+        alert('يرجى ملء جميع الحقول');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            saveLogin(data);
+            closeAuth();
+            alert('تم تسجيل الدخول بنجاح');
+        } else {
+            alert('خطأ: ' + (data.error || 'بيانات غير صحيحة'));
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('خطأ في الاتصال بالخادم');
+    }
+}
+
+function loadUserUI() {
+    const user = restoreLogin();
+    const authPanel = document.getElementById('authPanel');
+    const userPanel = document.getElementById('userPanel');
+    
+    if (user) {
+        if (authPanel) authPanel.style.display = 'none';
+        if (userPanel) userPanel.style.display = 'block';
+    } else {
+        if (authPanel) authPanel.style.display = 'block';
+        if (userPanel) userPanel.style.display = 'none';
+    }
+}
+
+// ========================================
+// guardedAction - Check limits & consume usage
+// ========================================
+async function guardedAction(feature, callback) {
+    const user = restoreLogin();
+    const ip = 'guest';
+    
+    if (!user) {
+        openAuth();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/entitlements?email=${user.email}`);
+        const data = await response.json();
+        
+        const unlocked = data.unlocked[feature];
+        const usage = data.usage[feature];
+        
+        if (!unlocked && usage >= 6) {
+            alert('انتهى الحد المجاني. يرجى الترقية');
+            return;
+        }
+        
+        await callback();
+        
+        // تسجيل الاستخدام
+        await fetch(`${API_BASE}/api/consume`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, feature })
+        });
+    } catch (error) {
+        console.error('guardedAction error:', error);
+        await callback();
+    }
+}
+
+// ========================================
+// Text-to-Speech Functions
+// ========================================
+let mediaRecorder;
+let audioChunks = [];
+let currentAudio = null;
+
+const synth = window.speechSynthesis;
+
+function tSpeak() {
+    const text = document.getElementById('ti')?.value || '';
+    if (!text.trim()) {
+        alert('اكتب نصاً أولاً');
+        return;
+    }
+    
+    const voices = synth.getVoices();
+    const selectedVoice = document.getElementById('vs')?.value || 'Google UK English Male';
+    const voice = voices.find(v => v.name === selectedVoice) || voices[0];
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = voice;
+    utterance.rate = parseFloat(document.getElementById('rr1')?.value || 1);
+    utterance.pitch = parseFloat(document.getElementById('pr1')?.value || 1);
+    utterance.volume = parseFloat(document.getElementById('vr1')?.value || 1);
+    
+    synth.cancel();
+    synth.speak(utterance);
+}
+
+function tPause() {
+    if (synth.speaking) {
+        synth.cancel();
+    }
+}
+
+function clrTxt() {
+    const input = document.getElementById('ti');
+    if (input) input.value = '';
+}
+
+// ========================================
+// Voice Recording for AI Dubbing
+// ========================================
+async function startVoiceRecording() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+        };
+        
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            const voiceStatus = document.getElementById('voiceStatus');
+            if (voiceStatus) {
+                voiceStatus.textContent = '✅ تم تسجيل الصوت بنجاح';
+                voiceStatus.style.color = '#34d399';
+            }
+            
+            // حفظ الصوت في localStorage مؤقتاً
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                localStorage.setItem('voiceSample', reader.result);
+            };
+            reader.readAsDataURL(audioBlob);
+        };
+        
+        mediaRecorder.start();
+        const recordStatus = document.getElementById('recordStatus');
+        if (recordStatus) {
+            recordStatus.textContent = '⏺️ جاري التسجيل...';
+        }
+    } catch (error) {
+        alert('خطأ في الوصول للميكروفون: ' + error.message);
+    }
+}
+
+function stopVoiceRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    }
+}
+
+// ========================================
+// AI Dubbing Generation
+// ========================================
+async function generateAIDubbing() {
+    const srtText = document.getElementById('srtInput')?.value;
+    const targetLang = document.getElementById('targetLang')?.value || 'ar';
+    
+    if (!srtText) {
+        alert('أدخل نص SRT أولاً');
+        return;
+    }
+    
+    const user = restoreLogin();
+    const email = user?.email || 'guest';
+    
+    const voiceSample = localStorage.getItem('voiceSample');
+    
+    try {
+        const aiProgress = document.getElementById('aiProgress');
+        const aiStatus = document.getElementById('aiStatus');
+        const progressFill = document.getElementById('progressFill');
+        
+        if (aiProgress) aiProgress.style.display = 'block';
+        if (aiStatus) aiStatus.textContent = '⏳ جاري معالجة الملف...';
+        
+        const response = await fetch(`${API_BASE}/api/dubbing/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                srt_content: srtText,
+                target_language: targetLang,
+                email: email,
+                voice_sample: voiceSample
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            if (aiStatus) aiStatus.textContent = '✅ تم توليد الدبلجة بنجاح!';
+            if (progressFill) progressFill.style.width = '100%';
+            
+            const downloadBtn = document.getElementById('downloadAI');
+            if (downloadBtn) {
+                downloadBtn.style.display = 'block';
+                downloadBtn.href = `${API_BASE}${data.audio_url}`;
+                downloadBtn.download = 'dubbed_audio.wav';
+            }
+            
+            // تسجيل الاستخدام
+            await fetch(`${API_BASE}/api/consume`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, feature: 'dub' })
+            });
+        } else {
+            if (aiStatus) aiStatus.textContent = '❌ خطأ: ' + (data.error || 'فشل التوليد');
+        }
+    } catch (error) {
+        console.error('Dubbing error:', error);
+        const aiStatus = document.getElementById('aiStatus');
+        if (aiStatus) aiStatus.textContent = '❌ خطأ في الاتصال بالخادم';
+    }
+}
+
+// ========================================
+// SRT Translator
+// ========================================
+async function translateSRT() {
+    const srtText = document.getElementById('srtFile')?.value;
+    const targetLang = document.getElementById('srtTargetLang')?.value || 'ar';
+    const user = restoreLogin();
+    const email = user?.email || 'guest';
+    
+    if (!srtText) {
+        alert('أدخل ملف SRT أولاً');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/srt/translate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                srt_content: srtText,
+                target_language: targetLang,
+                email: email
+            })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            const resultArea = document.getElementById('srtResult');
+            if (resultArea) resultArea.value = data.translated_srt;
+            alert('✅ تم الترجمة بنجاح');
+        } else {
+            alert('خطأ: ' + (data.error || 'فشلت الترجمة'));
+        }
+    } catch (error) {
+        console.error('Translation error:', error);
+        alert('خطأ في الاتصال بالخادم');
+    }
+}
+
+// ========================================
+// Initialize on Page Load
+// ========================================
+window.addEventListener('DOMContentLoaded', () => {
+    // تحميل الأصوات المتاحة
+    const synth = window.speechSynthesis;
+    synth.onvoiceschanged = () => {
+        const voiceSelect = document.getElementById('vs');
+        if (voiceSelect) {
+            const voices = synth.getVoices();
+            voiceSelect.innerHTML = voices.map((voice, i) => 
+                `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`
+            ).join('');
+        }
+    };
+    
+    // استعادة تسجيل الدخول
+    restoreLogin();
+    loadUserUI();
+    
+    // تحديث عداد الأحرف
+    const textInput = document.getElementById('ti');
+    if (textInput) {
+        textInput.addEventListener('input', (e) => {
+            const count = document.getElementById('cc');
+            if (count) count.textContent = e.target.value.length;
+        });
+    }
+    
+    // تحديث عرض القيم
+    const ranges = ['rr1', 'pr1', 'vr1'];
+    ranges.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', (e) => {
+                const display = document.getElementById(id.replace('r', 'v'));
+                if (display) {
+                    if (id === 'vr1') {
+                        display.textContent = Math.round(e.target.value * 100) + '%';
+                    } else {
+                        display.textContent = e.target.value + 'x';
+                    }
+                }
+            });
+        }
+    });
+});
+
+// معالج الأخطاء العام
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+});
+
+// منع مشاكل localStorage في Incognito
+try {
+    localStorage.setItem('test', 'test');
+    localStorage.removeItem('test');
+} catch (e) {
+    console.warn('localStorage غير متاح - وضع Incognito');
+}
+</script>
+</body>
+</html>
