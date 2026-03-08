@@ -1,6 +1,4 @@
-
-# إنشاء ملف ai-dubbing.js الكامل والمحدث
-js_code = '''// =============================================================
+// =============================================================
 // AI Dubbing Service - Voice Cloning Integration
 // رابط السيرفر: https://dubbing-studio-ai.onrender.com
 // =============================================================
@@ -147,7 +145,7 @@ function stopVoiceRecording() {
             document.getElementById('recordStatus').textContent = '⏹ تم الإيقاف';
             
             try {
-                const lang = document.getElementById('dubLang')?.value || 'ar';
+                const lang = document.getElementById('targetLang')?.value || 'ar';
                 const result = await aiService.uploadVoice(blob, lang);
                 document.getElementById('voiceStatus').textContent = `✅ تم حفظ الصوت (${result.duration.toFixed(1)}s)`;
             } catch (e) {
@@ -203,9 +201,3 @@ async function generateAIDubbing() {
 
 // تصدير للاستخدام
 if (typeof module !== 'undefined') module.exports = AIDubbingService;
-'''
-
-with open('/mnt/kimi/output/ai-dubbing-complete.js', 'w', encoding='utf-8') as f:
-    f.write(js_code)
-
-print("✅ تم إنشاء ai-dubbing.js الكامل")
