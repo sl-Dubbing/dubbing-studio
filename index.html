@@ -331,7 +331,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
         </div>
         
         <div class="payment-grid">
-            <!-- TTS Product -->
+            <!-- TTS Product - $10 -->
             <div class="payment-card tts">
                 <span class="payment-badge tts">✏️ نطق النص</span>
                 <div class="payment-icon">🎙️</div>
@@ -347,7 +347,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                     <div class="price-amount tts">$10</div>
                     <div class="price-label" data-i18n="lifetime">مدى الحياة / دفعة واحدة</div>
                 </div>
-                <a href="https://payhip.com/b/XXXXX" class="payhip-btn tts" target="_blank">
+                <a href="https://payhip.com/b/jQdFJ" class="payhip-btn tts" target="_blank">
                     <span>💎</span>
                     <span data-i18n="buyNowTTS">اشترِ النطق الآن</span>
                 </a>
@@ -357,7 +357,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                 </div>
             </div>
 
-            <!-- Dubbing Product -->
+            <!-- Dubbing Product - $50 -->
             <div class="payment-card dub">
                 <span class="payment-badge dub">🎬 دبلجة</span>
                 <div class="payment-icon">🚀</div>
@@ -383,7 +383,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                 </div>
             </div>
 
-            <!-- SRT Translator Product -->
+            <!-- SRT Translator Product - $30 -->
             <div class="payment-card srt">
                 <span class="payment-badge srt">🌐 مترجم</span>
                 <div class="payment-icon">🌍</div>
@@ -396,10 +396,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                     <li data-i18n="srtF4">تنزيل SRT مترجم</li>
                 </ul>
                 <div class="price-box">
-                    <div class="price-amount srt">$10</div>
+                    <div class="price-amount srt">$30</div>
                     <div class="price-label" data-i18n="lifetime">مدى الحياة / دفعة واحدة</div>
                 </div>
-                <a href="https://payhip.com/b/YYYYY" class="payhip-btn srt" target="_blank">
+                <a href="https://payhip.com/b/5XbaQ" class="payhip-btn srt" target="_blank">
                     <span>🌍</span>
                     <span data-i18n="buyNowSRT">اشترِ المترجم الآن</span>
                 </a>
@@ -485,7 +485,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                     <div class="ir">⏱️ تزامن دقيق مع توقيتات SRT</div>
                     <div class="ir">📤 ملف WAV لـ YouTube Dubbing</div>
                 </div>
-                <button class="gb" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl" data-i18n="generateDub">توليد الدبلجة</span><span class="gs">يتطلب سيرفر Render</span></button>
+                <button class="gb" id="genBtn" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl" data-i18n="generateDub">توليد الدبلجة</span><span class="gs">يتطلب سيرفر Render</span></button>
                 <div id="dubP" style="display:none">
                     <div class="ph"><div class="pd"></div><div class="pt">جارٍ...</div></div>
                     <div class="cb">
