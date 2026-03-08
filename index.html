@@ -257,349 +257,474 @@ footer{text-align:center;padding:16px;color:#374151;font-size:.7rem;grid-column:
 <body>
 <div class="bg"></div>
 <div class="wrap">
-    <div class="lang-switcher">
-        <button class="lang-btn" onclick="toggleLang()" aria-label="Change language">
-            <svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
-            <span id="currentLang">العربية</span>
-            <svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-        </button>
-        <div class="lang-dropdown" id="langDropdown" role="menu">
-            <div class="lang-option active" onclick="setLang('ar')" data-lang="ar" role="menuitem"><span class="lang-flag">🇸🇦</span><span class="lang-name">العربية</span></div>
-            <div class="lang-option" onclick="setLang('en')" data-lang="en" role="menuitem"><span class="lang-flag">🇺🇸</span><span class="lang-name">English</span></div>
-            <div class="lang-option" onclick="setLang('ru')" data-lang="ru" role="menuitem"><span class="lang-flag">🇷🇺</span><span class="lang-name">Русский</span></div>
-            <div class="lang-option" onclick="setLang('tr')" data-lang="tr" role="menuitem"><span class="lang-flag">🇹🇷</span><span class="lang-name">Türkçe</span></div>
-            <div class="lang-option" onclick="setLang('fr')" data-lang="fr" role="menuitem"><span class="lang-flag">🇫🇷</span><span class="lang-name">Français</span></div>
-            <div class="lang-option" onclick="setLang('de')" data-lang="de" role="menuitem"><span class="lang-flag">🇩🇪</span><span class="lang-name">Deutsch</span></div>
-            <div class="lang-option" onclick="setLang('es')" data-lang="es" role="menuitem"><span class="lang-flag">🇪🇸</span><span class="lang-name">Español</span></div>
-        </div>
-    </div>
-
-    <div class="auth-switcher" id="authSwitcher">
-        <div class="upgrade-link" onclick="startCheckout('dub')">
-            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <span style="color:#422006 !important;">👑 ترقية الحساب Pro</span>
-        </div>
-        <button class="auth-btn" id="authToggleBtn" onclick="toggleAuthDropdown()">
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-            <span id="authBtnLabel">تسجيل الدخول</span>
-            <svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-        </button>
-        <div class="auth-dropdown" id="authDropdown">
-            <div id="userPanel" style="display:none">
-                <div class="user-panel">
-                    <div class="user-info">
-                        <div class="user-avatar-lg" id="userAvatarLg">?</div>
-                        <div class="user-details">
-                            <div class="user-email" id="userEmailDisplay">—</div>
-                            <div class="user-plan" id="userPlanBadge">خطة مجانية</div>
-                        </div>
-                    </div>
-                    <div class="usage-title">📊 الاستخدام المجاني المتبقي</div>
-                    <div class="usage-item">
-                        <div class="usage-row"><span class="usage-label">✏️ نطق النص</span><span class="usage-count" id="uc-tts">6/6</span></div>
-                        <div class="usage-bar-bg"><div class="usage-bar-fill tts" id="ub-tts" style="width:100%"></div></div>
-                    </div>
-                    <div class="usage-item">
-                        <div class="usage-row"><span class="usage-label">🎬 الدبلجة</span><span class="usage-count" id="uc-dub">⏱️ 30 ث مجانية</span></div>
-                        <div class="usage-bar-bg"><div class="usage-bar-fill dub" id="ub-dub" style="width:100%"></div></div>
-                    </div>
-                    <div class="usage-item">
-                        <div class="usage-row"><span class="usage-label">🌐 مترجم SRT</span><span class="usage-count" id="uc-srt">6/6</span></div>
-                        <div class="usage-bar-bg"><div class="usage-bar-fill srt" id="ub-srt" style="width:100%"></div></div>
-                    </div>
-                    <button class="user-logout" onclick="logoutUser()">🚪 تسجيل الخروج</button>
-                </div>
-            </div>
-
-            <div id="authForms">
-                <div class="auth-tabs">
-                    <button class="auth-tab on" id="tab-login" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-                    <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">إنشاء حساب</button>
-                </div>
-
-                <div class="auth-form" id="form-login">
-                    <div class="auth-field"><label>البريد الإلكتروني</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"></div>
-                    <div class="auth-field"><label>كلمة المرور</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
-                    <button class="auth-submit" id="loginBtn" onclick="doLogin()"><div class="btn-spinner"></div><span class="btn-text">🔐 دخول</span></button>
-                    <div class="auth-msg" id="login-msg"></div>
-                </div>
-
-                <div class="auth-form" id="form-register" style="display:none">
-                    <div class="auth-field"><label>البريد الإلكتروني (Gmail فقط ✉️)</label><input type="email" id="reg-email" placeholder="you@gmail.com" autocomplete="email"></div>
-                    <div class="auth-field"><label>كلمة المرور</label><input type="password" id="reg-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password"></div>
-                    <div class="auth-field"><label>تأكيد كلمة المرور</label><input type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password"></div>
-                    <button class="auth-submit" id="registerBtn" onclick="doRegister()"><div class="btn-spinner"></div><span class="btn-text">🚀 إنشاء حساب مجاني</span></button>
-                    <div class="auth-msg" id="register-msg"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <header>
-        <div class="logo-container">
-            <div class="logo-img"><img src="logo.png" alt="sl-Dubbing Logo"></div>
-            <div>
-                <h1>sl-Dubbing</h1>
-                <p class="subtitle"><span style="background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700">&amp; Translation</span> — دبلجة وترجمة احترافية</p>
-            </div>
-        </div>
-    </header>
-
-    <div class="adsense-container">
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-691108357486678" data-ad-slot="YOUR_AD_SLOT_1" data-ad-format="auto" data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
-    <div class="payment-section">
-        <div class="payment-section-title">
-            <h2>🛒 المتجر — ترقية الحساب</h2>
-            <p>ادفع مرة واحدة واستمتع مدى الحياة · مدعوم بـ Lemon Squeezy</p>
-        </div>
-        <div class="payment-grid">
-            <div class="payment-card tts">
-                <span class="payment-badge tts">✏️ نطق النص</span>
-                <span class="payment-icon">🎙️</span>
-                <div class="payment-title">تفعيل النطق مدى الحياة</div>
-                <div class="payment-desc">نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود</div>
-                <ul class="payment-features">
-                    <li>أصوات متعددة اللغات (13+ لغة)</li>
-                    <li>تحكم في السرعة والطبقة والصوت</li>
-                    <li>فلاتر صوتية متقدمة</li>
-                    <li>دفعة واحدة · بدون اشتراك</li>
-                </ul>
-                <div class="price-display"><span class="price-amount tts">$10</span><span class="price-label">مدى الحياة</span></div>
-                <button class="buy-btn tts" id="btn-tts" onclick="startCheckout('tts')"><span class="btn-text">💳 شراء الآن</span></button>
-                <div class="payment-note">🔒 دفع آمن عبر Lemon Squeezy</div>
-            </div>
-
-            <div class="payment-card dub">
-                <span class="payment-badge dub">🎬 دبلجة</span>
-                <span class="payment-icon">🚀</span>
-                <div class="payment-title">فتح الدبلجة مدى الحياة</div>
-                <div class="payment-desc">دبلجة SRT كاملة بلا حدود — التجربة المجانية: أول 30 ثانية فقط</div>
-                <ul class="payment-features">
-                    <li>دبلجة SRT بالكامل مع التزامن</li>
-                    <li>تصدير WAV لـ YouTube Dubbing</li>
-                    <li>معالجة سحابية صامتة</li>
-                    <li>دفعة واحدة · بدون اشتراك</li>
-                </ul>
-                <div class="price-display"><span class="price-amount dub">$50</span><span class="price-label">مدى الحياة</span></div>
-                <button class="buy-btn dub" id="btn-dub" onclick="startCheckout('dub')"><span class="btn-text">💳 شراء الآن</span></button>
-                <div class="payment-note">🔒 دفع آمن عبر Lemon Squeezy</div>
-            </div>
-
-            <div class="payment-card srt">
-                <span class="payment-badge srt">🌐 مترجم</span>
-                <span class="payment-icon">🌍</span>
-                <div class="payment-title">شراء المترجم مدى الحياة</div>
-                <div class="payment-desc">ترجمة ملفات SRT إلى أكثر من 13 لغة بنقرة واحدة</div>
-                <ul class="payment-features">
-                    <li>ترجمة لـ 13+ لغة عالمية</li>
-                    <li>تنزيل SRT مترجم جاهز</li>
-                    <li>تنظيف النص التلقائي</li>
-                    <li>دفعة واحدة · بدون اشتراك</li>
-                </ul>
-                <div class="price-display"><span class="price-amount srt">$10</span><span class="price-label">مدى الحياة</span></div>
-                <button class="buy-btn srt" id="btn-srt" onclick="startCheckout('srt')"><span class="btn-text">💳 شراء الآن</span></button>
-                <div class="payment-note">🔒 دفع آمن عبر Lemon Squeezy</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="adsense-container">
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-691108357486678" data-ad-slot="YOUR_AD_SLOT_2" data-ad-format="auto" data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
-    <div class="features-wrapper">
-        <div class="feature-zone" id="zone-tts">
-            <div class="lock-overlay tts-lock" id="lock-tts">
-                <div class="lock-icon" id="lock-icon-tts">🔒</div>
-                <div class="lock-title" id="lock-title-tts">نطق النص — مقفل</div>
-                <div class="lock-free-badge" id="lock-free-tts" style="display:none">🎁 <span id="lock-free-count-tts">6</span> استخدامات مجانية</div>
-                <div class="lock-uses-left" id="lock-uses-tts" style="display:none">متبقي <strong id="lock-left-tts">0</strong> من 6 استخدامات</div>
-                <div class="lock-sub" id="lock-sub-tts">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
-                <button class="lock-buy-hint tts-btn" id="lock-action-tts" onclick="lockAction('tts')">👤 سجّل للاستخدام المجاني</button>
-            </div>
-
-            <div class="card">
-                <div class="card-header"><div class="card-icon">✏️</div><span class="card-title">نطق النص</span></div>
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">اختر اللغة</span></div>
-                <div class="lg" id="g1" style="margin-bottom:10px"></div>
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الصوت</span></div>
-                <select id="vs" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#e0e0ff;font-size:.75rem;margin-bottom:10px"></select>
-                <div class="tw"><textarea id="ti" placeholder="اكتب النص..." style="min-height:80px;font-size:.8rem"></textarea><span class="cc" id="cc">0</span></div>
-                <div class="ctrls" style="margin-bottom:10px">
-                    <div class="cg"><label style="font-size:.55rem">السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
-                    <div class="cg"><label style="font-size:.55rem">الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
-                    <div class="cg"><label style="font-size:.55rem">الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
-                </div>
-                <div class="wv" id="wv1" style="height:20px;margin:8px 0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
-                <div class="br">
-                    <button class="btn bs" id="sb" onclick="guardedAction('tts', tSpeak)" style="padding:8px 12px;font-size:.75rem"><span id="si">▶</span><span id="st2">نطق</span></button>
-                    <button class="btn bsm" onclick="tPause()" style="padding:8px 10px;font-size:.75rem">⏸</button>
-                    <button class="btn bsm" onclick="clrTxt()" style="padding:8px 10px;font-size:.75rem">🗑</button>
-                </div>
-                <div class="st i" id="s1" style="margin-top:8px;font-size:.7rem">👋 اكتب نصاً واضغط نطق</div>
-            </div>
-
-            <div class="filters-card" id="filtersCard" style="display:none">
-                <div class="fc-title"><span>🎛️</span> الفلاتر الصوتية</div>
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">السرعة</span><span class="rv" id="speedVal">1.0x</span></div>
-                <input type="range" id="filterSpeed" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الطبقة</span><span class="rv" id="pitchVal">1.0</span></div>
-                <input type="range" id="filterPitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Bass</span><span class="rv" id="bassVal">0dB</span></div>
-                <input type="range" id="eqBass" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Mid</span><span class="rv" id="midVal">0dB</span></div>
-                <input type="range" id="eqMid" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">Treble</span><span class="rv" id="trebleVal">0dB</span></div>
-                <input type="range" id="eqTreble" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
-                <button class="btn bsm" style="width:100%;justify-content:center;margin-top:8px;font-size:.7rem;padding:6px" onclick="resetFilters()">🔄 إعادة تعيين</button>
-                <div class="sg">
-                    <button class="sbtn" onclick="applyPreset('male')">👨 رجالي</button>
-                    <button class="sbtn" onclick="applyPreset('radio')">📻 راديو</button>
-                    <button class="sbtn" onclick="applyPreset('warm')">🌟 دافئ</button>
-                    <button class="sbtn" onclick="applyPreset('fast')">⚡ سريع</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="feature-zone" id="zone-dub">
-            <div class="lock-overlay dub-lock" id="lock-dub">
-                <div class="lock-icon" id="lock-icon-dub">🔒</div>
-                <div class="lock-title" id="lock-title-dub">الدبلجة — مقفلة</div>
-                <div class="lock-free-badge" id="lock-free-dub" style="display:none">🎁 تجربة مجانية: أول 30 ثانية</div>
-                <div class="lock-uses-left" id="lock-uses-dub" style="display:none">متبقي <strong id="lock-left-dub">0</strong> من 6 استخدامات</div>
-                <div class="lock-sub" id="lock-sub-dub">سجّل للحصول على تجربة مجانية (30 ث) أو اشترِ للملف الكامل</div>
-                <button class="lock-buy-hint dub-btn" id="lock-action-dub" onclick="lockAction('dub')">👤 سجّل للاستخدام المجاني</button>
-            </div>
-
-            <div class="card">
-                <div class="card-header"><div class="card-icon">🎬</div><span class="card-title">لغة الدبلجة</span></div>
-                <div class="lg" id="g2"></div>
-                <div class="ctrls" style="margin-bottom:0">
-                    <div class="cg"><label>السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
-                    <div class="cg"><label>الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header"><div class="card-icon">📂</div><span class="card-title">ملف SRT</span></div>
-                <div class="ua"><input type="file" accept=".srt,.txt" onchange="ldSRT(event)" aria-label="Upload SRT file"><div class="ui">📁</div><div class="ut">اسحب أو اضغط</div><div class="us">.srt أو .txt</div></div>
-                <span class="lbl">أو الصق المحتوى</span>
-                <textarea id="srtP" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
-                <button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" onclick="prsPaste()">📥 تحليل الملف</button>
-                <div id="srtInfo" style="display:none;margin-top:12px">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                        <span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> جملة · <span id="sDur">0:00:00</span></span>
-                        <button class="btn bsm" style="padding:4px 8px;font-size:.65rem" onclick="cpySRT()">📋</button>
-                    </div>
-                    <div class="sl" id="srtL"></div>
-                </div>
-            </div>
-
-            <div class="card" id="dubCard" style="display:none">
-                <div class="card-header"><div class="card-icon">⚡</div><span class="card-title">التوليد</span></div>
-                <div class="ib">
-                    <div class="ir">🔇 معالجة <strong>صامتة</strong> عبر سيرفر سحابي</div>
-                    <div class="ir">⏱️ تزامن دقيق مع توقيتات SRT</div>
-                    <div class="ir">📤 ملف WAV لـ YouTube Dubbing</div>
-                </div>
-                <button class="gb" id="genBtn" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl">توليد الدبلجة</span><span class="gs">يتطلب سيرفر Render شغال</span></button>
-                <div id="dubP" style="display:none">
-                    <div class="ph"><div class="pd"></div><div class="pt" id="phTxt">جارٍ...</div></div>
-                    <div class="cb">
-                        <div class="cr">
-                            <div class="ci"><div class="cl">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
-                            <div class="ci"><div class="cl">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
-                            <div class="ci"><div class="cl">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
-                        </div>
-                        <div class="wv on" style="height:22px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
-                    </div>
-                    <div class="pw"><div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div><div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div></div>
-                    <div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px">جارٍ...</div>
-                    <div class="sc" id="sntC" style="text-align:center;font-size:.65rem;color:#4b5563;font-family:monospace;margin-bottom:10px"></div>
-                    <button class="btn bsm" style="width:100%;justify-content:center" onclick="cnclDub()">⏹ إلغاء</button>
-                </div>
-                <div id="dubRes" style="display:none">
-                    <div class="rb">
-                        <div class="rt">🎉 جاهز</div>
-                        <audio id="dubAu" controls style="width:100%;margin-bottom:10px;border-radius:8px"></audio>
-                        <button class="db" onclick="dlRes()">⬇️ تنزيل WAV</button>
-                        <div class="yh" style="font-size:.65rem;color:#6b7280;text-align:center;margin-top:8px">📤 YouTube Studio → دبلجة</div>
-                    </div>
-                </div>
-                <div class="st i" id="dubSt" style="margin-top:12px">تأكد سيرفر Render شغال ثم اضغط</div>
-            </div>
-        </div>
-
-        <div class="feature-zone" id="zone-srt">
-            <div class="lock-overlay srt-lock" id="lock-srt">
-                <div class="lock-icon" id="lock-icon-srt">🔒</div>
-                <div class="lock-title" id="lock-title-srt">مترجم SRT — مقفل</div>
-                <div class="lock-free-badge" id="lock-free-srt" style="display:none">🎁 <span id="lock-free-count-srt">6</span> استخدامات مجانية</div>
-                <div class="lock-uses-left" id="lock-uses-srt" style="display:none">متبقي <strong id="lock-left-srt">0</strong> من 6 استخدامات</div>
-                <div class="lock-sub" id="lock-sub-srt">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
-                <button class="lock-buy-hint srt-btn" id="lock-action-srt" onclick="lockAction('srt')">👤 سجّل للاستخدام المجاني</button>
-            </div>
-
-            <div class="card tp" style="border-top:4px solid #34d399">
-                <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div><span class="card-title">مترجم SRT</span></div>
-                <div class="lbl">1. اختر لغة الترجمة</div>
-                <div class="tg" id="transLangs"></div>
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">2. النص المصدر (SRT)</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteSrc()">📋 لصق</button></div>
-                <textarea id="srcSRT" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
-                <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="guardedAction('srt', startTrans)">🚀 ترجمة</button>
-                <div id="transRes" style="display:none;margin-top:14px">
-                    <div class="trs">
-                        <div class="trh"><span class="trt">✅ النتيجة</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="copyResult()">📋 نسخ</button></div>
-                        <div class="trc" id="transOut"></div>
-                        <button class="db" style="margin-top:10px" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
-                    </div>
-                </div>
-                <div class="st i" id="transSt" style="margin-top:10px">جاهز</div>
-            </div>
-
-            <div class="card" style="border-top:4px solid #fbbf24">
-                <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🧹</div><span class="card-title">تنظيف النص من الفراغات</span></div>
-                <div class="lbl-row"><span class="lbl" style="margin-bottom:0">الصق نص SRT أو أي نص</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteClean()">📋 لصق</button></div>
-                <textarea id="cleanInput" placeholder="الصق النص هنا..." style="min-height:80px;font-family:monospace;font-size:.75rem;margin-bottom:10px"></textarea>
-                <div class="ctrls" style="margin-bottom:10px">
-                    <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeNumbers" style="display:none" checked>📌 حذف الأرقام</label>
-                    <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeTime" style="display:none" checked>⏱️ حذف التوقيتات</label>
-                    <label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeEmpty" style="display:none" checked>🗑️ حذف الأسطر الفارغة</label>
-                </div>
-                <button class="btn bs" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000" onclick="cleanText()">🧹 تنظيف النص</button>
-                <div id="cleanResult" style="display:none">
-                    <div class="clean-box">
-                        <div class="clean-title">✨ النص بعد التنظيف</div>
-                        <div class="clean-output" id="cleanOutput"></div>
-                        <div class="br">
-                            <button class="btn bsm" style="flex:1;justify-content:center" onclick="copyClean()">📋 نسخ</button>
-                            <button class="btn bsm" style="flex:1;justify-content:center" onclick="dlClean()">⬇️ تنزيل</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="st i" id="cleanSt" style="margin-top:10px">الصق نصاً واضغط تنظيف</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="adsense-container">
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-691108357486678" data-ad-slot="YOUR_AD_SLOT_4" data-ad-format="auto" data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
+<div class="lang-switcher">
+<button class="lang-btn" onclick="toggleLang()" aria-label="Change language">
+<svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
+<span id="currentLang">العربية</span>
+<svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+</button>
+<div class="lang-dropdown" id="langDropdown" role="menu">
+<div class="lang-option active" onclick="setLang('ar')" data-lang="ar" role="menuitem"><span class="lang-flag">🇸🇦</span><span class="lang-name">العربية</span></div>
+<div class="lang-option" onclick="setLang('en')" data-lang="en" role="menuitem"><span class="lang-flag">🇺🇸</span><span class="lang-name">English</span></div>
+<div class="lang-option" onclick="setLang('ru')" data-lang="ru" role="menuitem"><span class="lang-flag">🇷🇺</span><span class="lang-name">Русский</span></div>
+<div class="lang-option" onclick="setLang('tr')" data-lang="tr" role="menuitem"><span class="lang-flag">🇹🇷</span><span class="lang-name">Türkçe</span></div>
+<div class="lang-option" onclick="setLang('fr')" data-lang="fr" role="menuitem"><span class="lang-flag">🇫🇷</span><span class="lang-name">Français</span></div>
+<div class="lang-option" onclick="setLang('de')" data-lang="de" role="menuitem"><span class="lang-flag">🇩🇪</span><span class="lang-name">Deutsch</span></div>
+<div class="lang-option" onclick="setLang('es')" data-lang="es" role="menuitem"><span class="lang-flag">🇪🇸</span><span class="lang-name">Español</span></div>
 </div>
-
-<footer>sl-Dubbing &amp; Translation <span>· GitHub + Render · gTTS · مجاني 100%</span></footer>
-
+</div>
+<div class="auth-switcher" id="authSwitcher">
+<div class="upgrade-link" onclick="startCheckout('dub')">
+<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<span style="color:#422006 !important;">👑 ترقية الحساب Pro</span>
+</div>
+<button class="auth-btn" id="authToggleBtn" onclick="toggleAuthDropdown()">
+<svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+<span id="authBtnLabel" data-i18n="login">تسجيل الدخول</span>
+<svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+</button>
+<div class="auth-dropdown" id="authDropdown">
+<div id="userPanel" style="display:none">
+<div class="user-panel">
+<div class="user-info">
+<div class="user-avatar-lg" id="userAvatarLg">?</div>
+<div class="user-details">
+<div class="user-email" id="userEmailDisplay">—</div>
+<div class="user-plan" id="userPlanBadge" data-i18n="freePlan">خطة مجانية</div>
+</div>
+</div>
+<div class="usage-title" data-i18n="usageTitle">📊 الاستخدام المجاني المتبقي</div>
+<div class="usage-item">
+<div class="usage-row"><span class="usage-label" data-i18n="usageTTS">✏️ نطق النص</span><span class="usage-count" id="uc-tts">6/6</span></div>
+<div class="usage-bar-bg"><div class="usage-bar-fill tts" id="ub-tts" style="width:100%"></div></div>
+</div>
+<div class="usage-item">
+<div class="usage-row"><span class="usage-label" data-i18n="usageDub">🎬 الدبلجة</span><span class="usage-count" id="uc-dub">⏱️ 30 ث مجانية</span></div>
+<div class="usage-bar-bg"><div class="usage-bar-fill dub" id="ub-dub" style="width:100%"></div></div>
+</div>
+<div class="usage-item">
+<div class="usage-row"><span class="usage-label" data-i18n="usageSRT">🌐 مترجم SRT</span><span class="usage-count" id="uc-srt">6/6</span></div>
+<div class="usage-bar-bg"><div class="usage-bar-fill srt" id="ub-srt" style="width:100%"></div></div>
+</div>
+<button class="user-logout" onclick="logoutUser()" data-i18n="logout">🚪 تسجيل الخروج</button>
+</div>
+</div>
+<div id="authForms">
+<div class="auth-tabs">
+<button class="auth-tab on" id="tab-login" onclick="switchAuthTab('login')" data-i18n="login">تسجيل الدخول</button>
+<button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')" data-i18n="register">إنشاء حساب</button>
+</div>
+<div class="auth-form" id="form-login">
+<div class="auth-field"><label data-i18n="email">البريد الإلكتروني</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"></div>
+<div class="auth-field"><label data-i18n="password">كلمة المرور</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
+<button class="auth-submit" id="loginBtn" onclick="doLogin()"><div class="btn-spinner"></div><span class="btn-text" data-i18n="submitLogin">🔐 دخول</span></button>
+<div class="auth-msg" id="login-msg"></div>
+</div>
+<div class="auth-form" id="form-register" style="display:none">
+<div class="auth-field"><label data-i18n="email">البريد الإلكتروني (Gmail فقط ✉️)</label><input type="email" id="reg-email" placeholder="you@gmail.com" autocomplete="email"></div>
+<div class="auth-field"><label data-i18n="password">كلمة المرور</label><input type="password" id="reg-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password"></div>
+<div class="auth-field"><label data-i18n="confirmPass">تأكيد كلمة المرور</label><input type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password"></div>
+<button class="auth-submit" id="registerBtn" onclick="doRegister()"><div class="btn-spinner"></div><span class="btn-text" data-i18n="submitRegister">🚀 إنشاء حساب مجاني</span></button>
+<div class="auth-msg" id="register-msg"></div>
+</div>
+</div>
+</div>
+</div>
+<header>
+<div class="logo-container">
+<div class="logo-img"><img src="logo.png" alt="sl-Dubbing Logo"></div>
+<div>
+<h1>sl-Dubbing</h1>
+<p class="subtitle"><span style="background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700">&amp; Translation</span> — دبلجة وترجمة احترافية</p>
+</div>
+</div>
+</header>
+<div class="adsense-container">
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-691108357486678" data-ad-slot="YOUR_AD_SLOT_1" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+<div class="payment-section">
+<div class="payment-section-title">
+<h2 data-i18n="storeTitle">🛒 المتجر — ترقية الحساب</h2>
+<p data-i18n="storeDesc">ادفع مرة واحدة واستمتع مدى الحياة · مدعوم بـ Lemon Squeezy</p>
+</div>
+<div class="payment-grid">
+<div class="payment-card tts">
+<span class="payment-badge tts" data-i18n="usageTTS">✏️ نطق النص</span>
+<span class="payment-icon">🎙️</span>
+<div class="payment-title" data-i18n="buyTTS">تفعيل النطق مدى الحياة</div>
+<div class="payment-desc">نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود</div>
+<ul class="payment-features">
+<li>أصوات متعددة اللغات (13+ لغة)</li>
+<li>تحكم في السرعة والطبقة والصوت</li>
+<li>فلاتر صوتية متقدمة</li>
+<li>دفعة واحدة · بدون اشتراك</li>
+</ul>
+<div class="price-display"><span class="price-amount tts">$10</span><span class="price-label" data-i18n="priceLabel">مدى الحياة</span></div>
+<button class="buy-btn tts" id="btn-tts" onclick="startCheckout('tts')"><span class="btn-text" data-i18n="buyBtn">💳 شراء الآن</span></button>
+<div class="payment-note" data-i18n="securePay">🔒 دفع آمن عبر Lemon Squeezy</div>
+</div>
+<div class="payment-card dub">
+<span class="payment-badge dub" data-i18n="usageDub">🎬 دبلجة</span>
+<span class="payment-icon">🚀</span>
+<div class="payment-title" data-i18n="buyDub">فتح الدبلجة مدى الحياة</div>
+<div class="payment-desc">دبلجة SRT كاملة بلا حدود — التجربة المجانية: أول 30 ثانية فقط</div>
+<ul class="payment-features">
+<li>دبلجة SRT بالكامل مع التزامن</li>
+<li>تصدير WAV لـ YouTube Dubbing</li>
+<li>معالجة سحابية صامتة</li>
+<li>دفعة واحدة · بدون اشتراك</li>
+</ul>
+<div class="price-display"><span class="price-amount dub">$50</span><span class="price-label" data-i18n="priceLabel">مدى الحياة</span></div>
+<button class="buy-btn dub" id="btn-dub" onclick="startCheckout('dub')"><span class="btn-text" data-i18n="buyBtn">💳 شراء الآن</span></button>
+<div class="payment-note" data-i18n="securePay">🔒 دفع آمن عبر Lemon Squeezy</div>
+</div>
+<div class="payment-card srt">
+<span class="payment-badge srt" data-i18n="usageSRT">🌐 مترجم</span>
+<span class="payment-icon">🌍</span>
+<div class="payment-title" data-i18n="buySRT">شراء المترجم مدى الحياة</div>
+<div class="payment-desc">ترجمة ملفات SRT إلى أكثر من 13 لغة بنقرة واحدة</div>
+<ul class="payment-features">
+<li>ترجمة لـ 13+ لغة عالمية</li>
+<li>تنزيل SRT مترجم جاهز</li>
+<li>تنظيف النص التلقائي</li>
+<li>دفعة واحدة · بدون اشتراك</li>
+</ul>
+<div class="price-display"><span class="price-amount srt">$10</span><span class="price-label" data-i18n="priceLabel">مدى الحياة</span></div>
+<button class="buy-btn srt" id="btn-srt" onclick="startCheckout('srt')"><span class="btn-text" data-i18n="buyBtn">💳 شراء الآن</span></button>
+<div class="payment-note" data-i18n="securePay">🔒 دفع آمن عبر Lemon Squeezy</div>
+</div>
+</div>
+</div>
+<div class="adsense-container">
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-691108357486678" data-ad-slot="YOUR_AD_SLOT_2" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+<div class="features-wrapper">
+<div class="feature-zone" id="zone-tts">
+<div class="lock-overlay tts-lock" id="lock-tts">
+<div class="lock-icon" id="lock-icon-tts">🔒</div>
+<div class="lock-title" id="lock-title-tts" data-i18n="lockTTS">نطق النص — مقفل</div>
+<div class="lock-free-badge" id="lock-free-tts" style="display:none">🎁 <span id="lock-free-count-tts">6</span> استخدامات مجانية</div>
+<div class="lock-uses-left" id="lock-uses-tts" style="display:none">متبقي <strong id="lock-left-tts">0</strong> من 6 استخدامات</div>
+<div class="lock-sub" id="lock-sub-tts" data-i18n="lockSubGuest">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
+<button class="lock-buy-hint tts-btn" id="lock-action-tts" onclick="lockAction('tts')" data-i18n="lockActionGuest">👤 سجّل للاستخدام المجاني</button>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-icon">✏️</div><span class="card-title" data-i18n="ttsTitle">نطق النص</span></div>
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="selectLang">اختر اللغة</span></div>
+<div class="lg" id="g1" style="margin-bottom:10px"></div>
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="voice">الصوت</span></div>
+<select id="vs" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#e0e0ff;font-size:.75rem;margin-bottom:10px"></select>
+<div class="tw"><textarea id="ti" placeholder="اكتب النص..." data-i18n-placeholder="typeText" style="min-height:80px;font-size:.8rem"></textarea><span class="cc" id="cc">0</span></div>
+<div class="ctrls" style="margin-bottom:10px">
+<div class="cg"><label style="font-size:.55rem" data-i18n="speed">السرعة <span class="rv" id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
+<div class="cg"><label style="font-size:.55rem" data-i18n="pitch">الطبقة <span class="rv" id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
+<div class="cg"><label style="font-size:.55rem" data-i18n="volume">الصوت <span class="rv" id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
+</div>
+<div class="wv" id="wv1" style="height:20px;margin:8px 0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+<div class="br">
+<button class="btn bs" id="sb" onclick="guardedAction('tts', tSpeak)" style="padding:8px 12px;font-size:.75rem"><span id="si">▶</span><span id="st2" data-i18n="speak">نطق</span></button>
+<button class="btn bsm" onclick="tPause()" style="padding:8px 10px;font-size:.75rem" data-i18n="pause">⏸</button>
+<button class="btn bsm" onclick="clrTxt()" style="padding:8px 10px;font-size:.75rem" data-i18n="clear">🗑</button>
+</div>
+<div class="st i" id="s1" style="margin-top:8px;font-size:.7rem" data-i18n="statusIdle">👋 اكتب نصاً واضغط نطق</div>
+</div>
+<div class="filters-card" id="filtersCard" style="display:none">
+<div class="fc-title"><span>🎛️</span> <span data-i18n="filtersTitle">الفلاتر الصوتية</span></div>
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="speed">السرعة</span><span class="rv" id="speedVal">1.0x</span></div>
+<input type="range" id="filterSpeed" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="pitch">الطبقة</span><span class="rv" id="pitchVal">1.0</span></div>
+<input type="range" id="filterPitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0">Bass</span><span class="rv" id="bassVal">0dB</span></div>
+<input type="range" id="eqBass" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0">Mid</span><span class="rv" id="midVal">0dB</span></div>
+<input type="range" id="eqMid" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0">Treble</span><span class="rv" id="trebleVal">0dB</span></div>
+<input type="range" id="eqTreble" min="-20" max="20" step="1" value="0" style="width:100%;margin-bottom:10px" oninput="updateFilters()">
+<button class="btn bsm" style="width:100%;justify-content:center;margin-top:8px;font-size:.7rem;padding:6px" onclick="resetFilters()" data-i18n="resetFilters">🔄 إعادة تعيين</button>
+<div class="sg">
+<button class="sbtn" onclick="applyPreset('male')" data-i18n="presetMale">👨 رجالي</button>
+<button class="sbtn" onclick="applyPreset('radio')" data-i18n="presetRadio">📻 راديو</button>
+<button class="sbtn" onclick="applyPreset('warm')" data-i18n="presetWarm">🌟 دافئ</button>
+<button class="sbtn" onclick="applyPreset('fast')" data-i18n="presetFast">⚡ سريع</button>
+</div>
+</div>
+</div>
+<div class="feature-zone" id="zone-dub">
+<div class="lock-overlay dub-lock" id="lock-dub">
+<div class="lock-icon" id="lock-icon-dub">🔒</div>
+<div class="lock-title" id="lock-title-dub" data-i18n="lockDub">الدبلجة — مقفلة</div>
+<div class="lock-free-badge" id="lock-free-dub" style="display:none">🎁 تجربة مجانية: أول 30 ثانية</div>
+<div class="lock-uses-left" id="lock-uses-dub" style="display:none">متبقي <strong id="lock-left-dub">0</strong> من 6 استخدامات</div>
+<div class="lock-sub" id="lock-sub-dub" data-i18n="lockSubDubGuest">سجّل للحصول على تجربة مجانية (30 ث) أو اشترِ للملف الكامل</div>
+<button class="lock-buy-hint dub-btn" id="lock-action-dub" onclick="lockAction('dub')" data-i18n="lockActionGuest">👤 سجّل للاستخدام المجاني</button>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-icon">🎬</div><span class="card-title" data-i18n="dubTitle">لغة الدبلجة</span></div>
+<div class="lg" id="g2"></div>
+<div class="ctrls" style="margin-bottom:0">
+<div class="cg"><label data-i18n="speed">السرعة <span class="rv" id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
+<div class="cg"><label data-i18n="volume">الصوت <span class="rv" id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
+</div>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-icon">📂</div><span class="card-title" data-i18n="srtTitle">ملف SRT</span></div>
+<div class="ua"><input type="file" accept=".srt,.txt" onchange="ldSRT(event)" aria-label="Upload SRT file"><div class="ui">📁</div><div class="ut" data-i18n="dragDrop">اسحب أو اضغط</div><div class="us" data-i18n="srtFormat">.srt أو .txt</div></div>
+<span class="lbl" data-i18n="pasteLabel">أو الصق المحتوى</span>
+<textarea id="srtP" placeholder="1&#10;00:00:00,000 --> 00:00:02,000&#10;النص..." data-i18n-placeholder="typeText" style="min-height:60px;font-size:.75rem;font-family:monospace"></textarea>
+<button class="btn bsm" style="margin-top:6px;font-size:.7rem;width:100%;justify-content:center" onclick="prsPaste()" data-i18n="parseBtn">📥 تحليل الملف</button>
+<div id="srtInfo" style="display:none;margin-top:12px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+<span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> <span data-i18n="sentences">جملة</span> · <span id="sDur">0:00:00</span></span>
+<button class="btn bsm" style="padding:4px 8px;font-size:.65rem" onclick="cpySRT()" data-i18n="copySRT">📋</button>
+</div>
+<div class="sl" id="srtL"></div>
+</div>
+</div>
+<div class="card" id="dubCard" style="display:none">
+<div class="card-header"><div class="card-icon">⚡</div><span class="card-title" data-i18n="genTitle">التوليد</span></div>
+<div class="ib">
+<div class="ir" data-i18n-html="true" data-i18n="genDesc1">🔇 معالجة <strong>صامتة</strong> عبر سيرفر سحابي</div>
+<div class="ir" data-i18n="genDesc2">⏱️ تزامن دقيق مع توقيتات SRT</div>
+<div class="ir" data-i18n="genDesc3">📤 ملف WAV لـ YouTube Dubbing</div>
+</div>
+<button class="gb" id="genBtn" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl" data-i18n="genBtn">توليد الدبلجة</span><span class="gs" data-i18n="genNote">يتطلب سيرفر Render شغال</span></button>
+<div id="dubP" style="display:none">
+<div class="ph"><div class="pd"></div><div class="pt" id="phTxt" data-i18n="processing">جارٍ...</div></div>
+<div class="cb">
+<div class="cr">
+<div class="ci"><div class="cl" data-i18n="remaining">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
+<div class="ci"><div class="cl" data-i18n="elapsed">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
+<div class="ci"><div class="cl" data-i18n="total">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
+</div>
+<div class="wv on" style="height:22px;margin:0"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+</div>
+<div class="pw"><div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div><div class="pm"><span id="pLbl">0/0</span><span id="pPct">0%</span></div></div>
+<div class="cs" id="curS" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:8px 12px;font-size:.75rem;line-height:1.5;color:#c4b5fd;text-align:center;min-height:36px;margin-bottom:6px" data-i18n="processing">جارٍ...</div>
+<div class="sc" id="sntC" style="text-align:center;font-size:.65rem;color:#4b5563;font-family:monospace;margin-bottom:10px"></div>
+<button class="btn bsm" style="width:100%;justify-content:center" onclick="cnclDub()" data-i18n="cancel">⏹ إلغاء</button>
+</div>
+<div id="dubRes" style="display:none">
+<div class="rb">
+<div class="rt" data-i18n="ready">🎉 جاهز</div>
+<audio id="dubAu" controls style="width:100%;margin-bottom:10px;border-radius:8px"></audio>
+<button class="db" onclick="dlRes()" data-i18n="download">⬇️ تنزيل WAV</button>
+<div class="yh" style="font-size:.65rem;color:#6b7280;text-align:center;margin-top:8px" data-i18n="youtubeTip">📤 YouTube Studio → دبلجة</div>
+</div>
+</div>
+<div class="st i" id="dubSt" style="margin-top:12px" data-i18n="dubStatus">تأكد سيرفر Render شغال ثم اضغط</div>
+</div>
+</div>
+<div class="feature-zone" id="zone-srt">
+<div class="lock-overlay srt-lock" id="lock-srt">
+<div class="lock-icon" id="lock-icon-srt">🔒</div>
+<div class="lock-title" id="lock-title-srt" data-i18n="lockSRT">مترجم SRT — مقفل</div>
+<div class="lock-free-badge" id="lock-free-srt" style="display:none">🎁 <span id="lock-free-count-srt">6</span> استخدامات مجانية</div>
+<div class="lock-uses-left" id="lock-uses-srt" style="display:none">متبقي <strong id="lock-left-srt">0</strong> من 6 استخدامات</div>
+<div class="lock-sub" id="lock-sub-srt" data-i18n="lockSubGuest">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
+<button class="lock-buy-hint srt-btn" id="lock-action-srt" onclick="lockAction('srt')" data-i18n="lockActionGuest">👤 سجّل للاستخدام المجاني</button>
+</div>
+<div class="card tp" style="border-top:4px solid #34d399">
+<div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div><span class="card-title" data-i18n="srtTransTitle">مترجم SRT</span></div>
+<div class="lbl" data-i18n="selectTransLang">1. اختر لغة الترجمة</div>
+<div class="tg" id="transLangs"></div>
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="sourceText">2. النص المصدر (SRT)</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteSrc()" data-i18n="pasteSrc">📋 لصق</button></div>
+<textarea id="srcSRT" placeholder="الصق محتوى SRT..." data-i18n-placeholder="typeText" style="min-height:90px;font-family:monospace;font-size:.75rem"></textarea>
+<button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="guardedAction('srt', startTrans)" data-i18n="translateBtn">🚀 ترجمة</button>
+<div id="transRes" style="display:none;margin-top:14px">
+<div class="trs">
+<div class="trh"><span class="trt" data-i18n="result">✅ النتيجة</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="copyResult()" data-i18n="copyResult">📋 نسخ</button></div>
+<div class="trc" id="transOut"></div>
+<button class="db" style="margin-top:10px" onclick="dlTransSRT()" data-i18n="downloadSRT">⬇️ تنزيل SRT</button>
+</div>
+</div>
+<div class="st i" id="transSt" style="margin-top:10px" data-i18n="transStatus">جاهز</div>
+</div>
+<div class="card" style="border-top:4px solid #fbbf24">
+<div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🧹</div><span class="card-title" data-i18n="cleanTitle">تنظيف النص من الفراغات</span></div>
+<div class="lbl-row"><span class="lbl" style="margin-bottom:0" data-i18n="sourceText">الصق نص SRT أو أي نص</span><button class="btn bsm" style="padding:6px 10px;font-size:.7rem" onclick="pasteClean()" data-i18n="pasteClean">📋 لصق</button></div>
+<textarea id="cleanInput" placeholder="الصق النص هنا..." data-i18n-placeholder="typeText" style="min-height:80px;font-family:monospace;font-size:.75rem;margin-bottom:10px"></textarea>
+<div class="ctrls" style="margin-bottom:10px">
+<label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeNumbers" style="display:none" checked>📌 <span data-i18n="removeNumbers">حذف الأرقام</span></label>
+<label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeTime" style="display:none" checked>⏱️ <span data-i18n="removeTime">حذف التوقيتات</span></label>
+<label class="tbtn" style="font-size:.7rem"><input type="checkbox" id="removeEmpty" style="display:none" checked>🗑️ <span data-i18n="removeEmpty">حذف الأسطر الفارغة</span></label>
+</div>
+<button class="btn bs" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000" onclick="cleanText()" data-i18n="cleanBtn">🧹 تنظيف النص</button>
+<div id="cleanResult" style="display:none">
+<div class="clean-box">
+<div class="clean-title" data-i18n="cleanOutput">✨ النص بعد التنظيف</div>
+<div class="clean-output" id="cleanOutput"></div>
+<div class="br">
+<button class="btn bsm" style="flex:1;justify-content:center" onclick="copyClean()" data-i18n="copyClean">📋 نسخ</button>
+<button class="btn bsm" style="flex:1;justify-content:center" onclick="dlClean()" data-i18n="download">⬇️ تنزيل</button>
+</div>
+</div>
+</div>
+<div class="st i" id="cleanSt" style="margin-top:10px" data-i18n="cleanStatus">الصق نصاً واضغط تنظيف</div>
+</div>
+</div>
+</div>
+<div class="adsense-container">
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-691108357486678" data-ad-slot="YOUR_AD_SLOT_4" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+</div>
+<footer data-i18n="footer">sl-Dubbing &amp; Translation <span>· GitHub + Render · gTTS · مجاني 100%</span></footer>
 <script>
+// =============================================================
+// 🌍 I18N - قاموس الترجمات الكامل
+// =============================================================
+const I18N = {
+  ar: {
+    login: 'تسجيل الدخول', register: 'إنشاء حساب', email: 'البريد الإلكتروني', password: 'كلمة المرور',
+    confirmPass: 'تأكيد كلمة المرور', submitLogin: '🔐 دخول', submitRegister: '🚀 إنشاء حساب مجاني',
+    logout: '🚪 تسجيل الخروج', myAccount: 'حسابي', freePlan: '🎁 خطة مجانية (6 استخدامات/ميزة)',
+    proPlan: '✨ حساب مدفوع', usageTitle: '📊 الاستخدام المجاني المتبقي', usageTTS: '✏️ نطق النص',
+    usageDub: '🎬 الدبلجة', usageSRT: '🌐 مترجم SRT', unlimited: '∞ مفتوح', used: 'انتهت',
+    ttsTitle: 'نطق النص', selectLang: 'اختر اللغة', voice: 'الصوت', typeText: 'اكتب النص...',
+    speed: 'السرعة', pitch: 'الطبقة', volume: 'الصوت', speak: 'نطق', pause: '⏸', clear: '🗑',
+    statusIdle: '👋 اكتب نصاً واضغط نطق', statusSpeaking: '🔊 جارٍ النطق...', statusDone: '✅ اكتمل',
+    statusError: '❌ خطأ في النطق', dubTitle: 'لغة الدبلجة', srtTitle: 'ملف SRT',
+    dragDrop: 'اسحب أو اضغط', srtFormat: '.srt أو .txt', pasteLabel: 'أو الصق المحتوى',
+    parseBtn: '📥 تحليل الملف', sentences: 'جملة', duration: 'المدة', copySRT: '📋',
+    genTitle: 'التوليد', genDesc1: '🔇 معالجة <strong>صامتة</strong> عبر سيرفر سحابي',
+    genDesc2: '⏱️ تزامن دقيق مع توقيتات SRT', genDesc3: '📤 ملف WAV لـ YouTube Dubbing',
+    genBtn: 'توليد الدبلجة', genNote: 'يتطلب سيرفر Render شغال', processing: 'جارٍ...',
+    remaining: 'المتبقي', elapsed: 'مضى', total: 'المجموع', cancel: '⏹ إلغاء',
+    ready: '🎉 جاهز', download: '⬇️ تنزيل WAV', youtubeTip: '📤 YouTube Studio → دبلجة',
+    dubStatus: 'تأكد سيرفر Render شغال ثم اضغط', srtTransTitle: 'مترجم SRT',
+    selectTransLang: '1. اختر لغة الترجمة', sourceText: '2. النص المصدر (SRT)',
+    pasteSrc: '📋 لصق', translateBtn: '🚀 ترجمة', result: '✅ النتيجة',
+    copyResult: '📋 نسخ', downloadSRT: '⬇️ تنزيل SRT', transStatus: 'جاهز',
+    cleanTitle: 'تنظيف النص من الفراغات', pasteClean: '📋 لصق',
+    removeNumbers: 'حذف الأرقام', removeTime: 'حذف التوقيتات', removeEmpty: 'حذف الأسطر الفارغة',
+    cleanBtn: '🧹 تنظيف النص', cleanOutput: '✨ النص بعد التنظيف', copyClean: '📋 نسخ',
+    dlClean: '⬇️ تنزيل', cleanStatus: 'الصق نصاً واضغط تنظيف',
+    storeTitle: '🛒 المتجر — ترقية الحساب',
+    storeDesc: 'ادفع مرة واحدة واستمتع مدى الحياة · مدعوم بـ Lemon Squeezy',
+    buyTTS: 'تفعيل النطق مدى الحياة', buyDub: 'فتح الدبلجة مدى الحياة',
+    buySRT: 'شراء المترجم مدى الحياة', priceLabel: 'مدى الحياة', buyBtn: '💳 شراء الآن',
+    securePay: '🔒 دفع آمن عبر Lemon Squeezy', lockTTS: 'نطق النص — مقفل',
+    lockDub: 'الدبلجة — مقفلة', lockSRT: 'مترجم SRT — مقفل',
+    lockSubGuest: 'سجّل دخولك للحصول على 6 استخدامات مجانية',
+    lockSubDubGuest: 'سجّل للتجربة المجانية (30 ث) أو اشترِ للملف الكامل',
+    lockSubUsed: 'اشترِ الميزة للاستمرار بدون قيود', lockActionGuest: '👤 سجّل للاستخدام المجاني',
+    lockActionBuy: '💎 اشترِ مقابل $10', lockActionBuyDub: '🚀 اشترِ مقابل $50',
+    filtersTitle: '🎛️ الفلاتر الصوتية', bass: 'Bass', mid: 'Mid', treble: 'Treble',
+    resetFilters: '🔄 إعادة تعيين', presetMale: '👨 رجالي', presetRadio: '📻 راديو',
+    presetWarm: '🌟 دافئ', presetFast: '⚡ سريع',
+    toastCopied: '✅ تم النسخ', toastWarnUses: '⚠️ تبقّى {n} استخدام مجاني فقط!',
+    footer: 'sl-Dubbing & Translation · GitHub + Render · gTTS · مجاني 100%'
+  },
+  en: {
+    login: 'Sign In', register: 'Create Account', email: 'Email Address', password: 'Password',
+    confirmPass: 'Confirm Password', submitLogin: '🔐 Sign In', submitRegister: '🚀 Create Free Account',
+    logout: '🚪 Sign Out', myAccount: 'My Account', freePlan: '🎁 Free Plan (6 uses/feature)',
+    proPlan: '✨ Pro Account', usageTitle: '📊 Remaining Free Usage', usageTTS: '✏️ Text-to-Speech',
+    usageDub: '🎬 Dubbing', usageSRT: '🌐 SRT Translator', unlimited: '∞ Unlimited', used: 'Used up',
+    ttsTitle: 'Text-to-Speech', selectLang: 'Select Language', voice: 'Voice', typeText: 'Type your text...',
+    speed: 'Speed', pitch: 'Pitch', volume: 'Volume', speak: 'Speak', pause: '⏸', clear: '🗑',
+    statusIdle: '👋 Type text and press Speak', statusSpeaking: '🔊 Speaking...', statusDone: '✅ Done',
+    statusError: '❌ Speech error', dubTitle: 'Dubbing Language', srtTitle: 'SRT File',
+    dragDrop: 'Drag & Drop or Click', srtFormat: '.srt or .txt', pasteLabel: 'Or paste content',
+    parseBtn: '📥 Parse File', sentences: 'sentences', duration: 'Duration', copySRT: '📋',
+    genTitle: 'Generate', genDesc1: '🔇 <strong>Silent</strong> cloud processing',
+    genDesc2: '⏱️ Precise sync with SRT timestamps', genDesc3: '📤 WAV file for YouTube Dubbing',
+    genBtn: 'Generate Dubbing', genNote: 'Requires active Render backend', processing: 'Processing...',
+    remaining: 'Remaining', elapsed: 'Elapsed', total: 'Total', cancel: '⏹ Cancel',
+    ready: '🎉 Ready', download: '⬇️ Download WAV', youtubeTip: '📤 YouTube Studio → Dubbing',
+    dubStatus: 'Ensure Render server is running, then click', srtTransTitle: 'SRT Translator',
+    selectTransLang: '1. Select Target Language', sourceText: '2. Source Text (SRT)',
+    pasteSrc: '📋 Paste', translateBtn: '🚀 Translate', result: '✅ Result',
+    copyResult: '📋 Copy', downloadSRT: '⬇️ Download SRT', transStatus: 'Ready',
+    cleanTitle: 'Clean Text from Extras', pasteClean: '📋 Paste',
+    removeNumbers: 'Remove Numbers', removeTime: 'Remove Timestamps', removeEmpty: 'Remove Empty Lines',
+    cleanBtn: '🧹 Clean Text', cleanOutput: '✨ Cleaned Text', copyClean: '📋 Copy',
+    dlClean: '⬇️ Download', cleanStatus: 'Paste text and click Clean',
+    storeTitle: '🛒 Store — Upgrade Account',
+    storeDesc: 'One-time payment, lifetime access · Powered by Lemon Squeezy',
+    buyTTS: 'Unlock TTS Lifetime', buyDub: 'Unlock Dubbing Lifetime',
+    buySRT: 'Unlock Translator Lifetime', priceLabel: 'Lifetime', buyBtn: '💳 Buy Now',
+    securePay: '🔒 Secure payment via Lemon Squeezy', lockTTS: 'Text-to-Speech — Locked',
+    lockDub: 'Dubbing — Locked', lockSRT: 'SRT Translator — Locked',
+    lockSubGuest: 'Sign in to get 6 free uses',
+    lockSubDubGuest: 'Sign in for free trial (30s) or buy for full file',
+    lockSubUsed: 'Purchase feature to continue without limits', lockActionGuest: '👤 Sign in for free uses',
+    lockActionBuy: '💎 Buy for $10', lockActionBuyDub: '🚀 Buy for $50',
+    filtersTitle: '🎛️ Audio Filters', bass: 'Bass', mid: 'Mid', treble: 'Treble',
+    resetFilters: '🔄 Reset', presetMale: '👨 Male', presetRadio: '📻 Radio',
+    presetWarm: '🌟 Warm', presetFast: '⚡ Fast',
+    toastCopied: '✅ Copied', toastWarnUses: '⚠️ Only {n} free uses remaining!',
+    footer: 'sl-Dubbing & Translation · GitHub + Render · gTTS · 100% Free'
+  }
+};
+
+// =============================================================
+// 🌍 دوال الترجمة
+// =============================================================
+function applyTranslation(el, key, lang) {
+  if (!el || !I18N[lang] || !I18N[lang][key]) return;
+  if (el.dataset.i18nHtml === 'true') {
+    el.innerHTML = I18N[lang][key];
+  } else {
+    el.textContent = I18N[lang][key];
+  }
+}
+
+function applyAllTranslations(lang) {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    applyTranslation(el, el.dataset.i18n, lang);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    if (I18N[lang]?.[el.dataset.i18nPlaceholder]) {
+      el.placeholder = I18N[lang][el.dataset.i18nPlaceholder];
+    }
+  });
+  updateDynamicText(lang);
+}
+
+function updateDynamicText(lang) {
+  const t = I18N[lang];
+  if (!t) return;
+  const s1 = document.getElementById('s1');
+  if (s1 && !s1.textContent.includes('جارٍ') && !s1.textContent.includes('خطأ')) {
+    s1.textContent = t.statusIdle;
+  }
+  if (currentUser) {
+    const anyUnlocked = ['tts','dub','srt'].some(f => getUnlocked()[f]);
+    document.getElementById('userPlanBadge').textContent = anyUnlocked ? t.proPlan : t.freePlan;
+  }
+}
+
+// =============================================================
+// 🎁 تتبع استخدام الضيوف (6 محاولات مجانية لكل ميزة)
+// =============================================================
+const GUEST_LIMIT = 6;
+const GUEST_USAGE_KEY = 'sl_guest_usage';
+
+function getGuestUsage() {
+  try { return JSON.parse(localStorage.getItem(GUEST_USAGE_KEY) || '{}'); }
+  catch { return {tts:0, dub:0, srt:0}; }
+}
+function saveGuestUsage(u) {
+  try { localStorage.setItem(GUEST_USAGE_KEY, JSON.stringify(u)); } catch {}
+}
+function getGuestUsesLeft(feature) {
+  const u = getGuestUsage();
+  return Math.max(0, GUEST_LIMIT - (u[feature] || 0));
+}
+function consumeGuestUse(feature) {
+  const u = getGuestUsage();
+  u[feature] = (u[feature] || 0) + 1;
+  saveGuestUsage(u);
+  return getGuestUsesLeft(feature);
+}
+
 // =============================================================
 // CONFIG
 // =============================================================
 const BACKEND_URL = 'https://YOUR-BACKEND-ON-RENDER.onrender.com';
-
 // =============================================================
 // SIMPLE AUTH + LOCAL USERS
 // =============================================================
@@ -608,891 +733,790 @@ const AUTH_KEY = 'alhashmi_users';
 const SESSION_KEY = 'alhashmi_session';
 const UNLOCK_KEY = 'alhashmi_unlocked';
 const FEATURES = ['tts', 'dub', 'srt'];
-
 function getUsers()   { try { return JSON.parse(localStorage.getItem(AUTH_KEY) || '{}'); } catch(e) { return {}; } }
 function saveUsers(u) { try { localStorage.setItem(AUTH_KEY, JSON.stringify(u)); } catch(e) {} }
 function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch(e) { return null; } }
 function saveSession(s) { try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch(e) {} }
 function clearSession() { try { localStorage.removeItem(SESSION_KEY); } catch(e) {} }
-
 function getUnlocked() { try { return JSON.parse(localStorage.getItem(UNLOCK_KEY) || '{}'); } catch(e) { return {}; } }
 function setUnlockedState(u) { try { localStorage.setItem(UNLOCK_KEY, JSON.stringify(u || {})); } catch(e) {} }
 function clearUnlocked() { try { localStorage.removeItem(UNLOCK_KEY); } catch(e) {} }
-
 let currentUser = null;
-
 function simpleHash(str) {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
-    return h.toString(36);
+let h = 0;
+for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+return h.toString(36);
 }
-
 function getUserData(email) { const users = getUsers(); return users[email] || null; }
-
 function getUsageLeft(email, feature) {
-    const u = getUserData(email);
-    if (!u) return 0;
-
-    const localUnlocked = getUnlocked();
-    if ((u.unlocked && u.unlocked[feature]) || localUnlocked[feature]) return Infinity;
-
-    return Math.max(0, FREE_LIMIT - ((u.usage && u.usage[feature]) || 0));
+const u = getUserData(email);
+if (!u) return 0;
+const localUnlocked = getUnlocked();
+if ((u.unlocked && u.unlocked[feature]) || localUnlocked[feature]) return Infinity;
+return Math.max(0, FREE_LIMIT - ((u.usage && u.usage[feature]) || 0));
 }
-
 function consumeUse(feature) {
-    if (!currentUser) return false;
-    const users = getUsers();
-    const u = users[currentUser.email];
-    if (!u) return false;
-
-    const localUnlocked = getUnlocked();
-    if ((u.unlocked && u.unlocked[feature]) || localUnlocked[feature]) return true;
-
-    u.usage = u.usage || {};
-    u.usage[feature] = (u.usage[feature] || 0) + 1;
-    saveUsers(users);
-    updateUsageUI();
-    return true;
+if (!currentUser) return false;
+const users = getUsers();
+const u = users[currentUser.email];
+if (!u) return false;
+const localUnlocked = getUnlocked();
+if ((u.unlocked && u.unlocked[feature]) || localUnlocked[feature]) return true;
+u.usage = u.usage || {};
+u.usage[feature] = (u.usage[feature] || 0) + 1;
+saveUsers(users);
+updateUsageUI();
+return true;
 }
-
 function showAuthMsg(form, msg, type) {
-    const el = document.getElementById(form + '-msg');
-    if (!el) return;
-    el.textContent = msg;
-    el.className = 'auth-msg ' + type;
+const el = document.getElementById(form + '-msg');
+if (!el) return;
+el.textContent = msg;
+el.className = 'auth-msg ' + type;
 }
-
 function showToast(msg, type) {
-    const colors = {
-        ok:'#059669,#10b981',
-        er:'#dc2626,#ef4444',
-        wn:'#d97706,#f59e0b'
-    };
-    const c = colors[type] || colors.ok;
-    const n = document.createElement('div');
-    n.style.cssText = `position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,${c});color:white;padding:11px 22px;border-radius:12px;font-weight:700;font-size:.82rem;box-shadow:0 8px 30px rgba(0,0,0,.4);transition:opacity .5s;white-space:nowrap`;
-    n.textContent = msg;
-    document.body.appendChild(n);
-    setTimeout(() => {
-        n.style.opacity='0';
-        setTimeout(()=>n.remove(),500);
-    }, 2800);
+const colors = {
+ok:'#059669,#10b981',
+er:'#dc2626,#ef4444',
+wn:'#d97706,#f59e0b'
+};
+const c = colors[type] || colors.ok;
+const n = document.createElement('div');
+n.style.cssText = `position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,${c});color:white;padding:11px 22px;border-radius:12px;font-weight:700;font-size:.82rem;box-shadow:0 8px 30px rgba(0,0,0,.4);transition:opacity .5s;white-space:nowrap`;
+n.textContent = msg;
+document.body.appendChild(n);
+setTimeout(() => {
+n.style.opacity='0';
+setTimeout(()=>n.remove(),500);
+}, 2800);
 }
-
 function switchAuthTab(tab) {
-    document.getElementById('form-login').style.display    = tab === 'login' ? 'block' : 'none';
-    document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
-    document.getElementById('tab-login').classList.toggle('on', tab === 'login');
-    document.getElementById('tab-register').classList.toggle('on', tab === 'register');
+document.getElementById('form-login').style.display    = tab === 'login' ? 'block' : 'none';
+document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+document.getElementById('tab-login').classList.toggle('on', tab === 'login');
+document.getElementById('tab-register').classList.toggle('on', tab === 'register');
 }
-
 function toggleAuthDropdown() {
-    document.getElementById('authDropdown').classList.toggle('show');
-    document.getElementById('langDropdown').classList.remove('show');
+document.getElementById('authDropdown').classList.toggle('show');
+document.getElementById('langDropdown').classList.remove('show');
 }
-
 function openAuthDropdown() {
-    document.getElementById('authDropdown').classList.add('show');
-    document.getElementById('langDropdown').classList.remove('show');
+document.getElementById('authDropdown').classList.add('show');
+document.getElementById('langDropdown').classList.remove('show');
 }
-
 function closeAuthDropdown() {
-    document.getElementById('authDropdown').classList.remove('show');
+document.getElementById('authDropdown').classList.remove('show');
 }
-
 function doRegister() {
-    const email = document.getElementById('reg-email').value.trim().toLowerCase();
-    const pass  = document.getElementById('reg-pass').value;
-    const pass2 = document.getElementById('reg-pass2').value;
-
-    if (!email || !email.includes('@')) {
-        showAuthMsg('register', '⚠️ أدخل بريدًا إلكترونيًا صحيحًا', 'er');
-        return;
-    }
-    if (!email.endsWith('@gmail.com')) {
-        showAuthMsg('register', '⚠️ مقبول فقط بريد Gmail (@gmail.com)', 'er');
-        return;
-    }
-    if (pass.length < 8) {
-        showAuthMsg('register', '⚠️ كلمة المرور 8 أحرف على الأقل', 'er');
-        return;
-    }
-    if (pass !== pass2) {
-        showAuthMsg('register', '⚠️ كلمتا المرور غير متطابقتان', 'er');
-        return;
-    }
-
-    const users = getUsers();
-    if (users[email]) {
-        showAuthMsg('register', '⚠️ البريد مسجّل مسبقًا', 'er');
-        return;
-    }
-
-    const btn = document.getElementById('registerBtn');
-    btn.classList.add('loading');
-    btn.disabled = true;
-
-    setTimeout(() => {
-        const token = Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
-        users[email] = {
-            hash: simpleHash(pass),
-            usage: { tts:0, dub:0, srt:0 },
-            unlocked: { tts:false, dub:false, srt:false },
-            createdAt: Date.now(),
-            verified: false,
-            token: token
-        };
-        saveUsers(users);
-
-        const verifyLink = `${window.location.origin}${window.location.pathname}?verify=${token}`;
-        console.log('📧 رابط التفعيل:', verifyLink);
-
-        showAuthMsg('register', '✅ تم التسجيل! افتح Console أو Alert للحصول على رابط التفعيل', 'ok');
-
-        setTimeout(() => {
-            const alertMsg =
-                `🎉 تم إنشاء حسابك بنجاح!\n\n` +
-                `📧 رابط التفعيل:\n${verifyLink}\n\n` +
-                `⚠️ هذه نسخة تطوير. في الإنتاج أرسل الرابط بالإيميل.\n\n` +
-                `انسخ الرابط وافتحه في المتصفح.`;
-            alert(alertMsg);
-        }, 400);
-
-        btn.classList.remove('loading');
-        btn.disabled = false;
-    }, 600);
+const email = document.getElementById('reg-email').value.trim().toLowerCase();
+const pass  = document.getElementById('reg-pass').value;
+const pass2 = document.getElementById('reg-pass2').value;
+if (!email || !email.includes('@')) {
+showAuthMsg('register', '⚠️ أدخل بريدًا إلكترونيًا صحيحًا', 'er');
+return;
 }
-
+if (!email.endsWith('@gmail.com')) {
+showAuthMsg('register', '⚠️ مقبول فقط بريد Gmail (@gmail.com)', 'er');
+return;
+}
+if (pass.length < 8) {
+showAuthMsg('register', '⚠️ كلمة المرور 8 أحرف على الأقل', 'er');
+return;
+}
+if (pass !== pass2) {
+showAuthMsg('register', '⚠️ كلمتا المرور غير متطابقتان', 'er');
+return;
+}
+const users = getUsers();
+if (users[email]) {
+showAuthMsg('register', '⚠️ البريد مسجّل مسبقًا', 'er');
+return;
+}
+const btn = document.getElementById('registerBtn');
+btn.classList.add('loading');
+btn.disabled = true;
+setTimeout(() => {
+const token = Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
+users[email] = {
+hash: simpleHash(pass),
+usage: { tts:0, dub:0, srt:0 },
+unlocked: { tts:false, dub:false, srt:false },
+createdAt: Date.now(),
+verified: false,
+token: token
+};
+saveUsers(users);
+const verifyLink = `${window.location.origin}${window.location.pathname}?verify=${token}`;
+console.log('📧 رابط التفعيل:', verifyLink);
+showAuthMsg('register', '✅ تم التسجيل! افتح Console أو Alert للحصول على رابط التفعيل', 'ok');
+setTimeout(() => {
+const alertMsg =
+`🎉 تم إنشاء حسابك بنجاح!
+` +
+`📧 رابط التفعيل:
+${verifyLink}
+` +
+`⚠️ هذه نسخة تطوير. في الإنتاج أرسل الرابط بالإيميل.
+` +
+`انسخ الرابط وافتحه في المتصفح.`;
+alert(alertMsg);
+}, 400);
+btn.classList.remove('loading');
+btn.disabled = false;
+}, 600);
+}
 function checkVerificationToken() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('verify');
-    if (!token) return;
-
-    const users = getUsers();
-    let verified = false;
-    let verifiedEmail = '';
-
-    for (let email in users) {
-        if (users[email].token === token && !users[email].verified) {
-            users[email].verified = true;
-            delete users[email].token;
-            saveUsers(users);
-            verified = true;
-            verifiedEmail = email;
-            break;
-        }
-    }
-
-    if (verified) {
-        showToast('🎉 تم تفعيل حساب ' + verifiedEmail + ' بنجاح! يمكنك الآن تسجيل الدخول', 'ok');
-        setTimeout(() => {
-            openAuthDropdown();
-            switchAuthTab('login');
-            document.getElementById('login-email').value = verifiedEmail;
-        }, 900);
-    } else {
-        showToast('❌ رابط التفعيل غير صالح أو مستخدم مسبقًا', 'er');
-    }
-
-    window.history.replaceState({}, document.title, window.location.pathname);
+const urlParams = new URLSearchParams(window.location.search);
+const token = urlParams.get('verify');
+if (!token) return;
+const users = getUsers();
+let verified = false;
+let verifiedEmail = '';
+for (let email in users) {
+if (users[email].token === token && !users[email].verified) {
+users[email].verified = true;
+delete users[email].token;
+saveUsers(users);
+verified = true;
+verifiedEmail = email;
+break;
 }
-
+}
+if (verified) {
+showToast('🎉 تم تفعيل حساب ' + verifiedEmail + ' بنجاح! يمكنك الآن تسجيل الدخول', 'ok');
+setTimeout(() => {
+openAuthDropdown();
+switchAuthTab('login');
+document.getElementById('login-email').value = verifiedEmail;
+}, 900);
+} else {
+showToast('❌ رابط التفعيل غير صالح أو مستخدم مسبقًا', 'er');
+}
+window.history.replaceState({}, document.title, window.location.pathname);
+}
 async function doLogin() {
-    const email = document.getElementById('login-email').value.trim().toLowerCase();
-    const pass  = document.getElementById('login-pass').value;
-
-    if (!email || !email.includes('@')) {
-        showAuthMsg('login', '⚠️ أدخل البريد الإلكتروني', 'er');
-        return;
-    }
-    if (!pass) {
-        showAuthMsg('login', '⚠️ أدخل كلمة المرور', 'er');
-        return;
-    }
-
-    const btn = document.getElementById('loginBtn');
-    btn.classList.add('loading');
-    btn.disabled = true;
-
-    setTimeout(async () => {
-        const users = getUsers();
-        const u = users[email];
-
-        if (!u || u.hash !== simpleHash(pass)) {
-            showAuthMsg('login', '❌ البريد أو كلمة المرور غير صحيحة', 'er');
-            btn.classList.remove('loading');
-            btn.disabled = false;
-            return;
-        }
-
-        if (!u.verified) {
-            showAuthMsg('login', '⚠️ يجب تفعيل الحساب أولاً', 'er');
-            btn.classList.remove('loading');
-            btn.disabled = false;
-            return;
-        }
-
-        await loginUser(email);
-        showAuthMsg('login', '✅ مرحبًا بك!', 'ok');
-        btn.classList.remove('loading');
-        btn.disabled = false;
-
-        setTimeout(() => closeAuthDropdown(), 900);
-    }, 600);
+const email = document.getElementById('login-email').value.trim().toLowerCase();
+const pass  = document.getElementById('login-pass').value;
+if (!email || !email.includes('@')) {
+showAuthMsg('login', '⚠️ أدخل البريد الإلكتروني', 'er');
+return;
 }
-
+if (!pass) {
+showAuthMsg('login', '⚠️ أدخل كلمة المرور', 'er');
+return;
+}
+const btn = document.getElementById('loginBtn');
+btn.classList.add('loading');
+btn.disabled = true;
+setTimeout(async () => {
+const users = getUsers();
+const u = users[email];
+if (!u || u.hash !== simpleHash(pass)) {
+showAuthMsg('login', '❌ البريد أو كلمة المرور غير صحيحة', 'er');
+btn.classList.remove('loading');
+btn.disabled = false;
+return;
+}
+if (!u.verified) {
+showAuthMsg('login', '⚠️ يجب تفعيل الحساب أولاً', 'er');
+btn.classList.remove('loading');
+btn.disabled = false;
+return;
+}
+await loginUser(email);
+showAuthMsg('login', '✅ مرحبًا بك!', 'ok');
+btn.classList.remove('loading');
+btn.disabled = false;
+setTimeout(() => closeAuthDropdown(), 900);
+}, 600);
+}
 async function loginUser(email) {
-    saveSession({ email });
-    currentUser = { email, initial: email[0].toUpperCase() };
-
-    const users = getUsers();
-    if (users[email] && users[email].unlocked) {
-        setUnlockedState(users[email].unlocked);
-    }
-
-    renderAuthState();
-    syncUIFromUnlockedState();
-    updateLockStates();
-    updateUsageUI();
-
-    await refreshEntitlements();
+saveSession({ email });
+currentUser = { email, initial: email[0].toUpperCase() };
+const users = getUsers();
+if (users[email] && users[email].unlocked) {
+setUnlockedState(users[email].unlocked);
 }
-
+renderAuthState();
+syncUIFromUnlockedState();
+updateLockStates();
+updateUsageUI();
+await refreshEntitlements();
+}
 function logoutUser() {
-    clearSession();
-    currentUser = null;
-    clearUnlocked();
-    renderAuthState();
-    updateLockStates();
-    closeAuthDropdown();
+clearSession();
+currentUser = null;
+clearUnlocked();
+renderAuthState();
+updateLockStates();
+closeAuthDropdown();
 }
-
 function renderAuthState() {
-    const loggedIn = !!currentUser;
-    document.getElementById('authBtnLabel').textContent = loggedIn ? currentUser.email.split('@')[0] : 'تسجيل الدخول';
-
-    const btn = document.getElementById('authToggleBtn');
-    const svgIcon = btn.querySelector('svg:first-child');
-    let avatarEl = btn.querySelector('.auth-avatar');
-
-    if (loggedIn) {
-        if (!avatarEl) {
-            avatarEl = document.createElement('span');
-            avatarEl.className = 'auth-avatar';
-            btn.insertBefore(avatarEl, btn.firstChild);
-            if (svgIcon) svgIcon.style.display = 'none';
-        }
-        avatarEl.textContent = currentUser.initial;
-        document.getElementById('userAvatarLg').textContent = currentUser.initial;
-    } else {
-        if (avatarEl) avatarEl.remove();
-        if (svgIcon) svgIcon.style.display = '';
-    }
-
-    document.getElementById('userPanel').style.display = loggedIn ? 'block' : 'none';
-    document.getElementById('authForms').style.display = loggedIn ? 'none' : 'block';
-
-    if (loggedIn) {
-        document.getElementById('userEmailDisplay').textContent = currentUser.email;
-        updateUsageUI();
-    }
+const loggedIn = !!currentUser;
+document.getElementById('authBtnLabel').textContent = loggedIn ? currentUser.email.split('@')[0] : 'تسجيل الدخول';
+const btn = document.getElementById('authToggleBtn');
+const svgIcon = btn.querySelector('svg:first-child');
+let avatarEl = btn.querySelector('.auth-avatar');
+if (loggedIn) {
+if (!avatarEl) {
+avatarEl = document.createElement('span');
+avatarEl.className = 'auth-avatar';
+btn.insertBefore(avatarEl, btn.firstChild);
+if (svgIcon) svgIcon.style.display = 'none';
 }
-
+avatarEl.textContent = currentUser.initial;
+document.getElementById('userAvatarLg').textContent = currentUser.initial;
+} else {
+if (avatarEl) avatarEl.remove();
+if (svgIcon) svgIcon.style.display = '';
+}
+document.getElementById('userPanel').style.display = loggedIn ? 'block' : 'none';
+document.getElementById('authForms').style.display = loggedIn ? 'none' : 'block';
+if (loggedIn) {
+document.getElementById('userEmailDisplay').textContent = currentUser.email;
+updateUsageUI();
+}
+}
 function updateUsageUI() {
-    if (!currentUser) return;
-    const users = getUsers();
-    const u = users[currentUser.email];
-    if (!u) return;
-
-    const localUnlocked = getUnlocked();
-
-    FEATURES.forEach(f => {
-        const unlimited = (u.unlocked && u.unlocked[f]) || localUnlocked[f];
-        const used = (u.usage && u.usage[f]) || 0;
-        const left = unlimited ? Infinity : Math.max(0, FREE_LIMIT - used);
-        const pct = unlimited ? 100 : (left / FREE_LIMIT) * 100;
-        const ucEl = document.getElementById('uc-' + f);
-        const ubEl = document.getElementById('ub-' + f);
-
-        if (ucEl) {
-            if (unlimited) {
-                ucEl.textContent = '∞ مفتوح';
-                ucEl.className = 'usage-count unlimited';
-            } else if (left > 0) {
-                ucEl.textContent = left + '/' + FREE_LIMIT;
-                ucEl.className = 'usage-count has-uses';
-            } else {
-                ucEl.textContent = '0/' + FREE_LIMIT + ' انتهت';
-                ucEl.className = 'usage-count no-uses';
-            }
-        }
-        if (ubEl) ubEl.style.width = Math.max(0, pct) + '%';
-    });
-
-    const anyUnlocked = FEATURES.some(f => (u.unlocked && u.unlocked[f]) || localUnlocked[f]);
-    document.getElementById('userPlanBadge').textContent = anyUnlocked ? '✨ حساب مدفوع' : '🎁 خطة مجانية (6 استخدامات/ميزة)';
+if (!currentUser) return;
+const users = getUsers();
+const u = users[currentUser.email];
+if (!u) return;
+const localUnlocked = getUnlocked();
+FEATURES.forEach(f => {
+const unlimited = (u.unlocked && u.unlocked[f]) || localUnlocked[f];
+const used = (u.usage && u.usage[f]) || 0;
+const left = unlimited ? Infinity : Math.max(0, FREE_LIMIT - used);
+const pct = unlimited ? 100 : (left / FREE_LIMIT) * 100;
+const ucEl = document.getElementById('uc-' + f);
+const ubEl = document.getElementById('ub-' + f);
+if (ucEl) {
+if (unlimited) {
+ucEl.textContent = '∞ مفتوح';
+ucEl.className = 'usage-count unlimited';
+} else if (left > 0) {
+ucEl.textContent = left + '/' + FREE_LIMIT;
+ucEl.className = 'usage-count has-uses';
+} else {
+ucEl.textContent = '0/' + FREE_LIMIT + ' انتهت';
+ucEl.className = 'usage-count no-uses';
 }
-
+}
+if (ubEl) ubEl.style.width = Math.max(0, pct) + '%';
+});
+const anyUnlocked = FEATURES.some(f => (u.unlocked && u.unlocked[f]) || localUnlocked[f]);
+document.getElementById('userPlanBadge').textContent = anyUnlocked ? '✨ حساب مدفوع' : '🎁 خطة مجانية (6 استخدامات/ميزة)';
+}
 function getLockTitle(f) {
-    return {
-        tts:'نطق النص — مقفل',
-        dub:'الدبلجة — مقفلة',
-        srt:'مترجم SRT — مقفل'
-    }[f];
+return {
+tts:'نطق النص — مقفل',
+dub:'الدبلجة — مقفلة',
+srt:'مترجم SRT — مقفل'
+}[f];
 }
-
 function getBuyLabel(f) {
-    return {
-        tts:'💎 اشترِ مقابل $10',
-        dub:'🚀 اشترِ مقابل $50',
-        srt:'🌍 اشترِ مقابل $10'
-    }[f];
+return {
+tts:'💎 اشترِ مقابل $10',
+dub:'🚀 اشترِ مقابل $50',
+srt:'🌍 اشترِ مقابل $10'
+}[f];
 }
-
 function lockAction(f) {
-    if (!currentUser) openAuthDropdown();
-    else startCheckout(f);
+if (!currentUser) openAuthDropdown();
+else startCheckout(f);
 }
-
 function updateLockStates() {
-    FEATURES.forEach(f => {
-        const zone = document.getElementById('zone-' + f);
-        const lock = document.getElementById('lock-' + f);
-        if (!zone || !lock) return;
-
-        const unlocked = getUnlocked();
-
-        if (unlocked[f]) {
-            lock.classList.remove('active');
-            zone.classList.add('unlocked');
-            return;
-        }
-
-        if (!currentUser) {
-            lock.classList.add('active');
-            zone.classList.remove('unlocked');
-            document.getElementById('lock-icon-'  + f).textContent = '🔒';
-            document.getElementById('lock-title-' + f).textContent = getLockTitle(f);
-            document.getElementById('lock-sub-'   + f).textContent = f === 'dub' ? 'سجّل للتجربة المجانية (30 ث) أو اشترِ للملف الكامل' : 'سجّل دخولك للحصول على 6 استخدامات مجانية';
-            document.getElementById('lock-free-'  + f).style.display = 'none';
-            document.getElementById('lock-uses-'  + f).style.display = 'none';
-            const ab = document.getElementById('lock-action-' + f);
-            ab.textContent = '👤 سجّل للاستخدام المجاني';
-            ab.className = 'lock-buy-hint ' + f + '-btn';
-            ab.onclick = () => openAuthDropdown();
-            return;
-        }
-
-        const left = getUsageLeft(currentUser.email, f);
-        if (left === Infinity || left > 0) {
-            lock.classList.remove('active');
-            zone.classList.add('unlocked');
-        } else {
-            lock.classList.add('active');
-            zone.classList.remove('unlocked');
-            document.getElementById('lock-icon-'  + f).textContent = '⛔';
-            document.getElementById('lock-title-' + f).textContent = 'انتهت الاستخدامات المجانية';
-            document.getElementById('lock-sub-'   + f).textContent = 'اشترِ الميزة للاستمرار بدون قيود';
-            document.getElementById('lock-free-'  + f).style.display = 'none';
-            document.getElementById('lock-uses-'  + f).style.display = 'none';
-            const ab = document.getElementById('lock-action-' + f);
-            ab.textContent = getBuyLabel(f);
-            ab.className = 'lock-buy-hint ' + f + '-btn';
-            ab.onclick = () => startCheckout(f);
-        }
-    });
+FEATURES.forEach(f => {
+const zone = document.getElementById('zone-' + f);
+const lock = document.getElementById('lock-' + f);
+if (!zone || !lock) return;
+const unlocked = getUnlocked();
+if (unlocked[f]) {
+lock.classList.remove('active');
+zone.classList.add('unlocked');
+return;
+}
+if (!currentUser) {
+lock.classList.add('active');
+zone.classList.remove('unlocked');
+document.getElementById('lock-icon-'  + f).textContent = '🔒';
+document.getElementById('lock-title-' + f).textContent = getLockTitle(f);
+const lang = localStorage.getItem('sl_lang') || 'ar';
+document.getElementById('lock-sub-'   + f).textContent = 
+  f === 'dub' ? (I18N[lang]?.lockSubDubGuest || 'Sign in for free trial (30s)') 
+              : (I18N[lang]?.lockSubGuest || 'Sign in to get 6 free uses');
+document.getElementById('lock-free-'  + f).style.display = 'none';
+document.getElementById('lock-uses-'  + f).style.display = 'none';
+const ab = document.getElementById('lock-action-' + f);
+ab.textContent = I18N[lang]?.lockActionGuest || '👤 Sign in for free uses';
+ab.className = 'lock-buy-hint ' + f + '-btn';
+ab.onclick = () => openAuthDropdown();
+return;
+}
+const left = getUsageLeft(currentUser.email, f);
+if (left === Infinity || left > 0) {
+lock.classList.remove('active');
+zone.classList.add('unlocked');
+} else {
+lock.classList.add('active');
+zone.classList.remove('unlocked');
+document.getElementById('lock-icon-'  + f).textContent = '⛔';
+document.getElementById('lock-title-' + f).textContent = 'انتهت الاستخدامات المجانية';
+const lang = localStorage.getItem('sl_lang') || 'ar';
+document.getElementById('lock-sub-'   + f).textContent = I18N[lang]?.lockSubUsed || 'Purchase feature to continue without limits';
+document.getElementById('lock-free-'  + f).style.display = 'none';
+document.getElementById('lock-uses-'  + f).style.display = 'none';
+const ab = document.getElementById('lock-action-' + f);
+ab.textContent = I18N[lang]?.lockActionBuy || '💎 Buy for $10';
+ab.className = 'lock-buy-hint ' + f + '-btn';
+ab.onclick = () => startCheckout(f);
+}
+});
 }
 
+// ✅ دالة guardedAction المعدلة لدعم الضيوف (6 محاولات مجانية)
 function guardedAction(feature, action) {
-    if (!currentUser) {
-        openAuthDropdown();
-        return false;
-    }
-
-    const left = getUsageLeft(currentUser.email, feature);
-    if (left === Infinity) {
-        action();
-        return true;
-    }
+  // إذا ضيف (غير مسجّل)
+  if (!currentUser) {
+    const left = getGuestUsesLeft(feature);
     if (left <= 0) {
-        updateLockStates();
-        return false;
+      openAuthDropdown();
+      const lang = localStorage.getItem('sl_lang') || 'ar';
+      showToast(I18N[lang]?.lockActionGuest || '👤 Sign in for free uses', 'wn');
+      return false;
     }
-
-    consumeUse(feature);
+    // خصم استخدام ضيف وتنفيذ الإجراء
+    const newLeft = consumeGuestUse(feature);
     action();
-
-    const newLeft = getUsageLeft(currentUser.email, feature);
     if (newLeft <= 2 && newLeft > 0) {
-        showToast('⚠️ تبقّى ' + newLeft + ' استخدام مجاني فقط!', 'wn');
-    } else if (newLeft === 0) {
-        setTimeout(() => updateLockStates(), 500);
+      const lang = localStorage.getItem('sl_lang') || 'ar';
+      showToast((I18N[lang]?.toastWarnUses || '⚠️ Only {n} free uses remaining!').replace('{n}', newLeft), 'wn');
     }
-
     return true;
+  }
+  
+  // إذا مسجّل دخول (الكود الأصلي)
+  const left = getUsageLeft(currentUser.email, feature);
+  if (left === Infinity) {
+    action();
+    return true;
+  }
+  if (left <= 0) {
+    updateLockStates();
+    return false;
+  }
+  consumeUse(feature);
+  action();
+  const newLeft = getUsageLeft(currentUser.email, feature);
+  if (newLeft <= 2 && newLeft > 0) {
+    const lang = localStorage.getItem('sl_lang') || 'ar';
+    showToast((I18N[lang]?.toastWarnUses || '⚠️ Only {n} free uses remaining!').replace('{n}', newLeft), 'wn');
+  } else if (newLeft === 0) {
+    setTimeout(() => updateLockStates(), 500);
+  }
+  return true;
 }
 
 async function initAuth() {
-    const s = getSession();
-
-    if (s && s.email) {
-        const users = getUsers();
-        if (users[s.email] && users[s.email].verified) {
-            currentUser = { email: s.email, initial: s.email[0].toUpperCase() };
-            if (users[s.email].unlocked) {
-                setUnlockedState(users[s.email].unlocked);
-            }
-        } else {
-            clearSession();
-        }
-    }
-
-    renderAuthState();
-    syncUIFromUnlockedState();
-    updateLockStates();
-
-    if (currentUser) {
-        await refreshEntitlements();
-    }
+const s = getSession();
+if (s && s.email) {
+const users = getUsers();
+if (users[s.email] && users[s.email].verified) {
+currentUser = { email: s.email, initial: s.email[0].toUpperCase() };
+if (users[s.email].unlocked) {
+setUnlockedState(users[s.email].unlocked);
 }
-
+} else {
+clearSession();
+}
+}
+renderAuthState();
+syncUIFromUnlockedState();
+updateLockStates();
+if (currentUser) {
+await refreshEntitlements();
+}
+}
 document.addEventListener('click', function(e) {
-    const sw = document.getElementById('authSwitcher');
-    if (sw && !sw.contains(e.target)) closeAuthDropdown();
-
-    const langSwitcher = document.querySelector('.lang-switcher');
-    if (langSwitcher && !langSwitcher.contains(e.target)) {
-        document.getElementById('langDropdown').classList.remove('show');
-    }
+const sw = document.getElementById('authSwitcher');
+if (sw && !sw.contains(e.target)) closeAuthDropdown();
+const langSwitcher = document.querySelector('.lang-switcher');
+if (langSwitcher && !langSwitcher.contains(e.target)) {
+document.getElementById('langDropdown').classList.remove('show');
+}
 });
-
 document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-        const ld = document.getElementById('authDropdown');
-        if (!ld.classList.contains('show')) return;
-
-        const loginActive = document.getElementById('form-login').style.display !== 'none';
-        if (loginActive) doLogin();
-        else doRegister();
-    }
+if (e.key === 'Enter') {
+const ld = document.getElementById('authDropdown');
+if (!ld.classList.contains('show')) return;
+const loginActive = document.getElementById('form-login').style.display !== 'none';
+if (loginActive) doLogin();
+else doRegister();
+}
 });
-
 // =============================================================
 // LEMON SQUEEZY + BACKEND ENTITLEMENTS
 // =============================================================
 const LS_URLS = {
-    tts: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/63c47294-0068-4206-a439-b0fca724b098',
-    dub: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/f92d46fb-65a6-4e53-bf13-5527cffa4e93',
-    srt: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/7e1f55d2-6e06-4525-954f-2306b9b3a20f'
+tts: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/63c47294-0068-4206-a439-b0fca724b098',
+dub: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/f92d46fb-65a6-4e53-bf13-5527cffa4e93',
+srt: 'https://sl-dubbing.lemonsqueezy.com/checkout/buy/7e1f55d2-6e06-4525-954f-2306b9b3a20f'
 };
-
 function startCheckout(product) {
-    const baseUrl = LS_URLS[product];
-    if (!baseUrl) {
-        showToast('❌ منتج غير معروف', 'er');
-        return;
-    }
-
-    const url = new URL(baseUrl);
-
-    if (currentUser?.email) {
-        url.searchParams.set('checkout[email]', currentUser.email);
-        url.searchParams.set('checkout[custom][app_user_email]', currentUser.email);
-    }
-
-    url.searchParams.set('checkout[custom][feature_hint]', product);
-    url.searchParams.set('checkout[custom][source]', 'sl-dubbing-web');
-
-    window.open(url.toString(), '_blank');
+const baseUrl = LS_URLS[product];
+if (!baseUrl) {
+showToast('❌ منتج غير معروف', 'er');
+return;
 }
-
+const url = new URL(baseUrl);
+if (currentUser?.email) {
+url.searchParams.set('checkout[email]', currentUser.email);
+url.searchParams.set('checkout[custom][app_user_email]', currentUser.email);
+}
+url.searchParams.set('checkout[custom][feature_hint]', product);
+url.searchParams.set('checkout[custom][source]', 'sl-dubbing-web');
+window.open(url.toString(), '_blank');
+}
 async function refreshEntitlements() {
-    if (!currentUser?.email) return;
-
-    try {
-        const res = await fetch(
-            `${BACKEND_URL}/api/entitlements?email=${encodeURIComponent(currentUser.email)}`,
-            { method: 'GET' }
-        );
-
-        if (!res.ok) throw new Error('Failed to load entitlements');
-
-        const data = await res.json();
-        const unlocked = data?.unlocked || {};
-
-        setUnlockedState(unlocked);
-
-        const users = getUsers();
-        if (users[currentUser.email]) {
-            users[currentUser.email].unlocked = { ...(users[currentUser.email].unlocked || {}), ...unlocked };
-            saveUsers(users);
-        }
-
-        syncUIFromUnlockedState();
-        updateLockStates();
-        updateUsageUI();
-    } catch (err) {
-        console.error('refreshEntitlements error:', err);
-    }
+if (!currentUser?.email) return;
+try {
+const res = await fetch(
+`${BACKEND_URL}/api/entitlements?email=${encodeURIComponent(currentUser.email)}`,
+{ method: 'GET' }
+);
+if (!res.ok) throw new Error('Failed to load entitlements');
+const data = await res.json();
+const unlocked = data?.unlocked || {};
+setUnlockedState(unlocked);
+const users = getUsers();
+if (users[currentUser.email]) {
+users[currentUser.email].unlocked = { ...(users[currentUser.email].unlocked || {}), ...unlocked };
+saveUsers(users);
 }
-
+syncUIFromUnlockedState();
+updateLockStates();
+updateUsageUI();
+} catch (err) {
+console.error('refreshEntitlements error:', err);
+}
+}
 function saveUnlocked(product) {
-    const u = getUnlocked();
-    u[product] = true;
-    setUnlockedState(u);
+const u = getUnlocked();
+u[product] = true;
+setUnlockedState(u);
 }
-
 function applyUnlockStates() {
-    const u = getUnlocked();
-    if (u.tts) unlockZone('tts', false);
-    if (u.dub) unlockZone('dub', false);
-    if (u.srt) unlockZone('srt', false);
+const u = getUnlocked();
+if (u.tts) unlockZone('tts', false);
+if (u.dub) unlockZone('dub', false);
+if (u.srt) unlockZone('srt', false);
 }
-
 function unlockZone(product, animate = true) {
-    const zone = document.getElementById('zone-' + product);
-    const lock = document.getElementById('lock-' + product);
-    if (!zone || !lock) return;
-
-    lock.classList.remove('active');
-    zone.classList.add('unlocked');
-
-    if (animate) {
-        zone.querySelectorAll('.card').forEach((c, i) => {
-            c.style.animationDelay = (i * 0.08) + 's';
-        });
-    }
-
-    const btn = document.getElementById('btn-' + product);
-    if (btn) {
-        btn.style.background='linear-gradient(135deg,#059669,#10b981)';
-        btn.innerHTML='<span class="btn-text">✅ مفعّل مدى الحياة</span>';
-        btn.disabled=true;
-    }
+const zone = document.getElementById('zone-' + product);
+const lock = document.getElementById('lock-' + product);
+if (!zone || !lock) return;
+lock.classList.remove('active');
+zone.classList.add('unlocked');
+if (animate) {
+zone.querySelectorAll('.card').forEach((c, i) => {
+c.style.animationDelay = (i * 0.08) + 's';
+});
 }
-
+const btn = document.getElementById('btn-' + product);
+if (btn) {
+btn.style.background='linear-gradient(135deg,#059669,#10b981)';
+btn.innerHTML='<span class="btn-text">✅ مفعّل مدى الحياة</span>';
+btn.disabled=true;
+}
+}
 function resetZoneButton(product) {
-    const btn = document.getElementById('btn-' + product);
-    if (!btn) return;
-
-    btn.disabled = false;
-    btn.innerHTML = '<span class="btn-text">💳 شراء الآن</span>';
-
-    if (product === 'tts') btn.style.background = 'linear-gradient(135deg,#4f46e5,#6366f1)';
-    if (product === 'dub') btn.style.background = 'linear-gradient(135deg,#d97706,#f59e0b)';
-    if (product === 'srt') btn.style.background = 'linear-gradient(135deg,#059669,#10b981)';
+const btn = document.getElementById('btn-' + product);
+if (!btn) return;
+btn.disabled = false;
+btn.innerHTML = '<span class="btn-text">💳 شراء الآن</span>';
+if (product === 'tts') btn.style.background = 'linear-gradient(135deg,#4f46e5,#6366f1)';
+if (product === 'dub') btn.style.background = 'linear-gradient(135deg,#d97706,#f59e0b)';
+if (product === 'srt') btn.style.background = 'linear-gradient(135deg,#059669,#10b981)';
 }
-
 function syncUIFromUnlockedState() {
-    const u = getUnlocked();
-
-    ['tts', 'dub', 'srt'].forEach(product => {
-        const zone = document.getElementById('zone-' + product);
-        const lock = document.getElementById('lock-' + product);
-        if (!zone || !lock) return;
-
-        if (u[product]) {
-            lock.classList.remove('active');
-            zone.classList.add('unlocked');
-            unlockZone(product, false);
-        } else {
-            zone.classList.remove('unlocked');
-            resetZoneButton(product);
-        }
-    });
+const u = getUnlocked();
+['tts', 'dub', 'srt'].forEach(product => {
+const zone = document.getElementById('zone-' + product);
+const lock = document.getElementById('lock-' + product);
+if (!zone || !lock) return;
+if (u[product]) {
+lock.classList.remove('active');
+zone.classList.add('unlocked');
+unlockZone(product, false);
+} else {
+zone.classList.remove('unlocked');
+resetZoneButton(product);
 }
-
+});
+}
 function showPaymentSuccess(product) {
-    saveUnlocked(product);
-
-    if (currentUser) {
-        const users = getUsers();
-        if (users[currentUser.email]) {
-            users[currentUser.email].unlocked = users[currentUser.email].unlocked || {};
-            users[currentUser.email].unlocked[product] = true;
-            saveUsers(users);
-        }
-    }
-
-    unlockZone(product, true);
-    updateLockStates();
-    updateUsageUI();
-    showToast('🎉 تم الدفع بنجاح! الميزة مفعّلة مدى الحياة.', 'ok');
+saveUnlocked(product);
+if (currentUser) {
+const users = getUsers();
+if (users[currentUser.email]) {
+users[currentUser.email].unlocked = users[currentUser.email].unlocked || {};
+users[currentUser.email].unlocked[product] = true;
+saveUsers(users);
 }
-
+}
+unlockZone(product, true);
+updateLockStates();
+updateUsageUI();
+showToast('🎉 تم الدفع بنجاح! الميزة مفعّلة مدى الحياة.', 'ok');
+}
 // =============================================================
 // APP LOGIC
 // =============================================================
 const langs = [
-    {c:'ar',f:'🇸🇦',n:'العربية',v:'ar'},{c:'en',f:'🇺🇸',n:'English',v:'en'},
-    {c:'ru',f:'🇷🇺',n:'Русский',v:'ru'},{c:'tr',f:'🇹🇷',n:'Türkçe',v:'tr'},
-    {c:'fr',f:'🇫🇷',n:'Français',v:'fr'},{c:'de',f:'🇩🇪',n:'Deutsch',v:'de'},
-    {c:'es',f:'🇪🇸',n:'Español',v:'es'},{c:'zh',f:'🇨🇳',n:'中文',v:'zh'},
-    {c:'hi',f:'🇮🇳',n:'हिन्दी',v:'hi'},{c:'fa',f:'🇮🇷',n:'فارسی',v:'fa'},
-    {c:'it',f:'🇮🇹',n:'Italiano',v:'it'},{c:'nl',f:'🇳🇱',n:'Nederlands',v:'nl'},
-    {c:'sv',f:'🇸🇪',n:'Svenska',v:'sv'},
+{c:'ar',f:'🇸🇦',n:'العربية',v:'ar'},{c:'en',f:'🇺🇸',n:'English',v:'en'},
+{c:'ru',f:'🇷🇺',n:'Русский',v:'ru'},{c:'tr',f:'🇹🇷',n:'Türkçe',v:'tr'},
+{c:'fr',f:'🇫🇷',n:'Français',v:'fr'},{c:'de',f:'🇩🇪',n:'Deutsch',v:'de'},
+{c:'es',f:'🇪🇸',n:'Español',v:'es'},{c:'zh',f:'🇨🇳',n:'中文',v:'zh'},
+{c:'hi',f:'🇮🇳',n:'हिन्दी',v:'hi'},{c:'fa',f:'🇮🇷',n:'فارسی',v:'fa'},
+{c:'it',f:'🇮🇹',n:'Italiano',v:'it'},{c:'nl',f:'🇳🇱',n:'Nederlands',v:'nl'},
+{c:'sv',f:'🇸🇪',n:'Svenska',v:'sv'},
 ];
-
 let selLang='ar', selDubLang='ar', selTransLang='en';
 let srtData=[], dubCancel=false, dubBlob=null;
 let curUtter=null, speaking=false;
-
 function buildLangGrid(id, sel, onPick) {
-    const g = document.getElementById(id);
-    if (!g) return;
-    g.innerHTML = langs.map(l => `<button class="lb${l.c===sel?' on':''}" onclick="${onPick}('${l.c}')"><span class="lf">${l.f}</span><span class="lang-text">${l.n}</span></button>`).join('');
+const g = document.getElementById(id);
+if (!g) return;
+g.innerHTML = langs.map(l => `<button class="lb${l.c===sel?' on':''}" onclick="${onPick}('${l.c}')"><span class="lf">${l.f}</span><span class="lang-text">${l.n}</span></button>`).join('');
 }
 function pickLang(c)      { selLang=c;      buildLangGrid('g1',c,'pickLang');      buildVoices(); }
 function pickDubLang(c)   { selDubLang=c;   buildLangGrid('g2',c,'pickDubLang'); }
 function pickTransLang(c) { selTransLang=c; buildTransGrid(); }
-
 function buildTransGrid() {
-    const g = document.getElementById('transLangs');
-    if (!g) return;
-    g.innerHTML = langs.map(l => `<button class="tbtn${l.c===selTransLang?' on':''}" onclick="pickTransLang('${l.c}')">${l.f} ${l.n}</button>`).join('');
+const g = document.getElementById('transLangs');
+if (!g) return;
+g.innerHTML = langs.map(l => `<button class="tbtn${l.c===selTransLang?' on':''}" onclick="pickTransLang('${l.c}')">${l.f} ${l.n}</button>`).join('');
 }
-
 function buildVoices() {
-    const vs = document.getElementById('vs');
-    if (!vs) return;
-    const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith(selLang));
-    vs.innerHTML = voices.length ? voices.map((v,i)=>`<option value="${i}">${v.name}</option>`).join('') : `<option>افتراضي</option>`;
+const vs = document.getElementById('vs');
+if (!vs) return;
+const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith(selLang));
+vs.innerHTML = voices.length ? voices.map((v,i)=>`<option value="${i}">${v.name}</option>`).join('') : `<option>افتراضي</option>`;
 }
-
 function tSpeak() {
-    const txt = document.getElementById('ti').value.trim();
-    if (!txt) { setSt('s1','⚠️ أدخل نصاً أولاً','er'); return; }
-
-    if (speechSynthesis.speaking) speechSynthesis.cancel();
-
-    const u = new SpeechSynthesisUtterance(txt);
-    const voices = speechSynthesis.getVoices().filter(v=>v.lang.startsWith(selLang));
-    const vi = parseInt(document.getElementById('vs').value) || 0;
-
-    if (voices[vi]) u.voice = voices[vi];
-    u.rate = parseFloat(document.getElementById('rr1').value);
-    u.pitch = parseFloat(document.getElementById('pr1').value);
-    u.volume = parseFloat(document.getElementById('vr1').value);
-    u.lang = selLang;
-
-    u.onstart = () => {
-        speaking = true;
-        setSt('s1','🔊 جارٍ النطق...','i');
-        document.getElementById('wv1').classList.add('on');
-    };
-    u.onend = () => {
-        speaking = false;
-        setSt('s1','✅ اكتمل','ok');
-        document.getElementById('wv1').classList.remove('on');
-    };
-    u.onerror = () => {
-        speaking = false;
-        setSt('s1','❌ خطأ في النطق','er');
-        document.getElementById('wv1').classList.remove('on');
-    };
-
-    speechSynthesis.speak(u);
-    curUtter = u;
+const txt = document.getElementById('ti').value.trim();
+if (!txt) { setSt('s1','⚠️ أدخل نصاً أولاً','er'); return; }
+if (speechSynthesis.speaking) speechSynthesis.cancel();
+const u = new SpeechSynthesisUtterance(txt);
+const voices = speechSynthesis.getVoices().filter(v=>v.lang.startsWith(selLang));
+const vi = parseInt(document.getElementById('vs').value) || 0;
+if (voices[vi]) u.voice = voices[vi];
+u.rate = parseFloat(document.getElementById('rr1').value);
+u.pitch = parseFloat(document.getElementById('pr1').value);
+u.volume = parseFloat(document.getElementById('vr1').value);
+u.lang = selLang;
+u.onstart = () => {
+speaking = true;
+setSt('s1','🔊 جارٍ النطق...','i');
+document.getElementById('wv1').classList.add('on');
+};
+u.onend = () => {
+speaking = false;
+setSt('s1','✅ اكتمل','ok');
+document.getElementById('wv1').classList.remove('on');
+};
+u.onerror = () => {
+speaking = false;
+setSt('s1','❌ خطأ في النطق','er');
+document.getElementById('wv1').classList.remove('on');
+};
+speechSynthesis.speak(u);
+curUtter = u;
 }
-
 function tPause() { if (speechSynthesis.speaking) speechSynthesis.cancel(); }
 function clrTxt() {
-    document.getElementById('ti').value='';
-    document.getElementById('cc').textContent='0';
-    setSt('s1','👋 اكتب نصاً واضغط نطق','i');
+document.getElementById('ti').value='';
+document.getElementById('cc').textContent='0';
+setSt('s1','👋 اكتب نصاً واضغط نطق','i');
 }
-
 function ldSRT(e) {
-    const f = e.target.files[0];
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = ev => {
-        document.getElementById('srtP').value = ev.target.result;
-        prsPaste();
-    };
-    r.readAsText(f,'UTF-8');
+const f = e.target.files[0];
+if (!f) return;
+const r = new FileReader();
+r.onload = ev => {
+document.getElementById('srtP').value = ev.target.result;
+prsPaste();
+};
+r.readAsText(f,'UTF-8');
 }
-
 function prsPaste() {
-    const raw = document.getElementById('srtP').value.trim();
-    if (!raw) { setSt('dubSt','⚠️ لا يوجد محتوى','er'); return; }
-
-    srtData = parseSRT(raw);
-    if (!srtData.length) { setSt('dubSt','❌ تعذّر تحليل الملف','er'); return; }
-
-    showSRTInfo();
-    document.getElementById('dubCard').style.display='block';
-    setSt('dubSt','✅ ' + srtData.length + ' جملة — اضغط توليد','ok');
+const raw = document.getElementById('srtP').value.trim();
+if (!raw) { setSt('dubSt','⚠️ لا يوجد محتوى','er'); return; }
+srtData = parseSRT(raw);
+if (!srtData.length) { setSt('dubSt','❌ تعذّر تحليل الملف','er'); return; }
+showSRTInfo();
+document.getElementById('dubCard').style.display='block';
+setSt('dubSt','✅ ' + srtData.length + ' جملة — اضغط توليد','ok');
 }
-
 function parseSRT(txt) {
-    const blocks = txt.trim().split(/\n\s*\n/), out = [];
-    blocks.forEach(b => {
-        const lines = b.trim().split('\n');
-        if (lines.length < 2) return;
-        const tLine = lines.find(l => /-->/.test(l));
-        if (!tLine) return;
-        const [st, et] = tLine.split('-->').map(s=>s.trim());
-        const text = lines.filter(l => !/-->/.test(l) && !/^\d+$/.test(l.trim())).join(' ').trim();
-        if (text) out.push({ start: toSec(st), end: toSec(et), text });
-    });
-    return out;
+const blocks = txt.trim().split(/\n\s*\n/), out = [];
+blocks.forEach(b => {
+const lines = b.trim().split('\n');
+if (lines.length < 2) return;
+const tLine = lines.find(l => /-->/.test(l));
+if (!tLine) return;
+const [st, et] = tLine.split('-->').map(s=>s.trim());
+const text = lines.filter(l => !/-->/.test(l) && !/^\d+$/.test(l.trim())).join(' ').trim();
+if (text) out.push({ start: toSec(st), end: toSec(et), text });
+});
+return out;
 }
-
 function toSec(s) {
-    const m = s.match(/(\d+):(\d+):(\d+)[,.](\d+)/);
-    if (!m) return 0;
-    return parseInt(m[1])*3600 + parseInt(m[2])*60 + parseInt(m[3]) + parseInt(m[4])/1000;
+const m = s.match(/(\d+):(\d+):(\d+)[,.](\d+)/);
+if (!m) return 0;
+return parseInt(m[1])*3600 + parseInt(m[2])*60 + parseInt(m[3]) + parseInt(m[4])/1000;
 }
-
 function fmtTime(s) {
-    const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60);
-    return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60);
+return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
-
 function showSRTInfo() {
-    document.getElementById('srtInfo').style.display='block';
-    document.getElementById('sCnt').textContent=srtData.length;
-    const maxE=srtData.reduce((a,b)=>b.end>a?b.end:a,0);
-    document.getElementById('sDur').textContent=fmtTime(maxE);
-
-    const sl=document.getElementById('srtL');
-    sl.innerHTML=srtData.map((s,i)=>`<div class="si"><span class="sin">${i+1}</span><span class="sit">${fmtTime(s.start)}</span><span class="sit2">${s.text}</span></div>`).join('');
+document.getElementById('srtInfo').style.display='block';
+document.getElementById('sCnt').textContent=srtData.length;
+const maxE=srtData.reduce((a,b)=>b.end>a?b.end:a,0);
+document.getElementById('sDur').textContent=fmtTime(maxE);
+const sl=document.getElementById('srtL');
+sl.innerHTML=srtData.map((s,i)=>`<div class="si"><span class="sin">${i+1}</span><span class="sit">${fmtTime(s.start)}</span><span class="sit2">${s.text}</span></div>`).join('');
 }
-
 function cpySRT() { navigator.clipboard.writeText(srtData.map(s=>s.text).join('\n')).then(()=>showToast('✅ تم النسخ','ok')); }
-
 async function stDub() {
-    setSt('dubSt','⚠️ يتطلب سيرفر backend','wn');
+setSt('dubSt','⚠️ يتطلب سيرفر backend','wn');
 }
 function cnclDub() { dubCancel=true; }
 function dlRes() {
-    if (dubBlob) {
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(dubBlob);
-        a.download='dubbing.wav';
-        a.click();
-    }
+if (dubBlob) {
+const a=document.createElement('a');
+a.href=URL.createObjectURL(dubBlob);
+a.download='dubbing.wav';
+a.click();
 }
-
+}
 async function startTrans() {
-    const src=document.getElementById('srcSRT').value.trim();
-    if(!src){ setSt('transSt','⚠️ الصق محتوى SRT أولاً','er'); return; }
-
-    setSt('transSt','⏳ جارٍ الترجمة...','i');
-    document.getElementById('transRes').style.display='none';
-
-    const blocks=src.trim().split(/\n\s*\n/), translated=[];
-    for(const b of blocks){
-        const lines=b.trim().split('\n');
-        const tLine=lines.find(l=>/-->/.test(l));
-        if(!tLine) continue;
-        const text=lines.filter(l=>!/-->/.test(l)&&!/^\d+$/.test(l.trim())).join(' ').trim();
-        translated.push({time:tLine,text});
-    }
-
-    const out=translated.map((b,i)=>`${i+1}\n${b.time}\n${b.text}`).join('\n\n');
-    document.getElementById('transOut').textContent=out;
-    document.getElementById('transRes').style.display='block';
-    setSt('transSt','✅ تمت الترجمة (stub — يتطلب backend)','ok');
+const src=document.getElementById('srcSRT').value.trim();
+if(!src){ setSt('transSt','⚠️ الصق محتوى SRT أولاً','er'); return; }
+setSt('transSt','⏳ جارٍ الترجمة...','i');
+document.getElementById('transRes').style.display='none';
+const blocks=src.trim().split(/\n\s*\n/), translated=[];
+for(const b of blocks){
+const lines=b.trim().split('\n');
+const tLine=lines.find(l=>/-->/.test(l));
+if(!tLine) continue;
+const text=lines.filter(l=>!/-->/.test(l)&&!/^\d+$/.test(l.trim())).join(' ').trim();
+translated.push({time:tLine,text});
 }
-
+const out=translated.map((b,i)=>`${i+1}\n${b.time}\n${b.text}`).join('\n');
+document.getElementById('transOut').textContent=out;
+document.getElementById('transRes').style.display='block';
+setSt('transSt','✅ تمت الترجمة (stub — يتطلب backend)','ok');
+}
 function copyResult() { navigator.clipboard.writeText(document.getElementById('transOut').textContent).then(()=>showToast('✅ تم النسخ','ok')); }
 function dlTransSRT() {
-    const txt=document.getElementById('transOut').textContent;
-    const a=document.createElement('a');
-    a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
-    a.download='translated.srt';
-    a.click();
+const txt=document.getElementById('transOut').textContent;
+const a=document.createElement('a');
+a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
+a.download='translated.srt';
+a.click();
 }
 function pasteSrc() { navigator.clipboard.readText().then(t=>{ document.getElementById('srcSRT').value=t; }).catch(()=>{}); }
-
 function cleanText() {
-    let txt=document.getElementById('cleanInput').value;
-    if(!txt.trim()){ setSt('cleanSt','⚠️ الصق نصاً أولاً','er'); return; }
-
-    if(document.getElementById('removeNumbers').checked) txt=txt.replace(/^\d+\s*$/gm,'');
-    if(document.getElementById('removeTime').checked) txt=txt.replace(/\d{1,2}:\d{2}:\d{2}[,\.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,\.]\d{3}/g,'');
-    if(document.getElementById('removeEmpty').checked) txt=txt.replace(/\n{2,}/g,'\n').trim();
-
-    document.getElementById('cleanOutput').textContent=txt;
-    document.getElementById('cleanResult').style.display='block';
-    setSt('cleanSt','✅ تم التنظيف','ok');
+let txt=document.getElementById('cleanInput').value;
+if(!txt.trim()){ setSt('cleanSt','⚠️ الصق نصاً أولاً','er'); return; }
+if(document.getElementById('removeNumbers').checked) txt=txt.replace(/^\d+\s*$/gm,'');
+if(document.getElementById('removeTime').checked) txt=txt.replace(/\d{1,2}:\d{2}:\d{2}[,\.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,\.]\d{3}/g,'');
+if(document.getElementById('removeEmpty').checked) txt=txt.replace(/\n{2,}/g,'\n').trim();
+document.getElementById('cleanOutput').textContent=txt;
+document.getElementById('cleanResult').style.display='block';
+setSt('cleanSt','✅ تم التنظيف','ok');
 }
 function copyClean() { navigator.clipboard.writeText(document.getElementById('cleanOutput').textContent).then(()=>showToast('✅ تم النسخ','ok')); }
 function dlClean() {
-    const txt=document.getElementById('cleanOutput').textContent;
-    const a=document.createElement('a');
-    a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
-    a.download='cleaned.txt';
-    a.click();
+const txt=document.getElementById('cleanOutput').textContent;
+const a=document.createElement('a');
+a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
+a.download='cleaned.txt';
+a.click();
 }
 function pasteClean() { navigator.clipboard.readText().then(t=>{ document.getElementById('cleanInput').value=t; }).catch(()=>{}); }
-
 function updateFilters() {
-    document.getElementById('speedVal').textContent=parseFloat(document.getElementById('filterSpeed').value).toFixed(1)+'x';
-    document.getElementById('pitchVal').textContent=parseFloat(document.getElementById('filterPitch').value).toFixed(1);
-    document.getElementById('bassVal').textContent=document.getElementById('eqBass').value+'dB';
-    document.getElementById('midVal').textContent=document.getElementById('eqMid').value+'dB';
-    document.getElementById('trebleVal').textContent=document.getElementById('eqTreble').value+'dB';
+document.getElementById('speedVal').textContent=parseFloat(document.getElementById('filterSpeed').value).toFixed(1)+'x';
+document.getElementById('pitchVal').textContent=parseFloat(document.getElementById('filterPitch').value).toFixed(1);
+document.getElementById('bassVal').textContent=document.getElementById('eqBass').value+'dB';
+document.getElementById('midVal').textContent=document.getElementById('eqMid').value+'dB';
+document.getElementById('trebleVal').textContent=document.getElementById('eqTreble').value+'dB';
 }
 function resetFilters() {
-    ['filterSpeed','filterPitch'].forEach(id=>document.getElementById(id).value=1);
-    ['eqBass','eqMid','eqTreble'].forEach(id=>document.getElementById(id).value=0);
-    updateFilters();
+['filterSpeed','filterPitch'].forEach(id=>document.getElementById(id).value=1);
+['eqBass','eqMid','eqTreble'].forEach(id=>document.getElementById(id).value=0);
+updateFilters();
 }
 function applyPreset(p) {
-    const presets={male:{pitch:.7,speed:1},radio:{pitch:1.1,speed:1.1},warm:{pitch:.9,speed:.9},fast:{pitch:1,speed:1.6}};
-    const pr=presets[p];
-    if(!pr) return;
-    document.getElementById('filterPitch').value=pr.pitch;
-    document.getElementById('filterSpeed').value=pr.speed;
-    updateFilters();
+const presets={male:{pitch:.7,speed:1},radio:{pitch:1.1,speed:1.1},warm:{pitch:.9,speed:.9},fast:{pitch:1,speed:1.6}};
+const pr=presets[p];
+if(!pr) return;
+document.getElementById('filterPitch').value=pr.pitch;
+document.getElementById('filterSpeed').value=pr.speed;
+updateFilters();
 }
-
 document.getElementById('rr1').oninput=function(){document.getElementById('rv1').textContent=parseFloat(this.value).toFixed(1)+'x';}
 document.getElementById('pr1').oninput=function(){document.getElementById('pv1').textContent=parseFloat(this.value).toFixed(1);}
 document.getElementById('vr1').oninput=function(){document.getElementById('vv1').textContent=Math.round(this.value*100)+'%';}
 document.getElementById('rr2').oninput=function(){document.getElementById('rv2').textContent=parseFloat(this.value).toFixed(1)+'x';}
 document.getElementById('vr2').oninput=function(){document.getElementById('vv2').textContent=parseFloat(this.value).toFixed(1);}
 document.getElementById('ti').oninput=function(){document.getElementById('cc').textContent=this.value.length;}
-
 function setSt(id,msg,cls){
-    const el=document.getElementById(id);
-    if(!el)return;
-    el.textContent=msg;
-    el.className='st '+cls;
+const el=document.getElementById(id);
+if(!el)return;
+el.textContent=msg;
+el.className='st '+cls;
 }
-
 function toggleLang() { document.getElementById('langDropdown').classList.toggle('show'); }
+
+// ✅ دالة setLang المعدلة لتطبيق الترجمة على كل الواجهة
 function setLang(l) {
-    document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===l));
-    document.getElementById('currentLang').textContent={ar:'العربية',en:'English',ru:'Русский',tr:'Türkçe',fr:'Français',de:'Deutsch',es:'Español'}[l]||l;
-    document.getElementById('langDropdown').classList.remove('show');
-    document.documentElement.lang=l;
-    document.documentElement.dir=['ar','fa','he'].includes(l)?'rtl':'ltr';
+  document.querySelectorAll('.lang-option').forEach(o => 
+    o.classList.toggle('active', o.dataset.lang === l)
+  );
+  const langNames = {ar:'العربية',en:'English',ru:'Русский',tr:'Türkçe',fr:'Français',de:'Deutsch',es:'Español'};
+  document.getElementById('currentLang').textContent = langNames[l] || l;
+  document.getElementById('langDropdown').classList.remove('show');
+  document.documentElement.lang = l;
+  document.documentElement.dir = ['ar','fa','he'].includes(l) ? 'rtl' : 'ltr';
+  // 🔥 تطبيق الترجمات على كل العناصر
+  applyAllTranslations(l);
+  // حفظ التفضيل
+  localStorage.setItem('sl_lang', l);
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    checkVerificationToken();
-    buildLangGrid('g1', selLang, 'pickLang');
-    buildLangGrid('g2', selDubLang, 'pickDubLang');
-    buildTransGrid();
-    buildVoices();
-    speechSynthesis.onvoiceschanged = buildVoices;
-
-    syncUIFromUnlockedState();
-    await initAuth();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const paid = urlParams.get('paid');
-    const feature = urlParams.get('feature');
-
-    if (paid === '1' && feature && ['tts', 'dub', 'srt'].includes(feature)) {
-        showToast('✅ تم استلام العودة من صفحة الدفع', 'ok');
-        if (currentUser) await refreshEntitlements();
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
+checkVerificationToken();
+buildLangGrid('g1', selLang, 'pickLang');
+buildLangGrid('g2', selDubLang, 'pickDubLang');
+buildTransGrid();
+buildVoices();
+speechSynthesis.onvoiceschanged = buildVoices;
+syncUIFromUnlockedState();
+await initAuth();
+// 🔥 تحميل اللغة المحفوظة وتطبيقها
+const savedLang = localStorage.getItem('sl_lang') || 'ar';
+setLang(savedLang);
+const urlParams = new URLSearchParams(window.location.search);
+const paid = urlParams.get('paid');
+const feature = urlParams.get('feature');
+if (paid === '1' && feature && ['tts', 'dub', 'srt'].includes(feature)) {
+showToast('✅ تم استلام العودة من صفحة الدفع', 'ok');
+if (currentUser) await refreshEntitlements();
+window.history.replaceState({}, document.title, window.location.pathname);
+}
 });
 </script>
 </body>
