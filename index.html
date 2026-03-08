@@ -1183,10 +1183,17 @@ let currentDubbingJob = null;
 // Check server status on load
 async function checkServerStatus() {
     try {
+        // Render free tier takes 30-60 seconds to wake up
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
         const response = await fetch(`${API_BASE_URL}/api/health`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         if (response.ok) {
             serverOnline = true;
@@ -1195,9 +1202,10 @@ async function checkServerStatus() {
             throw new Error('Server not responding');
         }
     } catch (e) {
+        // Server might be sleeping (Render free tier)
         serverOnline = false;
         updateServerStatus(false);
-        console.log('Server offline:', e.message);
+        console.log('Server sleeping or offline:', e.message);
     }
 }
 
@@ -1267,6 +1275,18 @@ async function startDubbingProcess() {
     progressDiv.style.display = 'block';
     resultDiv.style.display = 'none';
 
+    // Show wake-up message for Render free tier
+    showDubStatus('info', currentLang === 'ar' ? 
+        '⏳ جاري إيقاظ السيرفر... قد يستغرق 30-60 ثانية (الخطة المجانية)' : 
+        '⏳ Waking up server... may take 30-60 seconds (free tier)');
+
+    // Try to wake up server first
+    try {
+        await fetch(`${API_BASE_URL}/api/health`, { method: 'GET' });
+    } catch (e) {
+        // Ignore error, server might be waking up
+    }
+
     showDubStatus('info', currentLang === 'ar' ? '🎬 جاري توليد الدبلجة...' : '🎬 Generating dubbing...');
 
     try {
@@ -1295,7 +1315,8 @@ async function startDubbingProcess() {
         const response = await fetch(`${API_BASE_URL}/api/dub`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(requestData)
         });
