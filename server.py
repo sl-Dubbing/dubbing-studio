@@ -28,7 +28,7 @@ db = SQLAlchemy(app)
 # =============================================================
 # إعدادات الحد المجاني
 # =============================================================
-GUEST_LIMIT = 6  # ✅ 6 محاولات مجانية لكل ميزة (كان 3)
+GUEST_LIMIT = 6  # ✅ 6 محاولات مجانية لكل ميزة
 GUEST_USAGE = {}  # format: {ip: {'tts': 0, 'dub': 0, 'srt': 0, 'last_reset': timestamp}}
 
 # =============================================================
@@ -37,7 +37,7 @@ GUEST_USAGE = {}  # format: {ip: {'tts': 0, 'dub': 0, 'srt': 0, 'last_reset': ti
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)  # ✅ تم إصلاح: self.String → db.String
+    password = db.Column(db.String(200), nullable=False)
     otp = db.Column(db.String(6))
     is_verified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -414,117 +414,6 @@ def download(filename):
     except Exception as e:
         logger.error(f"Download Error: {e}")
         return jsonify({'error': 'فشل تنزيل الملف'}), 500
-
-# =============================================================
-# مسار ترجمة SRT (مثال - يحتاج لتكامل مع API ترجمة)
-# =============================================================
-@app.route('/api/translate-srt', methods=['POST'])
-def translate_srt():
-    try:
-        data = request.get_json()
-        content = data.get('content', '')
-        target_lang = data.get('target_lang', 'en')
-        email = data.get('email', '').strip().lower() if data.get('email') else None
-        feature = 'srt'
-        
-        # نفس منطق التحقق من الحد
-        if not email:
-            ip = request.remote_addr
-            reset_guest_usage_if_needed(ip)
-            
-            if GUEST_USAGE[ip].get(feature, 0) >= GUEST_LIMIT:
-                return jsonify({'error': 'انتهى الحد المجاني', 'limit_reached': True}), 403
-            
-            GUEST_USAGE[ip][feature] = GUEST_USAGE[ip].get(feature, 0) + 1
-        else:
-            user = User.query.filter_by(email=email).first()
-            if not user or not user.is_verified:
-                return jsonify({'error': 'يجب التفعيل', 'not_verified': True}), 403
-            
-            if not user.unlocked_srt and user.usage_srt >= GUEST_LIMIT:
-                return jsonify({'error': 'انتهى الحد المجاني', 'limit_reached': True}), 403
-            
-            if not user.unlocked_srt:
-                user.usage_srt += 1
-                db.session.commit()
-        
-        # ⚠️ هنا تضع كود الترجمة الفعلي (يمكن استخدام Google Translate API أو غيره)
-        # هذا مجرد مثال حالي يعيد نفس النص
-        translated_content = content
-        
-        return jsonify({
-            'success': True,
-            'translated': translated_content,
-            'message': 'تمت المعالجة بنجاح'
-        }), 200
-        
-    except Exception as e:
-        logger.error(f"Translate SRT Error: {e}")
-        return jsonify({'error': 'حدث خطأ في المعالجة'}), 500
-
-# =============================================================
-# مسار Webhook لاستلام تأكيدات الدفع من Lemon Squeezy
-# =============================================================
-@app.route('/api/webhook/lemonsqueezy', methods=['POST'])
-def lemonsqueezy_webhook():
-    try:
-        data = request.get_json()
-        event_name = data.get('event_name', '')
-        
-        if event_name == 'order_created':
-            order_data = data.get('data', {}).get('attributes', {})
-            customer_email = order_data.get('email', '').lower()
-            custom_data = order_data.get('custom', {})
-            feature_hint = custom_data.get('feature_hint', '')
-            
-            if customer_email and feature_hint in ['tts', 'dub', 'srt']:
-                user = User.query.filter_by(email=customer_email).first()
-                
-                if user:
-                    unlocked_field = f'unlocked_{feature_hint}'
-                    setattr(user, unlocked_field, True)
-                    db.session.commit()
-                    
-                    logger.info(f"User {customer_email} unlocked {feature_hint}")
-                    return jsonify({'success': True}), 200
-        
-        return jsonify({'success': True, 'ignored': True}), 200
-        
-    except Exception as e:
-        logger.error(f"Webhook Error: {e}")
-        return jsonify({'error': 'Webhook failed'}), 500
-
-# =============================================================
-# مسار حذف الحساب (للتوافق مع GDPR)
-# =============================================================
-@app.route('/api/delete-account', methods=['POST'])
-def delete_account():
-    try:
-        data = request.get_json()
-        email = data.get('email', '').strip().lower()
-        password = data.get('password', '')
-        
-        if not email or not password:
-            return jsonify({'error': 'البريد وكلمة المرور مطلوبان'}), 400
-        
-        user = User.query.filter_by(email=email).first()
-        
-        if not user:
-            return jsonify({'error': 'المستخدم غير موجود'}), 404
-        
-        if not check_password_hash(user.password, password):
-            return jsonify({'error': 'كلمة المرور غير صحيحة'}), 401
-        
-        # حذف المستخدم
-        db.session.delete(user)
-        db.session.commit()
-        
-        logger.info(f"Account deleted: {email}")
-        return jsonify({'success': True, 'message': 'تم حذف حسابك بنجاح'}), 200
-        
-    except Exception as e:
-        logger.error(f"Delete Account Error: {e}")
-        return jsonify({'error': 'حدث خطأ في حذف الحساب'}), 500
 
 # =============================================================
 # تشغيل التطبيق
