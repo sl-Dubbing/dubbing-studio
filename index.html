@@ -27,7 +27,7 @@ header{text-align:center;margin-bottom:32px;grid-column:1/-1;display:flex;justif
 .lang-switcher{position:fixed;top:20px;left:20px;z-index:1000}
 .lang-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;color:#e0e0ff;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .3s;backdrop-filter:blur(10px)}
 .lang-btn:hover{background:rgba(255,255,255,.15);transform:translateY(-2px)}
-.lang-dropdown{position:absolute;top:100%;left:0;margin-top:8px;background:rgba(255,255,255,.98);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);min-width:220px;overflow:hidden;transform:scale(0);transform-origin:top left;transition:all .3s;opacity:0}
+.lang-dropdown{position:absolute;top:100%;left:0;margin-top:8px;background:rgba(255,255,255,.98);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);min-width:220px;max-height:400px;overflow-y:auto;overflow-x:hidden;transform:scale(0);transform-origin:top left;transition:all .3s;opacity:0}
 .lang-dropdown.show{transform:scale(1);opacity:1}
 .lang-option{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;transition:all .2s;border-bottom:1px solid rgba(0,0,0,.05);color:#1a0533}
 .lang-option:hover{background:rgba(167,139,250,.1)}
@@ -255,8 +255,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
         <div class="lang-dropdown" id="langDropdown">
             <div class="lang-option active" onclick="setLang('ar')" data-lang="ar"><span class="lang-flag">🇸🇦</span><span>العربية</span></div>
             <div class="lang-option" onclick="setLang('en')" data-lang="en"><span class="lang-flag">🇺🇸</span><span>English</span></div>
+            <div class="lang-option" onclick="setLang('es')" data-lang="es"><span class="lang-flag">🇪🇸</span><span>Español</span></div>
             <div class="lang-option" onclick="setLang('ru')" data-lang="ru"><span class="lang-flag">🇷🇺</span><span>Русский</span></div>
             <div class="lang-option" onclick="setLang('tr')" data-lang="tr"><span class="lang-flag">🇹🇷</span><span>Türkçe</span></div>
+            <div class="lang-option" onclick="setLang('de')" data-lang="de"><span class="lang-flag">🇩🇪</span><span>Deutsch</span></div>
+            <div class="lang-option" onclick="setLang('zh')" data-lang="zh"><span class="lang-flag">🇨🇳</span><span>中文</span></div>
+            <div class="lang-option" onclick="setLang('hi')" data-lang="hi"><span class="lang-flag">🇮🇳</span><span>हिन्दी</span></div>
+            <div class="lang-option" onclick="setLang('fa')" data-lang="fa"><span class="lang-flag">🇮🇷</span><span>فارسی</span></div>
+            <div class="lang-option" onclick="setLang('fr')" data-lang="fr"><span class="lang-flag">🇫🇷</span><span>Français</span></div>
+            <div class="lang-option" onclick="setLang('sv')" data-lang="sv"><span class="lang-flag">🇸🇪</span><span>Svenska</span></div>
+            <div class="lang-option" onclick="setLang('it')" data-lang="it"><span class="lang-flag">🇮🇹</span><span>Italiano</span></div>
+            <div class="lang-option" onclick="setLang('nl')" data-lang="nl"><span class="lang-flag">🇳🇱</span><span>Nederlands</span></div>
         </div>
     </div>
 
@@ -272,19 +281,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
         </button>
         <div class="auth-dropdown" id="authDropdown">
             <div class="auth-tabs">
-                <button class="auth-tab on" onclick="switchAuthTab('login')">دخول</button>
-                <button class="auth-tab" onclick="switchAuthTab('register')">تسجيل</button>
+                <button class="auth-tab on" onclick="switchAuthTab('login')" data-i18n="loginTab">دخول</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')" data-i18n="registerTab">تسجيل</button>
             </div>
             <div class="auth-form active" id="loginForm">
-                <div class="auth-field"><label>البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="you@gmail.com"></div>
-                <div class="auth-field"><label>كلمة المرور</label><input type="password" id="loginPass" placeholder="••••••••"></div>
-                <button class="auth-submit" onclick="doLogin()">دخول</button>
+                <div class="auth-field"><label data-i18n="emailLabel">البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="you@gmail.com"></div>
+                <div class="auth-field"><label data-i18n="passwordLabel">كلمة المرور</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+                <button class="auth-submit" onclick="doLogin()" data-i18n="loginBtn">دخول</button>
             </div>
             <div class="auth-form" id="registerForm">
-                <div class="auth-field"><label>البريد الإلكتروني</label><input type="email" id="regEmail" placeholder="you@gmail.com"></div>
-                <div class="auth-field"><label>كلمة المرور</label><input type="password" id="regPass" placeholder="8 أحرف على الأقل"></div>
-                <div class="auth-field"><label>تأكيد كلمة المرور</label><input type="password" id="regPass2" placeholder="••••••••"></div>
-                <button class="auth-submit" onclick="doRegister()">تسجيل</button>
+                <div class="auth-field"><label data-i18n="emailLabel">البريد الإلكتروني</label><input type="email" id="regEmail" placeholder="you@gmail.com"></div>
+                <div class="auth-field"><label data-i18n="passwordLabel">كلمة المرور</label><input type="password" id="regPass" placeholder="8 أحرف على الأقل"></div>
+                <div class="auth-field"><label data-i18n="confirmPasswordLabel">تأكيد كلمة المرور</label><input type="password" id="regPass2" placeholder="••••••••"></div>
+                <button class="auth-submit" onclick="doRegister()" data-i18n="registerBtn">تسجيل</button>
             </div>
             <div class="user-panel" id="userPanel">
                 <div class="user-info">
@@ -294,20 +303,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                         <div class="user-plan" data-i18n="freePlan">خطة مجانية</div>
                     </div>
                 </div>
-                <div class="usage-title">الاستخدام المتبقي</div>
+                <div class="usage-title" data-i18n="usageTitle">الاستخدام المتبقي</div>
                 <div class="usage-item">
-                    <div class="usage-row"><span>✏️ نطق النص</span><span id="ttsCount">6/6</span></div>
+                    <div class="usage-row"><span data-i18n="ttsUsage">✏️ نطق النص</span><span id="ttsCount">6/6</span></div>
                     <div class="usage-bar-bg"><div class="usage-bar-fill tts" style="width:100%;background:linear-gradient(90deg,#6366f1,#818cf8)"></div></div>
                 </div>
                 <div class="usage-item">
-                    <div class="usage-row"><span>🎬 الدبلجة</span><span id="dubCount">30s</span></div>
+                    <div class="usage-row"><span data-i18n="dubUsage">🎬 الدبلجة</span><span id="dubCount">30s</span></div>
                     <div class="usage-bar-bg"><div class="usage-bar-fill dub" style="width:100%;background:linear-gradient(90deg,#d97706,#f59e0b)"></div></div>
                 </div>
                 <div class="usage-item">
-                    <div class="usage-row"><span>🌐 مترجم SRT</span><span id="srtCount">6/6</span></div>
+                    <div class="usage-row"><span data-i18n="srtUsage">🌐 مترجم SRT</span><span id="srtCount">6/6</span></div>
                     <div class="usage-bar-bg"><div class="usage-bar-fill srt" style="width:100%;background:linear-gradient(90deg,#059669,#34d399)"></div></div>
                 </div>
-                <button class="user-logout" onclick="logout()">تسجيل الخروج</button>
+                <button class="user-logout" onclick="logout()" data-i18n="logoutBtn">تسجيل الخروج</button>
             </div>
         </div>
     </div>
@@ -333,12 +342,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
         <div class="payment-grid">
             <!-- TTS Product - $10 -->
             <div class="payment-card tts">
-                <span class="payment-badge tts">✏️ نطق النص</span>
+                <span class="payment-badge tts">✏️ <span data-i18n="ttsBadge">نطق النص</span></span>
                 <div class="payment-icon">🎙️</div>
                 <h3 class="payment-title" data-i18n="ttsProduct">تفعيل النطق مدى الحياة</h3>
-                <p class="payment-desc" data-i18n="ttsProductDesc">نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيوب</p>
+                <p class="payment-desc" data-i18n="ttsProductDesc">نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود</p>
                 <ul class="payment-features">
-                    <li data-i18n="ttsF1">13+ لغة عالمية</li>
+                    <li data-i18n="ttsF1">12+ لغة عالمية</li>
                     <li data-i18n="ttsF2">تحكم في السرعة والطبقة</li>
                     <li data-i18n="ttsF3">فلاتر صوتية متقدمة</li>
                     <li data-i18n="ttsF4">تنزيل MP3</li>
@@ -359,7 +368,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 
             <!-- Dubbing Product - $50 -->
             <div class="payment-card dub">
-                <span class="payment-badge dub">🎬 دبلجة</span>
+                <span class="payment-badge dub">🎬 <span data-i18n="dubBadge">دبلجة</span></span>
                 <div class="payment-icon">🚀</div>
                 <h3 class="payment-title" data-i18n="dubProduct">فتح الدبلجة مدى الحياة</h3>
                 <p class="payment-desc" data-i18n="dubProductDesc">دبلجة SRT كاملة بلا حدود مع تزامن دقيق</p>
@@ -385,12 +394,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 
             <!-- SRT Translator Product - $30 -->
             <div class="payment-card srt">
-                <span class="payment-badge srt">🌐 مترجم</span>
+                <span class="payment-badge srt">🌐 <span data-i18n="srtBadge">مترجم</span></span>
                 <div class="payment-icon">🌍</div>
                 <h3 class="payment-title" data-i18n="srtProduct">شراء المترجم مدى الحياة</h3>
-                <p class="payment-desc" data-i18n="srtProductDesc">ترجمة ملفات SRT إلى 13 لغة بنقرة واحدة</p>
+                <p class="payment-desc" data-i18n="srtProductDesc">ترجمة ملفات SRT إلى 12 لغة بنقرة واحدة</p>
                 <ul class="payment-features">
-                    <li data-i18n="srtF1">13+ لغة عالمية</li>
+                    <li data-i18n="srtF1">12+ لغة عالمية</li>
                     <li data-i18n="srtF2">ترجمة فورية</li>
                     <li data-i18n="srtF3">تنظيف نص تلقائي</li>
                     <li data-i18n="srtF4">تنزيل SRT مترجم</li>
@@ -419,17 +428,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                 <div class="lock-icon">🔒</div>
                 <div class="lock-title" data-i18n="ttsLocked">نطق النص — مقفل</div>
                 <div class="lock-sub" data-i18n="loginForFree">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
-                <button class="lock-buy-hint" onclick="openAuth()">سجّل للاستخدام المجاني</button>
+                <button class="lock-buy-hint" onclick="openAuth()" data-i18n="registerForFree">سجّل للاستخدام المجاني</button>
             </div>
             <div class="card">
                 <div class="card-header"><div class="card-icon">✏️</div><span class="card-title" data-i18n="ttsTitle">نطق النص</span></div>
                 <div class="lg" id="g1"></div>
                 <select id="vs" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:#e0e0ff;font-size:.75rem;margin-bottom:10px"></select>
-                <div style="position:relative"><textarea id="ti" placeholder="اكتب النص..." style="min-height:80px"></textarea><span class="cc" id="cc">0</span></div>
+                <div style="position:relative"><textarea id="ti" placeholder="اكتب النص..." data-i18n-placeholder="typeText" style="min-height:80px"></textarea><span class="cc" id="cc">0</span></div>
                 <div class="ctrls">
-                    <div class="cg"><label>السرعة <span id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
-                    <div class="cg"><label>الطبقة <span id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
-                    <div class="cg"><label>الصوت <span id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
+                    <div class="cg"><label data-i18n="speedLabel">السرعة <span id="rv1">1.0x</span></label><input type="range" id="rr1" min=".5" max="2" step=".1" value="1"></div>
+                    <div class="cg"><label data-i18n="pitchLabel">الطبقة <span id="pv1">1.0</span></label><input type="range" id="pr1" min=".5" max="2" step=".1" value="1"></div>
+                    <div class="cg"><label data-i18n="volumeLabel">الصوت <span id="vv1">100%</span></label><input type="range" id="vr1" min="0" max="1" step=".05" value="1"></div>
                 </div>
                 <div class="wv" id="wv1"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
                 <div class="br">
@@ -447,7 +456,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                 <div class="lock-icon">🔒</div>
                 <div class="lock-title" data-i18n="dubLocked">الدبلجة — مقفلة</div>
                 <div class="lock-sub" data-i18n="dubLoginPrompt">سجّل للحصول على تجربة مجانية (30 ث)</div>
-                <button class="lock-buy-hint" onclick="openAuth()">سجّل للاستخدام المجاني</button>
+                <button class="lock-buy-hint" onclick="openAuth()" data-i18n="registerForFree">سجّل للاستخدام المجاني</button>
             </div>
             
             <div class="server-status" id="serverStatus">
@@ -459,19 +468,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                 <div class="card-header"><div class="card-icon">🎬</div><span class="card-title" data-i18n="dubLang">لغة الدبلجة</span></div>
                 <div class="lg" id="g2"></div>
                 <div class="ctrls">
-                    <div class="cg"><label>السرعة <span id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
-                    <div class="cg"><label>الصوت <span id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
+                    <div class="cg"><label data-i18n="speedLabel">السرعة <span id="rv2">1.0x</span></label><input type="range" id="rr2" min=".5" max="1" step=".05" value="1"></div>
+                    <div class="cg"><label data-i18n="volumeLabel">الصوت <span id="vv2">1.0</span></label><input type="range" id="vr2" min=".2" max="2" step=".1" value="1"></div>
                 </div>
             </div>
             
             <div class="card">
                 <div class="card-header"><div class="card-icon">📂</div><span class="card-title" data-i18n="srtFile">ملف SRT</span></div>
-                <div class="ua"><input type="file" accept=".srt,.txt" onchange="ldSRT(event)"><div style="font-size:1.5rem;margin-bottom:4px">📁</div><div style="color:#60a5fa">اسحب أو اضغط</div><div style="color:#4b5563;font-size:.65rem">.srt أو .txt</div></div>
-                <textarea id="srtP" placeholder="الصق محتوى SRT..." style="min-height:60px;font-family:monospace"></textarea>
-                <button class="btn bsm" style="width:100%;margin-top:6px" onclick="prsPaste()">📥 تحليل الملف</button>
+                <div class="ua"><input type="file" accept=".srt,.txt" onchange="ldSRT(event)"><div style="font-size:1.5rem;margin-bottom:4px">📁</div><div style="color:#60a5fa" data-i18n="dragOrClick">اسحب أو اضغط</div><div style="color:#4b5563;font-size:.65rem">.srt أو .txt</div></div>
+                <textarea id="srtP" placeholder="الصق محتوى SRT..." data-i18n-placeholder="pasteSRT" style="min-height:60px;font-family:monospace"></textarea>
+                <button class="btn bsm" style="width:100%;margin-top:6px" onclick="prsPaste()" data-i18n="analyzeFile">📥 تحليل الملف</button>
                 <div id="srtInfo" style="display:none;margin-top:12px">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                        <span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> جملة</span>
+                        <span style="color:#34d399;font-size:.75rem;font-weight:700">✅ <span id="sCnt">0</span> <span data-i18n="sentences">جملة</span></span>
                         <button class="btn bsm" onclick="cpySRT()">📋</button>
                     </div>
                     <div class="sl" id="srtL"></div>
@@ -481,32 +490,32 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
             <div class="card" id="dubCard" style="display:none">
                 <div class="card-header"><div class="card-icon">⚡</div><span class="card-title" data-i18n="generation">التوليد</span></div>
                 <div class="ib">
-                    <div class="ir">🔇 معالجة <strong>صامتة</strong> عبر سيرفر سحابي</div>
-                    <div class="ir">⏱️ تزامن دقيق مع توقيتات SRT</div>
-                    <div class="ir">📤 ملف WAV لـ YouTube Dubbing</div>
+                    <div class="ir">🔇 <span data-i18n="silentProcessing">معالجة <strong>صامتة</strong> عبر سيرفر سحابي</span></div>
+                    <div class="ir">⏱️ <span data-i18n="preciseSync">تزامن دقيق مع توقيتات SRT</span></div>
+                    <div class="ir">📤 <span data-i18n="wavExport">ملف WAV لـ YouTube Dubbing</span></div>
                 </div>
-                <button class="gb" id="genBtn" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl" data-i18n="generateDub">توليد الدبلجة</span><span class="gs">يتطلب سيرفر Render</span></button>
+                <button class="gb" id="genBtn" onclick="guardedAction('dub', stDub)"><span class="gi">🎬</span><span class="gl" data-i18n="generateDub">توليد الدبلجة</span><span class="gs" data-i18n="requiresServer">يتطلب سيرفر Render</span></button>
                 <div id="dubP" style="display:none">
-                    <div class="ph"><div class="pd"></div><div class="pt">جارٍ...</div></div>
+                    <div class="ph"><div class="pd"></div><div class="pt" data-i18n="processing">جارٍ...</div></div>
                     <div class="cb">
                         <div class="cr">
-                            <div class="ci"><div class="cl">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
-                            <div class="ci"><div class="cl">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
-                            <div class="ci"><div class="cl">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
+                            <div class="ci"><div class="cl" data-i18n="remaining">المتبقي</div><div class="cv cr1" id="clkR">--:--:--</div></div>
+                            <div class="ci"><div class="cl" data-i18n="elapsed">مضى</div><div class="cv cr2" id="clkE">00:00:00</div></div>
+                            <div class="ci"><div class="cl" data-i18n="total">المجموع</div><div class="cv cr3" id="clkT">--:--:--</div></div>
                         </div>
                         <div class="wv on"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
                     </div>
                     <div class="pw"><div class="pb"><div class="pf" id="pFill" style="width:0%"></div></div></div>
-                    <button class="btn bsm" style="width:100%" onclick="cnclDub()">⏹ إلغاء</button>
+                    <button class="btn bsm" style="width:100%" onclick="cnclDub()" data-i18n="cancel">⏹ إلغاء</button>
                 </div>
                 <div id="dubRes" style="display:none">
                     <div class="rb">
-                        <div class="rt">🎉 جاهز</div>
+                        <div class="rt" data-i18n="ready">🎉 جاهز</div>
                         <audio id="dubAu" controls style="width:100%;margin-bottom:10px;border-radius:8px"></audio>
-                        <button class="db" onclick="dlRes()">⬇️ تنزيل WAV</button>
+                        <button class="db" onclick="dlRes()" data-i18n="downloadWAV">⬇️ تنزيل WAV</button>
                     </div>
                 </div>
-                <div class="st i" id="dubSt">تأكد سيرفر Render شغال ثم اضغط</div>
+                <div class="st i" id="dubSt" data-i18n="dubHint">تأكد سيرفر Render شغال ثم اضغط</div>
             </div>
         </div>
 
@@ -516,23 +525,23 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
                 <div class="lock-icon">🔒</div>
                 <div class="lock-title" data-i18n="srtLocked">مترجم SRT — مقفل</div>
                 <div class="lock-sub" data-i18n="srtLoginPrompt">سجّل دخولك للحصول على 6 استخدامات مجانية</div>
-                <button class="lock-buy-hint" onclick="openAuth()">سجّل للاستخدام المجاني</button>
+                <button class="lock-buy-hint" onclick="openAuth()" data-i18n="registerForFree">سجّل للاستخدام المجاني</button>
             </div>
             <div class="card" style="border-top:4px solid #34d399">
                 <div class="card-header"><div class="card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">🌐</div><span class="card-title" data-i18n="srtTranslator">مترجم SRT</span></div>
-                <div class="lbl">اختر لغة الترجمة</div>
+                <div class="lbl" data-i18n="selectTransLang">اختر لغة الترجمة</div>
                 <div class="tg" id="transLangs"></div>
-                <div class="lbl" style="margin-top:10px">النص المصدر (SRT)</div>
-                <textarea id="srcSRT" placeholder="الصق محتوى SRT..." style="min-height:90px;font-family:monospace"></textarea>
-                <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669);margin-top:10px" onclick="guardedAction('srt', startTrans)">🚀 ترجمة</button>
+                <div class="lbl" style="margin-top:10px" data-i18n="sourceText">النص المصدر (SRT)</div>
+                <textarea id="srcSRT" placeholder="الصق محتوى SRT..." data-i18n-placeholder="pasteSRT" style="min-height:90px;font-family:monospace"></textarea>
+                <button class="btn bs" style="background:linear-gradient(135deg,#10b981,#059669);margin-top:10px" onclick="guardedAction('srt', startTrans)">🚀 <span data-i18n="translate">ترجمة</span></button>
                 <div id="transRes" style="display:none;margin-top:14px">
                     <div class="trs">
-                        <div class="trh"><span class="trt">✅ النتيجة</span><button class="btn bsm" onclick="copyResult()">📋 نسخ</button></div>
+                        <div class="trh"><span class="trt" data-i18n="result">✅ النتيجة</span><button class="btn bsm" onclick="copyResult()" data-i18n="copy">📋 نسخ</button></div>
                         <div class="trc" id="transOut"></div>
-                        <button class="db" style="margin-top:10px" onclick="dlTransSRT()">⬇️ تنزيل SRT</button>
+                        <button class="db" style="margin-top:10px" onclick="dlTransSRT()" data-i18n="downloadSRT">⬇️ تنزيل SRT</button>
                     </div>
                 </div>
-                <div class="st i" id="transSt">جاهز</div>
+                <div class="st i" id="transSt" data-i18n="ready">جاهز</div>
             </div>
         </div>
     </div>
@@ -597,27 +606,55 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 </footer>
 
 <script>
-// Translations
+// All 12 Languages Support
+const langs = [
+    {c:'en',f:'🇺🇸',n:'English'},
+    {c:'es',f:'🇪🇸',n:'Español'},
+    {c:'ru',f:'🇷🇺',n:'Русский'},
+    {c:'tr',f:'🇹🇷',n:'Türkçe'},
+    {c:'de',f:'🇩🇪',n:'Deutsch'},
+    {c:'zh',f:'🇨🇳',n:'中文'},
+    {c:'hi',f:'🇮🇳',n:'हिन्दी'},
+    {c:'ar',f:'🇸🇦',n:'العربية'},
+    {c:'fa',f:'🇮🇷',n:'فارسی'},
+    {c:'fr',f:'🇫🇷',n:'Français'},
+    {c:'sv',f:'🇸🇪',n:'Svenska'},
+    {c:'it',f:'🇮🇹',n:'Italiano'},
+    {c:'nl',f:'🇳🇱',n:'Nederlands'}
+];
+
+// Translations for all 12 languages
 const translations = {
     ar: {
         upgradePro: "👑 ترقية الحساب", login: "تسجيل الدخول", freePlan: "خطة مجانية",
-        subtitle: "دبلجة وترجمة احترافية",
+        loginTab: "دخول", registerTab: "تسجيل", emailLabel: "البريد الإلكتروني", passwordLabel: "كلمة المرور",
+        confirmPasswordLabel: "تأكيد كلمة المرور", loginBtn: "دخول", registerBtn: "تسجيل",
+        usageTitle: "الاستخدام المتبقي", ttsUsage: "✏️ نطق النص", dubUsage: "🎬 الدبلجة", srtUsage: "🌐 مترجم SRT",
+        logoutBtn: "تسجيل الخروج", subtitle: "دبلجة وترجمة احترافية",
         pricingTitle: "اختر خطتك", pricingDesc: "اشترِ الميزة التي تحتاجها - تفعيل مدى الحياة بدون اشتراكات",
-        ttsProduct: "تفعيل النطق مدى الحياة", ttsProductDesc: "نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيوب",
-        ttsF1: "13+ لغة عالمية", ttsF2: "تحكم في السرعة والطبقة", ttsF3: "فلاتر صوتية متقدمة", ttsF4: "تنزيل MP3",
-        dubProduct: "فتح الدبلجة مدى الحياة", dubProductDesc: "دبلجة SRT كاملة بلا حدود مع تزامن دقيق",
+        ttsBadge: "نطق النص", ttsProduct: "تفعيل النطق مدى الحياة", ttsProductDesc: "نطق نصوص غير محدودة بأصوات متعددة اللغات دون قيود",
+        ttsF1: "12+ لغة عالمية", ttsF2: "تحكم في السرعة والطبقة", ttsF3: "فلاتر صوتية متقدمة", ttsF4: "تنزيل MP3",
+        dubBadge: "دبلجة", dubProduct: "فتح الدبلجة مدى الحياة", dubProductDesc: "دبلجة SRT كاملة بلا حدود مع تزامن دقيق",
         dubF1: "دبلجة غير محدودة", dubF2: "تزامن تلقائي مع SRT", dubF3: "تصدير WAV لـ YouTube", dubF4: "معالجة سحابية سريعة",
-        srtProduct: "شراء المترجم مدى الحياة", srtProductDesc: "ترجمة ملفات SRT إلى 13 لغة بنقرة واحدة",
-        srtF1: "13+ لغة عالمية", srtF2: "ترجمة فورية", srtF3: "تنظيف نص تلقائي", srtF4: "تنزيل SRT مترجم",
+        srtBadge: "مترجم", srtProduct: "شراء المترجم مدى الحياة", srtProductDesc: "ترجمة ملفات SRT إلى 12 لغة بنقرة واحدة",
+        srtF1: "12+ لغة عالمية", srtF2: "ترجمة فورية", srtF3: "تنظيف نص تلقائي", srtF4: "تنزيل SRT مترجم",
         lifetime: "مدى الحياة / دفعة واحدة", buyNowTTS: "اشترِ النطق الآن", buyNowDub: "اشترِ الدبلجة الآن", buyNowSRT: "اشترِ المترجم الآن",
         securePayment: "دفع آمن عبر Payhip",
-        ttsLocked: "نطق النص — مقفل", loginForFree: "سجّل دخولك للحصول على 6 استخدامات مجانية",
-        ttsTitle: "نطق النص", speak: "نطق", ttsHint: "اكتب نصاً واضغط نطق",
+        ttsLocked: "نطق النص — مقفل", loginForFree: "سجّل دخولك للحصول على 6 استخدامات مجانية", registerForFree: "سجّل للاستخدام المجاني",
+        ttsTitle: "نطق النص", typeText: "اكتب النص...", speedLabel: "السرعة", pitchLabel: "الطبقة", volumeLabel: "الصوت",
+        speak: "نطق", ttsHint: "اكتب نصاً واضغط نطق",
         dubLocked: "الدبلجة — مقفلة", dubLoginPrompt: "سجّل للحصول على تجربة مجانية (30 ث)",
         serverOffline: "⚠️ سيرفر الدبلجة غير متصل", serverOnline: "✅ سيرفر الدبلجة متصل",
-        dubLang: "لغة الدبلجة", srtFile: "ملف SRT", generation: "التوليد", generateDub: "توليد الدبلجة",
+        dubLang: "لغة الدبلجة", srtFile: "ملف SRT", dragOrClick: "اسحب أو اضغط", pasteSRT: "الصق محتوى SRT...",
+        analyzeFile: "📥 تحليل الملف", sentences: "جملة",
+        generation: "التوليد", silentProcessing: "معالجة <strong>صامتة</strong> عبر سيرفر سحابي",
+        preciseSync: "تزامن دقيق مع توقيتات SRT", wavExport: "ملف WAV لـ YouTube Dubbing",
+        generateDub: "توليد الدبلجة", requiresServer: "يتطلب سيرفر Render",
+        processing: "جارٍ...", remaining: "المتبقي", elapsed: "مضى", total: "المجموع",
+        cancel: "⏹ إلغاء", ready: "🎉 جاهز", downloadWAV: "⬇️ تنزيل WAV", dubHint: "تأكد سيرفر Render شغال ثم اضغط",
         srtLocked: "مترجم SRT — مقفل", srtLoginPrompt: "سجّل دخولك للحصول على 6 استخدامات مجانية",
-        srtTranslator: "مترجم SRT",
+        srtTranslator: "مترجم SRT", selectTransLang: "اختر لغة الترجمة", sourceText: "النص المصدر (SRT)",
+        translate: "ترجمة", result: "✅ النتيجة", copy: "📋 نسخ", downloadSRT: "⬇️ تنزيل SRT",
         footerDesc: "منصة احترافية للدبلجة والترجمة باستخدام أحدث تقنيات الذكاء الاصطناعي. نساعدك في الوصول إلى جمهور عالمي بمحتوى بلغتهم الأم.",
         product: "المنتج", features: "المميزات", pricing: "الأسعار", api: "API للمطورين", updates: "التحديثات",
         company: "الشركة", about: "من نحن", blog: "المدونة", careers: "الوظائف", contact: "تواصل معنا",
@@ -626,48 +663,106 @@ const translations = {
     },
     en: {
         upgradePro: "👑 Upgrade to Pro", login: "Login", freePlan: "Free Plan",
-        subtitle: "Professional Dubbing & Translation",
+        loginTab: "Login", registerTab: "Register", emailLabel: "Email", passwordLabel: "Password",
+        confirmPasswordLabel: "Confirm Password", loginBtn: "Login", registerBtn: "Register",
+        usageTitle: "Remaining Usage", ttsUsage: "✏️ Text to Speech", dubUsage: "🎬 Dubbing", srtUsage: "🌐 SRT Translator",
+        logoutBtn: "Logout", subtitle: "Professional Dubbing & Translation",
         pricingTitle: "Choose Your Plan", pricingDesc: "Buy the feature you need - Lifetime access, no subscriptions",
-        ttsProduct: "Text-to-Speech Lifetime", ttsProductDesc: "Unlimited text-to-speech in multiple languages",
-        ttsF1: "13+ Global Languages", ttsF2: "Speed & Pitch Control", ttsF3: "Advanced Audio Filters", ttsF4: "MP3 Download",
-        dubProduct: "Dubbing Lifetime Unlock", dubProductDesc: "Unlimited SRT dubbing with precise sync",
+        ttsBadge: "Text to Speech", ttsProduct: "Text-to-Speech Lifetime", ttsProductDesc: "Unlimited text-to-speech in 12+ languages",
+        ttsF1: "12+ Global Languages", ttsF2: "Speed & Pitch Control", ttsF3: "Advanced Audio Filters", ttsF4: "MP3 Download",
+        dubBadge: "Dubbing", dubProduct: "Dubbing Lifetime Unlock", dubProductDesc: "Unlimited SRT dubbing with precise sync",
         dubF1: "Unlimited Dubbing", dubF2: "Auto SRT Sync", dubF3: "YouTube WAV Export", dubF4: "Fast Cloud Processing",
-        srtProduct: "SRT Translator Lifetime", srtProductDesc: "Translate SRT files to 13 languages with one click",
-        srtF1: "13+ Global Languages", srtF2: "Instant Translation", srtF3: "Auto Text Cleaning", srtF4: "Download Translated SRT",
+        srtBadge: "Translator", srtProduct: "SRT Translator Lifetime", srtProductDesc: "Translate SRT files to 12 languages with one click",
+        srtF1: "12+ Global Languages", srtF2: "Instant Translation", srtF3: "Auto Text Cleaning", srtF4: "Download Translated SRT",
         lifetime: "Lifetime / One-time Payment", buyNowTTS: "Buy TTS Now", buyNowDub: "Buy Dubbing Now", buyNowSRT: "Buy Translator Now",
         securePayment: "Secure Payment via Payhip",
-        ttsLocked: "Text-to-Speech — Locked", loginForFree: "Login to get 6 free uses",
-        ttsTitle: "Text-to-Speech", speak: "Speak", ttsHint: "Type text and click speak",
+        ttsLocked: "Text-to-Speech — Locked", loginForFree: "Login to get 6 free uses", registerForFree: "Register for free access",
+        ttsTitle: "Text to Speech", typeText: "Type text...", speedLabel: "Speed", pitchLabel: "Pitch", volumeLabel: "Volume",
+        speak: "Speak", ttsHint: "Type text and click speak",
         dubLocked: "Dubbing — Locked", dubLoginPrompt: "Register for free trial (30s)",
         serverOffline: "⚠️ Dubbing server offline", serverOnline: "✅ Dubbing server online",
-        dubLang: "Dubbing Language", srtFile: "SRT File", generation: "Generation", generateDub: "Generate Dubbing",
+        dubLang: "Dubbing Language", srtFile: "SRT File", dragOrClick: "Drag or click", pasteSRT: "Paste SRT content...",
+        analyzeFile: "📥 Analyze File", sentences: "sentences",
+        generation: "Generation", silentProcessing: "<strong>Silent</strong> processing via cloud server",
+        preciseSync: "Precise sync with SRT timings", wavExport: "WAV file for YouTube Dubbing",
+        generateDub: "Generate Dubbing", requiresServer: "Requires Render server",
+        processing: "Processing...", remaining: "Remaining", elapsed: "Elapsed", total: "Total",
+        cancel: "⏹ Cancel", ready: "🎉 Ready", downloadWAV: "⬇️ Download WAV", dubHint: "Make sure Render server is running, then click",
         srtLocked: "SRT Translator — Locked", srtLoginPrompt: "Login to get 6 free uses",
-        srtTranslator: "SRT Translator",
+        srtTranslator: "SRT Translator", selectTransLang: "Select translation language", sourceText: "Source Text (SRT)",
+        translate: "Translate", result: "✅ Result", copy: "📋 Copy", downloadSRT: "⬇️ Download SRT",
         footerDesc: "Professional dubbing and translation platform using latest AI technologies. Reach global audiences with content in their native language.",
         product: "Product", features: "Features", pricing: "Pricing", api: "API for Developers", updates: "Updates",
         company: "Company", about: "About Us", blog: "Blog", careers: "Careers", contact: "Contact Us",
         support: "Support", help: "Help Center", faq: "FAQ", privacy: "Privacy Policy", terms: "Terms of Service",
         allRights: "All rights reserved."
     },
+    es: {
+        upgradePro: "👑 Actualizar a Pro", login: "Iniciar sesión", freePlan: "Plan Gratuito",
+        loginTab: "Entrar", registerTab: "Registro", emailLabel: "Correo electrónico", passwordLabel: "Contraseña",
+        confirmPasswordLabel: "Confirmar contraseña", loginBtn: "Entrar", registerBtn: "Registrarse",
+        usageTitle: "Uso restante", ttsUsage: "✏️ Texto a Voz", dubUsage: "🎬 Doblaje", srtUsage: "🌐 Traductor SRT",
+        logoutBtn: "Cerrar sesión", subtitle: "Doblaje y Traducción Profesional",
+        pricingTitle: "Elige tu Plan", pricingDesc: "Compra la función que necesitas - Acceso de por vida, sin suscripciones",
+        ttsBadge: "Texto a Voz", ttsProduct: "Texto a Voz de por Vida", ttsProductDesc: "Texto a voz ilimitado en 12+ idiomas",
+        ttsF1: "12+ Idiomas Globales", ttsF2: "Control de Velocidad y Tono", ttsF3: "Filtros de Audio Avanzados", ttsF4: "Descarga MP3",
+        dubBadge: "Doblaje", dubProduct: "Desbloqueo de Doblaje de por Vida", dubProductDesc: "Doblaje SRT ilimitado con sincronización precisa",
+        dubF1: "Doblaje Ilimitado", dubF2: "Sincronización Auto SRT", dubF3: "Exportar WAV para YouTube", dubF4: "Procesamiento Rápido en la Nube",
+        srtBadge: "Traductor", srtProduct: "Traductor SRT de por Vida", srtProductDesc: "Traduce archivos SRT a 12 idiomas con un clic",
+        srtF1: "12+ Idiomas Globales", srtF2: "Traducción Instantánea", srtF3: "Limpieza Automática de Texto", srtF4: "Descargar SRT Traducido",
+        lifetime: "De por Vida / Pago único", buyNowTTS: "Comprar TTS Ahora", buyNowDub: "Comprar Doblaje Ahora", buyNowSRT: "Comprar Traductor Ahora",
+        securePayment: "Pago Seguro vía Payhip",
+        ttsLocked: "Texto a Voz — Bloqueado", loginForFree: "Inicia sesión para obtener 6 usos gratuitos", registerForFree: "Regístrate para acceso gratuito",
+        ttsTitle: "Texto a Voz", typeText: "Escribe texto...", speedLabel: "Velocidad", pitchLabel: "Tono", volumeLabel: "Volumen",
+        speak: "Hablar", ttsHint: "Escribe texto y presiona hablar",
+        dubLocked: "Doblaje — Bloqueado", dubLoginPrompt: "Regístrate para prueba gratuita (30s)",
+        serverOffline: "⚠️ Servidor de doblaje desconectado", serverOnline: "✅ Servidor de doblaje en línea",
+        dubLang: "Idioma de Doblaje", srtFile: "Archivo SRT", dragOrClick: "Arrastra o haz clic", pasteSRT: "Pega contenido SRT...",
+        analyzeFile: "📥 Analizar Archivo", sentences: "oraciones",
+        generation: "Generación", silentProcessing: "Procesamiento <strong>silencioso</strong> vía servidor en la nube",
+        preciseSync: "Sincronización precisa con tiempos SRT", wavExport: "Archivo WAV para Doblaje de YouTube",
+        generateDub: "Generar Doblaje", requiresServer: "Requiere servidor Render",
+        processing: "Procesando...", remaining: "Restante", elapsed: "Transcurrido", total: "Total",
+        cancel: "⏹ Cancelar", ready: "🎉 Listo", downloadWAV: "⬇️ Descargar WAV", dubHint: "Asegúrate de que el servidor Render esté funcionando, luego haz clic",
+        srtLocked: "Traductor SRT — Bloqueado", srtLoginPrompt: "Inicia sesión para obtener 6 usos gratuitos",
+        srtTranslator: "Traductor SRT", selectTransLang: "Seleccionar idioma de traducción", sourceText: "Texto Fuente (SRT)",
+        translate: "Traducir", result: "✅ Resultado", copy: "📋 Copiar", downloadSRT: "⬇️ Descargar SRT",
+        footerDesc: "Plataforma profesional de doblaje y traducción utilizando las últimas tecnologías de IA. Llega a audiencias globales con contenido en su idioma nativo.",
+        product: "Producto", features: "Características", pricing: "Precios", api: "API para Desarrolladores", updates: "Actualizaciones",
+        company: "Empresa", about: "Sobre Nosotros", blog: "Blog", careers: "Carreras", contact: "Contáctanos",
+        support: "Soporte", help: "Centro de Ayuda", faq: "Preguntas Frecuentes", privacy: "Política de Privacidad", terms: "Términos de Servicio",
+        allRights: "Todos los derechos reservados."
+    },
     ru: {
         upgradePro: "👑 Обновить до Pro", login: "Вход", freePlan: "Бесплатный план",
-        subtitle: "Профессиональный дубляж и перевод",
+        loginTab: "Вход", registerTab: "Регистрация", emailLabel: "Электронная почта", passwordLabel: "Пароль",
+        confirmPasswordLabel: "Подтвердите пароль", loginBtn: "Войти", registerBtn: "Зарегистрироваться",
+        usageTitle: "Оставшееся использование", ttsUsage: "✏️ Текст в Речь", dubUsage: "🎬 Дубляж", srtUsage: "🌐 Переводчик SRT",
+        logoutBtn: "Выйти", subtitle: "Профессиональный Дубляж и Перевод",
         pricingTitle: "Выберите план", pricingDesc: "Купите нужную функцию - Доступ навсегда, без подписок",
-        ttsProduct: "Озвучка текста навсегда", ttsProductDesc: "Неограниченная озвучка на многих языках",
-        ttsF1: "13+ языков мира", ttsF2: "Контроль скорости и тона", ttsF3: "Продвинутые фильтры", ttsF4: "Скачать MP3",
-        dubProduct: "Дубляж навсегда", dubProductDesc: "Неограниченный дубляж SRT с точной синхронизацией",
+        ttsBadge: "Текст в Речь", ttsProduct: "Текст в Речь навсегда", ttsProductDesc: "Неограниченное озвучивание на 12+ языках",
+        ttsF1: "12+ языков мира", ttsF2: "Контроль скорости и тона", ttsF3: "Продвинутые аудиофильтры", ttsF4: "Скачать MP3",
+        dubBadge: "Дубляж", dubProduct: "Дубляж навсегда", dubProductDesc: "Неограниченный дубляж SRT с точной синхронизацией",
         dubF1: "Неограниченный дубляж", dubF2: "Авто синхронизация SRT", dubF3: "Экспорт WAV для YouTube", dubF4: "Быстрая облачная обработка",
-        srtProduct: "Переводчик SRT навсегда", srtProductDesc: "Переводите SRT файлы на 13 языков одним кликом",
-        srtF1: "13+ языков мира", srtF2: "Мгновенный перевод", srtF3: "Авто очистка текста", srtF4: "Скачать переведенный SRT",
+        srtBadge: "Переводчик", srtProduct: "Переводчик SRT навсегда", srtProductDesc: "Переводите файлы SRT на 12 языков одним кликом",
+        srtF1: "12+ языков мира", srtF2: "Мгновенный перевод", srtF3: "Авто очистка текста", srtF4: "Скачать переведенный SRT",
         lifetime: "Навсегда / Разовый платеж", buyNowTTS: "Купить озвучку", buyNowDub: "Купить дубляж", buyNowSRT: "Купить переводчик",
         securePayment: "Безопасная оплата через Payhip",
-        ttsLocked: "Озвучка текста — Заблокировано", loginForFree: "Войдите для 6 бесплатных использований",
-        ttsTitle: "Озвучка текста", speak: "Говорить", ttsHint: "Введите текст и нажмите говорить",
+        ttsLocked: "Текст в Речь — Заблокировано", loginForFree: "Войдите для 6 бесплатных использований", registerForFree: "Зарегистрируйтесь для бесплатного доступа",
+        ttsTitle: "Текст в Речь", typeText: "Введите текст...", speedLabel: "Скорость", pitchLabel: "Тон", volumeLabel: "Громкость",
+        speak: "Говорить", ttsHint: "Введите текст и нажмите говорить",
         dubLocked: "Дубляж — Заблокировано", dubLoginPrompt: "Зарегистрируйтесь для бесплатной пробной версии (30с)",
         serverOffline: "⚠️ Сервер дубляжа офлайн", serverOnline: "✅ Сервер дубляжа онлайн",
-        dubLang: "Язык дубляжа", srtFile: "SRT файл", generation: "Генерация", generateDub: "Сгенерировать дубляж",
+        dubLang: "Язык дубляжа", srtFile: "Файл SRT", dragOrClick: "Перетащите или нажмите", pasteSRT: "Вставьте содержимое SRT...",
+        analyzeFile: "📥 Анализировать файл", sentences: "предложений",
+        generation: "Генерация", silentProcessing: "<strong>Бесшумная</strong> обработка через облачный сервер",
+        preciseSync: "Точная синхронизация с таймингами SRT", wavExport: "Файл WAV для дубляжа YouTube",
+        generateDub: "Сгенерировать дубляж", requiresServer: "Требуется сервер Render",
+        processing: "Обработка...", remaining: "Осталось", elapsed: "Прошло", total: "Всего",
+        cancel: "⏹ Отмена", ready: "🎉 Готово", downloadWAV: "⬇️ Скачать WAV", dubHint: "Убедитесь, что сервер Render работает, затем нажмите",
         srtLocked: "Переводчик SRT — Заблокировано", srtLoginPrompt: "Войдите для 6 бесплатных использований",
-        srtTranslator: "Переводчик SRT",
+        srtTranslator: "Переводчик SRT", selectTransLang: "Выберите язык перевода", sourceText: "Исходный текст (SRT)",
+        translate: "Перевести", result: "✅ Результат", copy: "📋 Копировать", downloadSRT: "⬇️ Скачать SRT",
         footerDesc: "Профессиональная платформа дубляжа и перевода с использованием новейших технологий ИИ. Достигайте мировой аудитории контентом на их родном языке.",
         product: "Продукт", features: "Функции", pricing: "Цены", api: "API для разработчиков", updates: "Обновления",
         company: "Компания", about: "О нас", blog: "Блог", careers: "Карьера", contact: "Связаться",
@@ -676,28 +771,327 @@ const translations = {
     },
     tr: {
         upgradePro: "👑 Pro'ya Yükselt", login: "Giriş", freePlan: "Ücretsiz Plan",
-        subtitle: "Profesyonel Dublaj ve Çeviri",
+        loginTab: "Giriş", registerTab: "Kayıt", emailLabel: "E-posta", passwordLabel: "Şifre",
+        confirmPasswordLabel: "Şifreyi Onayla", loginBtn: "Giriş Yap", registerBtn: "Kaydol",
+        usageTitle: "Kalan Kullanım", ttsUsage: "✏️ Metin Okuma", dubUsage: "🎬 Dublaj", srtUsage: "🌐 SRT Çevirmen",
+        logoutBtn: "Çıkış Yap", subtitle: "Profesyonel Dublaj ve Çeviri",
         pricingTitle: "Planınızı Seçin", pricingDesc: "İhtiyacınız olan özelliği satın alın - Ömür boyu erişim, abonelik yok",
-        ttsProduct: "Metin Okuma Ömür Boyu", ttsProductDesc: "Çok dilli sınırsız metin okuma",
-        ttsF1: "13+ Küresel Dil", ttsF2: "Hız ve Ton Kontrolü", ttsF3: "Gelişmiş Ses Filtreleri", ttsF4: "MP3 İndir",
-        dubProduct: "Dublaj Ömür Boyu", dubProductDesc: "Hassas senkronizasyonlu sınırsız SRT dublajı",
+        ttsBadge: "Metin Okuma", ttsProduct: "Metin Okuma Ömür Boyu", ttsProductDesc: "12+ dilde sınırsız metin okuma",
+        ttsF1: "12+ Küresel Dil", ttsF2: "Hız ve Ton Kontrolü", ttsF3: "Gelişmiş Ses Filtreleri", ttsF4: "MP3 İndir",
+        dubBadge: "Dublaj", dubProduct: "Dublaj Ömür Boyu", dubProductDesc: "Hassas senkronizasyonlu sınırsız SRT dublajı",
         dubF1: "Sınırsız Dublaj", dubF2: "Oto SRT Senkronizasyonu", dubF3: "YouTube WAV Dışa Aktar", dubF4: "Hızlı Bulut İşleme",
-        srtProduct: "SRT Çevirmen Ömür Boyu", srtProductDesc: "SRT dosyalarını tek tıkla 13 dile çevirin",
-        srtF1: "13+ Küresel Dil", srtF2: "Anında Çeviri", srtF3: "Oto Metin Temizleme", srtF4: "Çevrilmiş SRT İndir",
+        srtBadge: "Çevirmen", srtProduct: "SRT Çevirmen Ömür Boyu", srtProductDesc: "SRT dosyalarını tek tıkla 12 dile çevirin",
+        srtF1: "12+ Küresel Dil", srtF2: "Anında Çeviri", srtF3: "Oto Metin Temizleme", srtF4: "Çevrilmiş SRT İndir",
         lifetime: "Ömür Boyu / Tek Ödeme", buyNowTTS: "Metin Okuma Satın Al", buyNowDub: "Dublaj Satın Al", buyNowSRT: "Çevirmen Satın Al",
         securePayment: "Payhip ile Güvenli Ödeme",
-        ttsLocked: "Metin Okuma — Kilitli", loginForFree: "6 ücretsiz kullanım için giriş yapın",
-        ttsTitle: "Metin Okuma", speak: "Oku", ttsHint: "Metin yazın ve oku'ya tıklayın",
+        ttsLocked: "Metin Okuma — Kilitli", loginForFree: "6 ücretsiz kullanım için giriş yapın", registerForFree: "Ücretsiz erişim için kaydolun",
+        ttsTitle: "Metin Okuma", typeText: "Metin yazın...", speedLabel: "Hız", pitchLabel: "Ton", volumeLabel: "Ses",
+        speak: "Oku", ttsHint: "Metin yazın ve oku'ya tıklayın",
         dubLocked: "Dublaj — Kilitli", dubLoginPrompt: "Ücretsiz deneme için kaydolun (30s)",
         serverOffline: "⚠️ Dublaj sunucusu çevrimdışı", serverOnline: "✅ Dublaj sunucusu çevrimiçi",
-        dubLang: "Dublaj Dili", srtFile: "SRT Dosyası", generation: "Üretim", generateDub: "Dublaj Üret",
+        dubLang: "Dublaj Dili", srtFile: "SRT Dosyası", dragOrClick: "Sürükleyin veya tıklayın", pasteSRT: "SRT içeriğini yapıştırın...",
+        analyzeFile: "📥 Dosyayı Analiz Et", sentences: "cümle",
+        generation: "Üretim", silentProcessing: "Bulut sunucusu aracılığıyla <strong>Sessiz</strong> işleme",
+        preciseSync: "SRT zamanlamaları ile hassas senkronizasyon", wavExport: "YouTube Dublajı için WAV dosyası",
+        generateDub: "Dublaj Üret", requiresServer: "Render sunucusu gerektirir",
+        processing: "İşleniyor...", remaining: "Kalan", elapsed: "Geçen", total: "Toplam",
+        cancel: "⏹ İptal", ready: "🎉 Hazır", downloadWAV: "⬇️ WAV İndir", dubHint: "Render sunucusunun çalıştığından emin olun, sonra tıklayın",
         srtLocked: "SRT Çevirmen — Kilitli", srtLoginPrompt: "6 ücretsiz kullanım için giriş yapın",
-        srtTranslator: "SRT Çevirmen",
+        srtTranslator: "SRT Çevirmen", selectTransLang: "Çeviri dilini seçin", sourceText: "Kaynak Metin (SRT)",
+        translate: "Çevir", result: "✅ Sonuç", copy: "📋 Kopyala", downloadSRT: "⬇️ SRT İndir",
         footerDesc: "En son yapay zeka teknolojilerini kullanan profesyonel dublaj ve çeviri platformu. İçeriğinizi kendi dillerinde küresel kitlelere ulaştırın.",
         product: "Ürün", features: "Özellikler", pricing: "Fiyatlandırma", api: "Geliştiriciler için API", updates: "Güncellemeler",
         company: "Şirket", about: "Hakkımızda", blog: "Blog", careers: "Kariyer", contact: "İletişim",
         support: "Destek", help: "Yardım Merkezi", faq: "SSS", privacy: "Gizlilik Politikası", terms: "Kullanım Koşulları",
         allRights: "Tüm hakları saklıdır."
+    },
+    de: {
+        upgradePro: "👑 Zu Pro upgraden", login: "Anmelden", freePlan: "Kostenloser Plan",
+        loginTab: "Anmelden", registerTab: "Registrieren", emailLabel: "E-Mail", passwordLabel: "Passwort",
+        confirmPasswordLabel: "Passwort bestätigen", loginBtn: "Anmelden", registerBtn: "Registrieren",
+        usageTitle: "Verbleibende Nutzung", ttsUsage: "✏️ Text zu Sprache", dubUsage: "🎬 Synchronisation", srtUsage: "🌐 SRT Übersetzer",
+        logoutBtn: "Abmelden", subtitle: "Professionelle Synchronisation & Übersetzung",
+        pricingTitle: "Wähle deinen Plan", pricingDesc: "Kaufe die Funktion, die du brauchst - Lebenslanger Zugriff, keine Abonnements",
+        ttsBadge: "Text zu Sprache", ttsProduct: "Text zu Sprache Lebenslang", ttsProductDesc: "Unbegrenzte Sprachausgabe in 12+ Sprachen",
+        ttsF1: "12+ Globale Sprachen", ttsF2: "Geschwindigkeits- & Tonhöhenkontrolle", ttsF3: "Erweiterte Audiofilter", ttsF4: "MP3 Download",
+        dubBadge: "Synchronisation", dubProduct: "Synchronisation Lebenslang", dubProductDesc: "Unbegrenzte SRT-Synchronisation mit präziser Synchronisation",
+        dubF1: "Unbegrenzte Synchronisation", dubF2: "Auto SRT-Sync", dubF3: "YouTube WAV-Export", dubF4: "Schnelle Cloud-Verarbeitung",
+        srtBadge: "Übersetzer", srtProduct: "SRT Übersetzer Lebenslang", srtProductDesc: "Übersetze SRT-Dateien mit einem Klick in 12 Sprachen",
+        srtF1: "12+ Globale Sprachen", srtF2: "Sofortige Übersetzung", srtF3: "Automatische Textbereinigung", srtF4: "Übersetztes SRT herunterladen",
+        lifetime: "Lebenslang / Einmalzahlung", buyNowTTS: "TTS jetzt kaufen", buyNowDub: "Synchronisation jetzt kaufen", buyNowSRT: "Übersetzer jetzt kaufen",
+        securePayment: "Sichere Zahlung via Payhip",
+        ttsLocked: "Text zu Sprache — Gesperrt", loginForFree: "Melde dich an für 6 kostenlose Nutzungen", registerForFree: "Registriere dich für kostenlosen Zugriff",
+        ttsTitle: "Text zu Sprache", typeText: "Text eingeben...", speedLabel: "Geschwindigkeit", pitchLabel: "Tonhöhe", volumeLabel: "Lautstärke",
+        speak: "Sprechen", ttsHint: "Text eingeben und auf Sprechen klicken",
+        dubLocked: "Synchronisation — Gesperrt", dubLoginPrompt: "Registriere dich für kostenlose Testversion (30s)",
+        serverOffline: "⚠️ Synchronisationsserver offline", serverOnline: "✅ Synchronisationsserver online",
+        dubLang: "Synchronisationssprache", srtFile: "SRT Datei", dragOrClick: "Ziehen oder klicken", pasteSRT: "SRT-Inhalt einfügen...",
+        analyzeFile: "📥 Datei analysieren", sentences: "Sätze",
+        generation: "Generierung", silentProcessing: "<strong>Stille</strong> Verarbeitung via Cloud-Server",
+        preciseSync: "Präzise Synchronisation mit SRT-Zeitangaben", wavExport: "WAV-Datei für YouTube-Synchronisation",
+        generateDub: "Synchronisation generieren", requiresServer: "Erfordert Render-Server",
+        processing: "Verarbeitung...", remaining: "Verbleibend", elapsed: "Vergangen", total: "Gesamt",
+        cancel: "⏹ Abbrechen", ready: "🎉 Bereit", downloadWAV: "⬇️ WAV herunterladen", dubHint: "Stelle sicher, dass der Render-Server läuft, dann klicke",
+        srtLocked: "SRT Übersetzer — Gesperrt", srtLoginPrompt: "Melde dich an für 6 kostenlose Nutzungen",
+        srtTranslator: "SRT Übersetzer", selectTransLang: "Übersetzungssprache auswählen", sourceText: "Quelltext (SRT)",
+        translate: "Übersetzen", result: "✅ Ergebnis", copy: "📋 Kopieren", downloadSRT: "⬇️ SRT herunterladen",
+        footerDesc: "Professionelle Plattform für Synchronisation und Übersetzung mit den neuesten KI-Technologien. Erreiche globale Zielgruppen mit Inhalten in ihrer Muttersprache.",
+        product: "Produkt", features: "Funktionen", pricing: "Preise", api: "API für Entwickler", updates: "Updates",
+        company: "Unternehmen", about: "Über uns", blog: "Blog", careers: "Karriere", contact: "Kontakt",
+        support: "Support", help: "Hilfecenter", faq: "FAQ", privacy: "Datenschutzrichtlinie", terms: "Nutzungsbedingungen",
+        allRights: "Alle Rechte vorbehalten."
+    },
+    zh: {
+        upgradePro: "👑 升级到专业版", login: "登录", freePlan: "免费计划",
+        loginTab: "登录", registerTab: "注册", emailLabel: "电子邮件", passwordLabel: "密码",
+        confirmPasswordLabel: "确认密码", loginBtn: "登录", registerBtn: "注册",
+        usageTitle: "剩余使用次数", ttsUsage: "✏️ 文字转语音", dubUsage: "🎬 配音", srtUsage: "🌐 SRT翻译器",
+        logoutBtn: "退出登录", subtitle: "专业配音与翻译",
+        pricingTitle: "选择您的计划", pricingDesc: "购买您需要的功能 - 终身访问，无需订阅",
+        ttsBadge: "文字转语音", ttsProduct: "文字转语音终身版", ttsProductDesc: "12种以上语言的无限文字转语音",
+        ttsF1: "12种以上全球语言", ttsF2: "速度和音调控制", ttsF3: "高级音频滤波器", ttsF4: "下载MP3",
+        dubBadge: "配音", dubProduct: "配音终身解锁", dubProductDesc: "无限SRT配音，精确同步",
+        dubF1: "无限配音", dubF2: "自动SRT同步", dubF3: "YouTube WAV导出", dubF4: "快速云处理",
+        srtBadge: "翻译器", srtProduct: "SRT翻译器终身版", srtProductDesc: "一键将SRT文件翻译成12种语言",
+        srtF1: "12种以上全球语言", srtF2: "即时翻译", srtF3: "自动文本清理", srtF4: "下载翻译后的SRT",
+        lifetime: "终身 / 一次性付款", buyNowTTS: "立即购买TTS", buyNowDub: "立即购买配音", buyNowSRT: "立即购买翻译器",
+        securePayment: "通过Payhip安全支付",
+        ttsLocked: "文字转语音 — 已锁定", loginForFree: "登录获取6次免费使用", registerForFree: "注册免费访问",
+        ttsTitle: "文字转语音", typeText: "输入文字...", speedLabel: "速度", pitchLabel: "音调", volumeLabel: "音量",
+        speak: "朗读", ttsHint: "输入文字并点击朗读",
+        dubLocked: "配音 — 已锁定", dubLoginPrompt: "注册免费试用（30秒）",
+        serverOffline: "⚠️ 配音服务器离线", serverOnline: "✅ 配音服务器在线",
+        dubLang: "配音语言", srtFile: "SRT文件", dragOrClick: "拖放或点击", pasteSRT: "粘贴SRT内容...",
+        analyzeFile: "📥 分析文件", sentences: "句子",
+        generation: "生成", silentProcessing: "通过云服务器进行<strong>静音</strong>处理",
+        preciseSync: "与SRT时间精确同步", wavExport: "用于YouTube配音的WAV文件",
+        generateDub: "生成配音", requiresServer: "需要Render服务器",
+        processing: "处理中...", remaining: "剩余", elapsed: "已用", total: "总计",
+        cancel: "⏹ 取消", ready: "🎉 就绪", downloadWAV: "⬇️ 下载WAV", dubHint: "确保Render服务器正在运行，然后点击",
+        srtLocked: "SRT翻译器 — 已锁定", srtLoginPrompt: "登录获取6次免费使用",
+        srtTranslator: "SRT翻译器", selectTransLang: "选择翻译语言", sourceText: "源文本（SRT）",
+        translate: "翻译", result: "✅ 结果", copy: "📋 复制", downloadSRT: "⬇️ 下载SRT",
+        footerDesc: "使用最新人工智能技术的专业配音和翻译平台。用受众的母语覆盖全球用户。",
+        product: "产品", features: "功能", pricing: "价格", api: "开发者API", updates: "更新",
+        company: "公司", about: "关于我们", blog: "博客", careers: "招聘", contact: "联系我们",
+        support: "支持", help: "帮助中心", faq: "常见问题", privacy: "隐私政策", terms: "服务条款",
+        allRights: "版权所有。"
+    },
+    hi: {
+        upgradePro: "👑 प्रो में अपग्रेड करें", login: "लॉग इन", freePlan: "मुफ्त योजना",
+        loginTab: "लॉग इन", registerTab: "पंजीकरण", emailLabel: "ईमेल", passwordLabel: "पासवर्ड",
+        confirmPasswordLabel: "पासवर्ड की पुष्टि करें", loginBtn: "लॉग इन", registerBtn: "पंजीकरण करें",
+        usageTitle: "शेष उपयोग", ttsUsage: "✏️ टेक्स्ट टू स्पीच", dubUsage: "🎬 डबिंग", srtUsage: "🌐 SRT अनुवादक",
+        logoutBtn: "लॉग आउट", subtitle: "पेशेवर डबिंग और अनुवाद",
+        pricingTitle: "अपनी योजना चुनें", pricingDesc: "वह सुविधा खरीदें जो आपको चाहिए - आजीवन पहुंच, कोई सदस्यता नहीं",
+        ttsBadge: "टेक्स्ट टू स्पीच", ttsProduct: "टेक्स्ट टू स्पीच आजीवन", ttsProductDesc: "12+ भाषाओं में असीमित टेक्स्ट टू स्पीच",
+        ttsF1: "12+ वैश्विक भाषाएं", ttsF2: "गति और पिच नियंत्रण", ttsF3: "उन्नत ऑडियो फिल्टर", ttsF4: "MP3 डाउनलोड",
+        dubBadge: "डबिंग", dubProduct: "डबिंग आजीवन अनलॉक", dubProductDesc: "सटीक सिंक के साथ असीमित SRT डबिंग",
+        dubF1: "असीमित डबिंग", dubF2: "ऑटो SRT सिंक", dubF3: "YouTube WAV निर्यात", dubF4: "तेज़ क्लाउड प्रोसेसिंग",
+        srtBadge: "अनुवादक", srtProduct: "SRT अनुवादक आजीवन", srtProductDesc: "एक क्लिक में SRT फाइलों का 12 भाषाओं में अनुवाद",
+        srtF1: "12+ वैश्विक भाषाएं", srtF2: "तत्काल अनुवाद", srtF3: "ऑटो टेक्स्ट सफाई", srtF4: "अनुवादित SRT डाउनलोड करें",
+        lifetime: "आजीवन / एकमुश्त भुगतान", buyNowTTS: "अभी TTS खरीदें", buyNowDub: "अभी डबिंग खरीदें", buyNowSRT: "अभी अनुवादक खरीदें",
+        securePayment: "Payhip के माध्यम से सुरक्षित भुगतान",
+        ttsLocked: "टेक्स्ट टू स्पीच — लॉक्ड", loginForFree: "6 मुफ्त उपयोग के लिए लॉग इन करें", registerForFree: "मुफ्त पहुंच के लिए पंजीकरण करें",
+        ttsTitle: "टेक्स्ट टू स्पीच", typeText: "टेक्स्ट लिखें...", speedLabel: "गति", pitchLabel: "पिच", volumeLabel: "वॉल्यूम",
+        speak: "बोलें", ttsHint: "टेक्स्ट लिखें और बोलें पर क्लिक करें",
+        dubLocked: "डबिंग — लॉक्ड", dubLoginPrompt: "मुफ्त परीक्षण के लिए पंजीकरण करें (30 सेकंड)",
+        serverOffline: "⚠️ डबिंग सर्वर ऑफलाइन", serverOnline: "✅ डबिंग सर्वर ऑनलाइन",
+        dubLang: "डबिंग भाषा", srtFile: "SRT फाइल", dragOrClick: "खींचें या क्लिक करें", pasteSRT: "SRT सामग्री पेस्ट करें...",
+        analyzeFile: "📥 फाइल का विश्लेषण करें", sentences: "वाक्य",
+        generation: "जनरेशन", silentProcessing: "क्लाउड सर्वर के माध्यम से <strong>मौन</strong> प्रसंस्करण",
+        preciseSync: "SRT समय के साथ सटीक सिंक", wavExport: "YouTube डबिंग के लिए WAV फाइल",
+        generateDub: "डबिंग जनरेट करें", requiresServer: "Render सर्वर की आवश्यकता है",
+        processing: "प्रसंस्करण...", remaining: "शेष", elapsed: "बीता", total: "कुल",
+        cancel: "⏹ रद्द करें", ready: "🎉 तैयार", downloadWAV: "⬇️ WAV डाउनलोड करें", dubHint: "सुनिश्चित करें कि Render सर्वर चल रहा है, फिर क्लिक करें",
+        srtLocked: "SRT अनुवादक — लॉक्ड", srtLoginPrompt: "6 मुफ्त उपयोग के लिए लॉग इन करें",
+        srtTranslator: "SRT अनुवादक", selectTransLang: "अनुवाद भाषा चुनें", sourceText: "स्रोत टेक्स्ट (SRT)",
+        translate: "अनुवाद करें", result: "✅ परिणाम", copy: "📋 कॉपी करें", downloadSRT: "⬇️ SRT डाउनलोड करें",
+        footerDesc: "नवीनतम AI तकनीकों का उपयोग करने वाला पेशेवर डबिंग और अनुवाद प्लेटफॉर्म। उनकी मातृभाषा में सामग्री के साथ वैश्विक दर्शकों तक पहुंचें।",
+        product: "उत्पाद", features: "सुविधाएं", pricing: "मूल्य निर्धारण", api: "डेवलपर्स के लिए API", updates: "अपडेट",
+        company: "कंपनी", about: "हमारे बारे में", blog: "ब्लॉग", careers: "करियर", contact: "संपर्क करें",
+        support: "सहायता", help: "सहायता केंद्र", faq: "अक्सर पूछे जाने वाले प्रश्न", privacy: "गोपनीयता नीति", terms: "सेवा की शर्तें",
+        allRights: "सर्वाधिकार सुरक्षित।"
+    },
+    fa: {
+        upgradePro: "👑 ارتقا به نسخه حرفه‌ای", login: "ورود", freePlan: "طرح رایگان",
+        loginTab: "ورود", registerTab: "ثبت نام", emailLabel: "ایمیل", passwordLabel: "رمز عبور",
+        confirmPasswordLabel: "تأیید رمز عبور", loginBtn: "ورود", registerBtn: "ثبت نام",
+        usageTitle: "استفاده باقیمانده", ttsUsage: "✏️ تبدیل متن به گفتار", dubUsage: "🎬 دوبله", srtUsage: "🌐 مترجم SRT",
+        logoutBtn: "خروج", subtitle: "دوبله و ترجمه حرفه‌ای",
+        pricingTitle: "طرح خود را انتخاب کنید", pricingDesc: "ویژگی مورد نیاز خود را بخرید - دسترسی مادام‌العمر، بدون اشتراک",
+        ttsBadge: "تبدیل متن به گفتار", ttsProduct: "تبدیل متن به گفتار مادام‌العمر", ttsProductDesc: "تبدیل متن به گفتار نامحدود به 12+ زبان",
+        ttsF1: "12+ زبان جهانی", ttsF2: "کنترل سرعت و لحن", ttsF3: "فیلترهای صوتی پیشرفته", ttsF4: "دانلود MP3",
+        dubBadge: "دوبله", dubProduct: "باز کردن دوبله مادام‌العمر", dubProductDesc: "دوبله SRT نامحدود با همگام‌سازی دقیق",
+        dubF1: "دوبله نامحدود", dubF2: "همگام‌سازی خودکار SRT", dubF3: "خروجی WAV برای YouTube", dubF4: "پردازش سریع ابری",
+        srtBadge: "مترجم", srtProduct: "مترجم SRT مادام‌العمر", srtProductDesc: "ترجمه فایل‌های SRT به 12 زبان با یک کلیک",
+        srtF1: "12+ زبان جهانی", srtF2: "ترجمه فوری", srtF3: "پاکسازی خودکار متن", srtF4: "دانلود SRT ترجمه شده",
+        lifetime: "مادام‌العمر / پرداخت یک‌باره", buyNowTTS: "همین حالا TTS بخر", buyNowDub: "همین حالا دوبله بخر", buyNowSRT: "همین حالا مترجم بخر",
+        securePayment: "پرداخت امن از طریق Payhip",
+        ttsLocked: "تبدیل متن به گفتار — قفل شده", loginForFree: "برای 6 استفاده رایگان وارد شوید", registerForFree: "برای دسترسی رایگان ثبت نام کنید",
+        ttsTitle: "تبدیل متن به گفتار", typeText: "متن بنویسید...", speedLabel: "سرعت", pitchLabel: "لحن", volumeLabel: "صدا",
+        speak: "بخوان", ttsHint: "متن بنویسید و روی بخوان کلیک کنید",
+        dubLocked: "دوبله — قفل شده", dubLoginPrompt: "برای نسخه آزمایشی رایگان ثبت نام کنید (30 ثانیه)",
+        serverOffline: "⚠️ سرور دوبله آفلاین است", serverOnline: "✅ سرور دوبله آنلاین است",
+        dubLang: "زبان دوبله", srtFile: "فایل SRT", dragOrClick: "بکشید یا کلیک کنید", pasteSRT: "محتوای SRT را بچسبانید...",
+        analyzeFile: "📥 تجزیه و تحلیل فایل", sentences: "جمله",
+        generation: "تولید", silentProcessing: "پردازش <strong>بی‌صدا</strong> از طریق سرور ابری",
+        preciseSync: "همگام‌سازی دقیق با زمان‌بندی SRT", wavExport: "فایل WAV برای دوبله YouTube",
+        generateDub: "تولید دوبله", requiresServer: "نیاز به سرور Render دارد",
+        processing: "در حال پردازش...", remaining: "باقیمانده", elapsed: "سپری شده", total: "کل",
+        cancel: "⏹ لغو", ready: "🎉 آماده", downloadWAV: "⬇️ دانلود WAV", dubHint: "اطمینان حاصل کنید که سرور Render در حال اجراست، سپس کلیک کنید",
+        srtLocked: "مترجم SRT — قفل شده", srtLoginPrompt: "برای 6 استفاده رایگان وارد شوید",
+        srtTranslator: "مترجم SRT", selectTransLang: "زبان ترجمه را انتخاب کنید", sourceText: "متن منبع (SRT)",
+        translate: "ترجمه", result: "✅ نتیجه", copy: "📋 کپی", downloadSRT: "⬇️ دانلود SRT",
+        footerDesc: "پلتفرم حرفه‌ای دوبله و ترجمه با استفاده از جدیدترین فناوری‌های هوش مصنوعی. با محتوا به زبان مادری خود به مخاطبان جهانی دست یابید.",
+        product: "محصول", features: "ویژگی‌ها", pricing: "قیمت‌گذاری", api: "API برای توسعه‌دهندگان", updates: "به‌روزرسانی‌ها",
+        company: "شرکت", about: "درباره ما", blog: "وبلاگ", careers: "فرصت‌های شغلی", contact: "تماس با ما",
+        support: "پشتیبانی", help: "مرکز راهنمایی", faq: "سوالات متداول", privacy: "سیاست حریم خصوصی", terms: "شرایط خدمات",
+        allRights: "تمامی حقوق محفوظ است."
+    },
+    fr: {
+        upgradePro: "👑 Passer à Pro", login: "Connexion", freePlan: "Plan Gratuit",
+        loginTab: "Connexion", registerTab: "Inscription", emailLabel: "E-mail", passwordLabel: "Mot de passe",
+        confirmPasswordLabel: "Confirmer le mot de passe", loginBtn: "Connexion", registerBtn: "S'inscrire",
+        usageTitle: "Utilisation Restante", ttsUsage: "✏️ Synthèse Vocale", dubUsage: "🎬 Doublage", srtUsage: "🌐 Traducteur SRT",
+        logoutBtn: "Déconnexion", subtitle: "Doublage et Traduction Professionnels",
+        pricingTitle: "Choisissez Votre Plan", pricingDesc: "Achetez la fonction dont vous avez besoin - Accès à vie, sans abonnement",
+        ttsBadge: "Synthèse Vocale", ttsProduct: "Synthèse Vocale à Vie", ttsProductDesc: "Synthèse vocale illimitée en 12+ langues",
+        ttsF1: "12+ Langues Mondiales", ttsF2: "Contrôle de la Vitesse et du Timbre", ttsF3: "Filtres Audio Avancés", ttsF4: "Téléchargement MP3",
+        dubBadge: "Doublage", dubProduct: "Déblocage Doublage à Vie", dubProductDesc: "Doublage SRT illimité avec synchronisation précise",
+        dubF1: "Doublage Illimité", dubF2: "Sync Auto SRT", dubF3: "Export WAV pour YouTube", dubF4: "Traitement Cloud Rapide",
+        srtBadge: "Traducteur", srtProduct: "Traducteur SRT à Vie", srtProductDesc: "Traduisez les fichiers SRT en 12 langues en un clic",
+        srtF1: "12+ Langues Mondiales", srtF2: "Traduction Instantanée", srtF3: "Nettoyage Auto du Texte", srtF4: "Télécharger SRT Traduit",
+        lifetime: "À Vie / Paiement Unique", buyNowTTS: "Acheter TTS Maintenant", buyNowDub: "Acheter Doublage Maintenant", buyNowSRT: "Acheter Traducteur Maintenant",
+        securePayment: "Paiement Sécurisé via Payhip",
+        ttsLocked: "Synthèse Vocale — Verrouillé", loginForFree: "Connectez-vous pour 6 utilisations gratuites", registerForFree: "Inscrivez-vous pour un accès gratuit",
+        ttsTitle: "Synthèse Vocale", typeText: "Tapez du texte...", speedLabel: "Vitesse", pitchLabel: "Timbre", volumeLabel: "Volume",
+        speak: "Parler", ttsHint: "Tapez du texte et cliquez sur parler",
+        dubLocked: "Doublage — Verrouillé", dubLoginPrompt: "Inscrivez-vous pour un essai gratuit (30s)",
+        serverOffline: "⚠️ Serveur de doublage hors ligne", serverOnline: "✅ Serveur de doublage en ligne",
+        dubLang: "Langue de Doublage", srtFile: "Fichier SRT", dragOrClick: "Glisser ou cliquer", pasteSRT: "Coller le contenu SRT...",
+        analyzeFile: "📥 Analyser le Fichier", sentences: "phrases",
+        generation: "Génération", silentProcessing: "Traitement <strong>silencieux</strong> via serveur cloud",
+        preciseSync: "Synchronisation précise avec les timings SRT", wavExport: "Fichier WAV pour Doublage YouTube",
+        generateDub: "Générer le Doublage", requiresServer: "Nécessite le serveur Render",
+        processing: "Traitement...", remaining: "Restant", elapsed: "Écoulé", total: "Total",
+        cancel: "⏹ Annuler", ready: "🎉 Prêt", downloadWAV: "⬇️ Télécharger WAV", dubHint: "Assurez-vous que le serveur Render fonctionne, puis cliquez",
+        srtLocked: "Traducteur SRT — Verrouillé", srtLoginPrompt: "Connectez-vous pour 6 utilisations gratuites",
+        srtTranslator: "Traducteur SRT", selectTransLang: "Sélectionner la langue de traduction", sourceText: "Texte Source (SRT)",
+        translate: "Traduire", result: "✅ Résultat", copy: "📋 Copier", downloadSRT: "⬇️ Télécharger SRT",
+        footerDesc: "Plateforme professionnelle de doublage et de traduction utilisant les dernières technologies d'IA. Atteignez des audiences mondiales avec du contenu dans leur langue maternelle.",
+        product: "Produit", features: "Fonctionnalités", pricing: "Tarification", api: "API pour Développeurs", updates: "Mises à Jour",
+        company: "Entreprise", about: "À Propos", blog: "Blog", careers: "Carrières", contact: "Contactez-nous",
+        support: "Support", help: "Centre d'Aide", faq: "FAQ", privacy: "Politique de Confidentialité", terms: "Conditions d'Utilisation",
+        allRights: "Tous droits réservés."
+    },
+    sv: {
+        upgradePro: "👑 Uppgradera till Pro", login: "Logga in", freePlan: "Gratis Plan",
+        loginTab: "Logga in", registerTab: "Registrera", emailLabel: "E-post", passwordLabel: "Lösenord",
+        confirmPasswordLabel: "Bekräfta lösenord", loginBtn: "Logga in", registerBtn: "Registrera",
+        usageTitle: "Återstående Användning", ttsUsage: "✏️ Text till Tal", dubUsage: "🎬 Dubbning", srtUsage: "🌐 SRT Översättare",
+        logoutBtn: "Logga ut", subtitle: "Professionell Dubbning och Översättning",
+        pricingTitle: "Välj Din Plan", pricingDesc: "Köp funktionen du behöver - Livstidsåtkomst, inga prenumerationer",
+        ttsBadge: "Text till Tal", ttsProduct: "Text till Tal Livstid", ttsProductDesc: "Obegränsad text till tal på 12+ språk",
+        ttsF1: "12+ Globala Språk", ttsF2: "Hastighets- & Tonhöjdkontroll", ttsF3: "Avancerade Ljudfilter", ttsF4: "Ladda ner MP3",
+        dubBadge: "Dubbning", dubProduct: "Dubbning Livstidsupplåsning", dubProductDesc: "Obegränsad SRT-dubbning med exakt synkronisering",
+        dubF1: "Obegränsad Dubbning", dubF2: "Auto SRT-Synk", dubF3: "YouTube WAV-Export", dubF4: "Snabb Molnbehandling",
+        srtBadge: "Översättare", srtProduct: "SRT Översättare Livstid", srtProductDesc: "Översätt SRT-filer till 12 språk med ett klick",
+        srtF1: "12+ Globala Språk", srtF2: "Omedelbar Översättning", srtF3: "Automatisk Textrensning", srtF4: "Ladda ner Översatt SRT",
+        lifetime: "Livstid / Engångsbetalning", buyNowTTS: "Köp TTS Nu", buyNowDub: "Köp Dubbning Nu", buyNowSRT: "Köp Översättare Nu",
+        securePayment: "Säker Betalning via Payhip",
+        ttsLocked: "Text till Tal — Låst", loginForFree: "Logga in för 6 gratis användningar", registerForFree: "Registrera dig för gratis åtkomst",
+        ttsTitle: "Text till Tal", typeText: "Skriv text...", speedLabel: "Hastighet", pitchLabel: "Tonhöjd", volumeLabel: "Volym",
+        speak: "Tala", ttsHint: "Skriv text och klicka på tala",
+        dubLocked: "Dubbning — Låst", dubLoginPrompt: "Registrera dig för gratis provperiod (30s)",
+        serverOffline: "⚠️ Dubbningsserver offline", serverOnline: "✅ Dubbningsserver online",
+        dubLang: "Dubbningsspråk", srtFile: "SRT Fil", dragOrClick: "Dra eller klicka", pasteSRT: "Klistra in SRT-innehåll...",
+        analyzeFile: "📥 Analysera Fil", sentences: "meningar",
+        generation: "Generering", silentProcessing: "<strong>Tyst</strong> behandling via molnservrar",
+        preciseSync: "Exakt synkronisering med SRT-tider", wavExport: "WAV-fil för YouTube-dubbning",
+        generateDub: "Generera Dubbning", requiresServer: "Kräver Render-server",
+        processing: "Behandlar...", remaining: "Återstående", elapsed: "Förfluten", total: "Totalt",
+        cancel: "⏹ Avbryt", ready: "🎉 Klar", downloadWAV: "⬇️ Ladda ner WAV", dubHint: "Se till att Render-servern körs, klicka sedan",
+        srtLocked: "SRT Översättare — Låst", srtLoginPrompt: "Logga in för 6 gratis användningar",
+        srtTranslator: "SRT Översättare", selectTransLang: "Välj översättningsspråk", sourceText: "Källtext (SRT)",
+        translate: "Översätt", result: "✅ Resultat", copy: "📋 Kopiera", downloadSRT: "⬇️ Ladda ner SRT",
+        footerDesc: "Professionell plattform för dubbning och översättning med de senaste AI-teknikerna. Nå globala målgrupper med innehåll på deras modersmål.",
+        product: "Produkt", features: "Funktioner", pricing: "Prissättning", api: "API för Utvecklare", updates: "Uppdateringar",
+        company: "Företag", about: "Om Oss", blog: "Blogg", careers: "Karriär", contact: "Kontakta Oss",
+        support: "Support", help: "Hjälpcenter", faq: "FAQ", privacy: "Integritetspolicy", terms: "Användarvillkor",
+        allRights: "Alla rättigheter förbehållna."
+    },
+    it: {
+        upgradePro: "👑 Aggiorna a Pro", login: "Accedi", freePlan: "Piano Gratuito",
+        loginTab: "Accedi", registerTab: "Registrati", emailLabel: "Email", passwordLabel: "Password",
+        confirmPasswordLabel: "Conferma Password", loginBtn: "Accedi", registerBtn: "Registrati",
+        usageTitle: "Utilizzo Rimanente", ttsUsage: "✏️ Sintesi Vocale", dubUsage: "🎬 Doppiaggio", srtUsage: "🌐 Traduttore SRT",
+        logoutBtn: "Esci", subtitle: "Doppiaggio e Traduzione Professionale",
+        pricingTitle: "Scegli il Tuo Piano", pricingDesc: "Acquista la funzione di cui hai bisogno - Accesso a vita, nessun abbonamento",
+        ttsBadge: "Sintesi Vocale", ttsProduct: "Sintesi Vocale a Vita", ttsProductDesc: "Sintesi vocale illimitata in 12+ lingue",
+        ttsF1: "12+ Lingue Globali", ttsF2: "Controllo Velocità e Tonalità", ttsF3: "Filtri Audio Avanzati", ttsF4: "Download MP3",
+        dubBadge: "Doppiaggio", dubProduct: "Sblocco Doppiaggio a Vita", dubProductDesc: "Doppiaggio SRT illimitato con sincronizzazione precisa",
+        dubF1: "Doppiaggio Illimitato", dubF2: "Sync Auto SRT", dubF3: "Esportazione WAV per YouTube", dubF4: "Elaborazione Cloud Veloce",
+        srtBadge: "Traduttore", srtProduct: "Traduttore SRT a Vita", srtProductDesc: "Traduci file SRT in 12 lingue con un clic",
+        srtF1: "12+ Lingue Globali", srtF2: "Traduzione Istantanea", srtF3: "Pulizia Automatica Testo", srtF4: "Scarica SRT Tradotto",
+        lifetime: "A Vita / Pagamento Unico", buyNowTTS: "Acquista TTS Ora", buyNowDub: "Acquista Doppiaggio Ora", buyNowSRT: "Acquista Traduttore Ora",
+        securePayment: "Pagamento Sicuro via Payhip",
+        ttsLocked: "Sintesi Vocale — Bloccato", loginForFree: "Accedi per 6 utilizzi gratuiti", registerForFree: "Registrati per accesso gratuito",
+        ttsTitle: "Sintesi Vocale", typeText: "Scrivi testo...", speedLabel: "Velocità", pitchLabel: "Tonalità", volumeLabel: "Volume",
+        speak: "Parla", ttsHint: "Scrivi testo e clicca parla",
+        dubLocked: "Doppiaggio — Bloccato", dubLoginPrompt: "Registrati per prova gratuita (30s)",
+        serverOffline: "⚠️ Server doppiaggio offline", serverOnline: "✅ Server doppiaggio online",
+        dubLang: "Lingua Doppiaggio", srtFile: "File SRT", dragOrClick: "Trascina o clicca", pasteSRT: "Incolla contenuto SRT...",
+        analyzeFile: "📥 Analizza File", sentences: "frasi",
+        generation: "Generazione", silentProcessing: "Elaborazione <strong>silenziosa</strong> via server cloud",
+        preciseSync: "Sincronizzazione precisa con tempi SRT", wavExport: "File WAV per Doppiaggio YouTube",
+        generateDub: "Genera Doppiaggio", requiresServer: "Richiede server Render",
+        processing: "Elaborazione...", remaining: "Rimanente", elapsed: "Trascorso", total: "Totale",
+        cancel: "⏹ Annulla", ready: "🎉 Pronto", downloadWAV: "⬇️ Scarica WAV", dubHint: "Assicurati che il server Render sia in esecuzione, poi clicca",
+        srtLocked: "Traduttore SRT — Bloccato", srtLoginPrompt: "Accedi per 6 utilizzi gratuiti",
+        srtTranslator: "Traduttore SRT", selectTransLang: "Seleziona lingua traduzione", sourceText: "Testo Sorgente (SRT)",
+        translate: "Traduci", result: "✅ Risultato", copy: "📋 Copia", downloadSRT: "⬇️ Scarica SRT",
+        footerDesc: "Piattaforma professionale di doppiaggio e traduzione che utilizza le ultime tecnologie AI. Raggiungi audience globali con contenuti nella loro lingua madre.",
+        product: "Prodotto", features: "Funzionalità", pricing: "Prezzi", api: "API per Sviluppatori", updates: "Aggiornamenti",
+        company: "Azienda", about: "Chi Siamo", blog: "Blog", careers: "Carriere", contact: "Contattaci",
+        support: "Supporto", help: "Centro Assistenza", faq: "FAQ", privacy: "Informativa sulla Privacy", terms: "Termini di Servizio",
+        allRights: "Tutti i diritti riservati."
+    },
+    nl: {
+        upgradePro: "👑 Upgraden naar Pro", login: "Inloggen", freePlan: "Gratis Plan",
+        loginTab: "Inloggen", registerTab: "Registreren", emailLabel: "E-mail", passwordLabel: "Wachtwoord",
+        confirmPasswordLabel: "Bevestig Wachtwoord", loginBtn: "Inloggen", registerBtn: "Registreren",
+        usageTitle: "Resterend Gebruik", ttsUsage: "✏️ Tekst naar Spraak", dubUsage: "🎬 Nasynchronisatie", srtUsage: "🌐 SRT Vertaler",
+        logoutBtn: "Uitloggen", subtitle: "Professionele Nasynchronisatie en Vertaling",
+        pricingTitle: "Kies Je Plan", pricingDesc: "Koop de functie die je nodig hebt - Levenslange toegang, geen abonnementen",
+        ttsBadge: "Tekst naar Spraak", ttsProduct: "Tekst naar Spraak Levenslang", ttsProductDesc: "Onbeperkte tekst naar spraak in 12+ talen",
+        ttsF1: "12+ Wereldwijde Talen", ttsF2: "Snelheids- & Toonhoogtecontrole", ttsF3: "Geavanceerde Audiofilters", ttsF4: "MP3 Download",
+        dubBadge: "Nasynchronisatie", dubProduct: "Nasynchronisatie Levenslang Vrijgeven", dubProductDesc: "Onbeperkte SRT-nasynchronisatie met precieze synchronisatie",
+        dubF1: "Onbeperkte Nasynchronisatie", dubF2: "Auto SRT-Sync", dubF3: "YouTube WAV-Export", dubF4: "Snelle Cloudverwerking",
+        srtBadge: "Vertaler", srtProduct: "SRT Vertaler Levenslang", srtProductDesc: "Vertaal SRT-bestanden naar 12 talen met één klik",
+        srtF1: "12+ Wereldwijde Talen", srtF2: "Directe Vertaling", srtF3: "Automatische Tekstreiniging", srtF4: "Gevertaalde SRT Downloaden",
+        lifetime: "Levenslang / Eenmalige Betaling", buyNowTTS: "Koop TTS Nu", buyNowDub: "Koop Nasynchronisatie Nu", buyNowSRT: "Koop Vertaler Nu",
+        securePayment: "Veilig Betalen via Payhip",
+        ttsLocked: "Tekst naar Spraak — Vergrendeld", loginForFree: "Log in voor 6 gratis gebruiken", registerForFree: "Registreer voor gratis toegang",
+        ttsTitle: "Tekst naar Spraak", typeText: "Typ tekst...", speedLabel: "Snelheid", pitchLabel: "Toonhoogte", volumeLabel: "Volume",
+        speak: "Spreek", ttsHint: "Typ tekst en klik op spreek",
+        dubLocked: "Nasynchronisatie — Vergrendeld", dubLoginPrompt: "Registreer voor gratis proefperiode (30s)",
+        serverOffline: "⚠️ Nasynchronisatieserver offline", serverOnline: "✅ Nasynchronisatieserver online",
+        dubLang: "Nasynchronisatietaal", srtFile: "SRT Bestand", dragOrClick: "Sleep of klik", pasteSRT: "Plak SRT-inhoud...",
+        analyzeFile: "📥 Bestand Analyseren", sentences: "zinnen",
+        generation: "Generatie", silentProcessing: "<strong>Stille</strong> verwerking via cloudserver",
+        preciseSync: "Precieze synchronisatie met SRT-tijden", wavExport: "WAV-bestand voor YouTube-nasynchronisatie",
+        generateDub: "Genereer Nasynchronisatie", requiresServer: "Vereist Render-server",
+        processing: "Verwerken...", remaining: "Resterend", elapsed: "Verstreken", total: "Totaal",
+        cancel: "⏹ Annuleren", ready: "🎉 Klaar", downloadWAV: "⬇️ WAV Downloaden", dubHint: "Zorg dat de Render-server draait, klik dan",
+        srtLocked: "SRT Vertaler — Vergrendeld", srtLoginPrompt: "Log in voor 6 gratis gebruiken",
+        srtTranslator: "SRT Vertaler", selectTransLang: "Selecteer vertaaltaal", sourceText: "Brontekst (SRT)",
+        translate: "Vertalen", result: "✅ Resultaat", copy: "📋 Kopiëren", downloadSRT: "⬇️ SRT Downloaden",
+        footerDesc: "Professioneel platform voor nasynchronisatie en vertaling met de nieuwste AI-technologieën. Bereik wereldwijde doelgroepen met content in hun moedertaal.",
+        product: "Product", features: "Functies", pricing: "Prijzen", api: "API voor Ontwikkelaars", updates: "Updates",
+        company: "Bedrijf", about: "Over Ons", blog: "Blog", careers: "Carrières", contact: "Neem Contact Op",
+        support: "Ondersteuning", help: "Helpcentrum", faq: "FAQ", privacy: "Privacybeleid", terms: "Servicevoorwaarden",
+        allRights: "Alle rechten voorbehouden."
     }
 };
 
@@ -708,11 +1102,16 @@ const FREE_LIMIT = 6;
 function setLang(lang) {
     currentLang = lang;
     document.documentElement.lang = lang;
-    document.documentElement.dir = ['ar', 'fa', 'he'].includes(lang) ? 'rtl' : 'ltr';
+    document.documentElement.dir = ['ar', 'fa'].includes(lang) ? 'rtl' : 'ltr';
     
     document.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === lang));
-    document.getElementById('currentLang').textContent = 
-        lang === 'ar' ? 'العربية' : lang === 'en' ? 'English' : lang === 'ru' ? 'Русский' : 'Türkçe';
+    
+    const langNames = {
+        ar: 'العربية', en: 'English', es: 'Español', ru: 'Русский', tr: 'Türkçe',
+        de: 'Deutsch', zh: '中文', hi: 'हिन्दी', fa: 'فارسی', fr: 'Français',
+        sv: 'Svenska', it: 'Italiano', nl: 'Nederlands'
+    };
+    document.getElementById('currentLang').textContent = langNames[lang];
     
     document.getElementById('langDropdown').classList.remove('show');
     
@@ -721,6 +1120,12 @@ function setLang(lang) {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (t[key]) el.textContent = t[key];
+    });
+    
+    // Apply placeholder translations
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (t[key]) el.placeholder = t[key];
     });
     
     localStorage.setItem('lang', lang);
@@ -749,7 +1154,7 @@ function switchAuthTab(tab) {
 
 function doLogin() {
     const email = document.getElementById('loginEmail').value;
-    if (email && email.includes('@gmail.com')) {
+    if (email && email.includes('@')) {
         currentUser = { email, usage: { tts: 0, dub: 0, srt: 0 } };
         updateAuthUI();
         toggleAuth();
@@ -844,11 +1249,7 @@ function scrollToPayment() {
 }
 
 // TTS Functions
-const langs = [
-    {c:'ar',f:'🇸🇦',n:'العربية'},{c:'en',f:'🇺🇸',n:'English'},{c:'ru',f:'🇷🇺',n:'Русский'},{c:'tr',f:'🇹🇷',n:'Türkçe'},
-    {c:'fr',f:'🇫🇷',n:'Français'},{c:'de',f:'🇩🇪',n:'Deutsch'},{c:'es',f:'🇪🇸',n:'Español'}
-];
-let selLang = 'ar', selDubLang = 'ar', selTransLang = 'en';
+let selLang = 'en', selDubLang = 'en', selTransLang = 'es';
 
 function buildLangGrid(id, sel, onPick) {
     const g = document.getElementById(id);
@@ -879,9 +1280,11 @@ function tSpeak() {
     const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith(selLang));
     if (voices[0]) u.voice = voices[0];
     u.rate = parseFloat(document.getElementById('rr1').value);
+    u.pitch = parseFloat(document.getElementById('pr1').value);
+    u.volume = parseFloat(document.getElementById('vr1').value);
     speechSynthesis.speak(u);
     document.getElementById('wv1').classList.add('on');
-    setTimeout(() => document.getElementById('wv1').classList.remove('on'), 1000);
+    u.onend = () => document.getElementById('wv1').classList.remove('on');
 }
 
 function tPause() { speechSynthesis.cancel(); }
@@ -921,7 +1324,7 @@ let serverOnline = false;
 
 function stDub() {
     if (!serverOnline) {
-        if (confirm(currentLang === 'ar' ? 'تشغيل وضع العرض التجريبي؟' : 'Start demo mode?')) {
+        if (confirm(translations[currentLang].serverOffline + '\n' + (currentLang === 'ar' ? 'تشغيل وضع العرض التجريبي؟' : currentLang === 'en' ? 'Start demo mode?' : 'Démarrer le mode démo?'))) {
             serverOnline = true;
             document.getElementById('serverStatus').classList.add('online');
             document.querySelector('#serverStatus span').textContent = translations[currentLang].serverOnline;
@@ -937,31 +1340,50 @@ function runDubbing() {
     document.getElementById('genBtn').style.display = 'none';
     let p = 0;
     const int = setInterval(() => {
-        p += 10;
+        p += 5;
         document.getElementById('pFill').style.width = p + '%';
         if (p >= 100) {
             clearInterval(int);
             document.getElementById('dubP').style.display = 'none';
             document.getElementById('dubRes').style.display = 'block';
         }
-    }, 200);
+    }, 300);
 }
 
-function cnclDub() { document.getElementById('dubP').style.display = 'none'; document.getElementById('genBtn').style.display = 'flex'; }
-function dlRes() { alert('Download started!'); }
+function cnclDub() { 
+    document.getElementById('dubP').style.display = 'none'; 
+    document.getElementById('genBtn').style.display = 'flex'; 
+}
+
+function dlRes() { 
+    const t = translations[currentLang];
+    alert(t.downloadWAV + ' started!'); 
+}
 
 // Translation Functions
 function startTrans() {
     const src = document.getElementById('srcSRT').value;
     if (!src) return;
+    
+    // Simple translation simulation
+    const lines = src.split('\n');
+    const translated = lines.map(line => {
+        if (/^\d+$/.test(line.trim()) || /-->/test(line)) return line;
+        if (line.trim() === '') return line;
+        return '[TR] ' + line;
+    }).join('\n');
+    
     document.getElementById('transRes').style.display = 'block';
-    document.getElementById('transOut').textContent = '[Translated]\n\n' + src;
+    document.getElementById('transOut').textContent = translated;
 }
 
-function copyResult() { navigator.clipboard.writeText(document.getElementById('transOut').textContent); }
+function copyResult() { 
+    navigator.clipboard.writeText(document.getElementById('transOut').textContent); 
+}
+
 function dlTransSRT() { 
     const a = document.createElement('a');
-    a.href = 'data:text/plain,' + encodeURIComponent(document.getElementById('transOut').textContent);
+    a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(document.getElementById('transOut').textContent);
     a.download = 'translated.srt';
     a.click();
 }
@@ -980,6 +1402,8 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // Range inputs
     document.getElementById('rr1').oninput = function() { document.getElementById('rv1').textContent = this.value + 'x'; };
+    document.getElementById('pr1').oninput = function() { document.getElementById('pv1').textContent = this.value; };
+    document.getElementById('vr1').oninput = function() { document.getElementById('vv1').textContent = Math.round(this.value * 100) + '%'; };
     document.getElementById('ti').oninput = function() { document.getElementById('cc').textContent = this.value.length; };
     
     // Click outside
