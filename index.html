@@ -1634,13 +1634,96 @@ window.addEventListener('DOMContentLoaded', () => {
     
     <script src="static/js/ai-dubbing.js"></script>
     
-    <!-- قسم الدبلجة الذكي -->
-    <div class="card" style="border-top: 4px solid #a78bfa; margin-top: 30px; grid-column: 1/-1;">
-        <!-- ... (كل كود القسم) ... -->
+ <!-- قسم الدبلجة الذكي -->
+<div class="card" style="border-top: 4px solid #a78bfa; margin-top: 30px; grid-column: 1/-1;">
+    <div class="card-header">
+        <div class="card-icon" style="background: linear-gradient(135deg, #7c3aed, #2563eb);">🎭</div>
+        <div>
+            <div class="card-title">دبلجة بالذكاء الاصطناعي (Voice Cloning)</div>
+            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 4px;">
+                نسخ نبرة صوتك ودبلجة النصوص بتزامن زمني دقيق
+            </div>
+        </div>
     </div>
     
+    <!-- خطوة 1: تسجيل الصوت -->
+    <div style="background: rgba(124,58,237,0.1); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <span style="background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</span>
+            <label style="margin: 0; font-size: 1rem;">🎙️ سجل عينة صوتية (10-30 ثانية)</label>
+        </div>
+        
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button class="btn btn-primary" id="recordBtn" onclick="startVoiceRecording()" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                🔴 تسجيل
+            </button>
+            <button class="btn btn-secondary" onclick="stopVoiceRecording()">
+                ⏹ إيقاف
+            </button>
+        </div>
+        
+        <p id="recordStatus" style="margin-top: 12px; color: #9ca3af; font-size: 0.9rem; min-height: 20px;"></p>
+        <p id="voiceStatus" style="color: #34d399; font-size: 0.9rem; min-height: 20px;"></p>
+    </div>
+    
+    <!-- خطوة 2: إدخال SRT -->
+    <div style="background: rgba(96,165,250,0.1); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <span style="background: linear-gradient(135deg, #2563eb, #60a5fa); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</span>
+            <label style="margin: 0; font-size: 1rem;">📝 أدخل ملف SRT للدبلجة</label>
+        </div>
+        
+        <textarea id="srtInput" placeholder="1
+00:00:01,000 --> 00:00:04,000
+مرحباً بكم في هذا الفيديو
+
+2
+00:00:04,500 --> 00:00:08,000
+سنتحدث عن تقنيات الذكاء الاصطناعي" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+        
+        <div style="margin-top: 15px;">
+            <label style="font-size: 0.85rem; margin-bottom: 8px;">لغة الدبلجة:</label>
+            <select id="targetLang" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0ff;">
+                <option value="ar">🇸🇦 العربية</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="de">🇩🇪 Deutsch</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="tr">🇹🇷 Türkçe</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="hi">🇮🇳 हिन्दी</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- خطوة 3: توليد -->
+    <div style="background: rgba(52,211,153,0.1); border-radius: 16px; padding: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <span style="background: linear-gradient(135deg, #059669, #10b981); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</span>
+            <label style="margin: 0; font-size: 1rem;">🚀 توليد الدبلجة</label>
+        </div>
+        
+        <button class="btn btn-primary" onclick="generateAIDubbing()" style="width: 100%; background: linear-gradient(135deg, #7c3aed, #2563eb); font-size: 1.1rem; padding: 16px;">
+            🎬 ابدأ الدبلجة بالذكاء الاصطناعي
+        </button>
+        
+        <div id="aiProgress" style="display: none; margin-top: 20px;">
+            <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
+                <div id="progressFill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #7c3aed, #34d399); border-radius: 5px; transition: width 0.5s;"></div>
+            </div>
+            <p id="aiStatus" style="text-align: center; margin-top: 12px; color: #a78bfa; font-weight: 600;"></p>
+        </div>
+        
+        <a id="downloadAI" class="btn" style="display: none; width: 100%; margin-top: 15px; background: linear-gradient(135deg, #059669, #10b981); color: white; text-decoration: none; text-align: center; font-size: 1.1rem; padding: 16px;">
+            ⬇️ تحميل الملف الصوتي (WAV)
+        </a>
+    </div>
+</div>
     <!-- ============================================ -->
 
 </body>
 </html>
+
 
