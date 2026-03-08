@@ -1,8 +1,8 @@
 # =============================================================
-# sl-Dubbing & Translation - Backend
+# sl-Dubbing & Translation - Backend (Flask)
 # =============================================================
 import os, uuid, logging, random, smtplib, time
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
@@ -13,7 +13,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["https://sl-dubbing.github.io", "http://localhost:*", "*"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # =============================================================
 # إعدادات التطبيق
@@ -82,17 +88,22 @@ def send_otp_email(user_email, otp_code):
 هذا الكود صالح لمدة 10 دقائق.
 
 إذا لم تقم بإنشاء حساب، يرجى تجاهل هذا البريد.
+
+شكراً لك!
+فريق sl-Dubbing
         '''
         msg.html = f'''
         <html>
-        <body style="font-family: Arial; background: #0a0a1a; color: #e0e0ff; padding: 20px;">
+        <body style="font-family: Arial, sans-serif; background: #0a0a1a; color: #e0e0ff; padding: 20px;">
             <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a0533, #0a0a1a); padding: 30px; border-radius: 20px; border: 2px solid #a78bfa;">
-                <h2 style="color: #a78bfa; text-align: center;">🎉 مرحباً بك!</h2>
-                <p style="text-align: center; color: #9ca3af;">كود التفعيل:</p>
+                <h2 style="color: #a78bfa; text-align: center;">🎉 مرحباً بك في sl-Dubbing!</h2>
+                <p style="text-align: center; color: #9ca3af;">كود تفعيل حسابك هو:</p>
                 <div style="text-align: center; margin: 30px 0;">
                     <span style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; padding: 20px 40px; border-radius: 12px; font-size: 2rem; font-weight: bold; letter-spacing: 5px;">{otp_code}</span>
                 </div>
                 <p style="text-align: center; color: #6b7280;">صالح لمدة 10 دقائق</p>
+                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+                <p style="text-align: center; color: #4b5563; font-size: 0.8rem;">إذا لم تقم بإنشاء حساب، يرجى تجاهل هذا البريد</p>
             </div>
         </body>
         </html>
@@ -117,208 +128,329 @@ def reset_guest_usage_if_needed(ip):
 # المسارات
 # =============================================================
 
+@app.route('/')
+def index():
+    return jsonify({
+        'status': 'ok',
+        'message': 'sl-Dubbing Backend API',
+        'endpoints': {
+            'health': '/api/health',
+            'login': '/api/login',
+            'register': '/api/register',
+            'verify-otp': '/api/verify-otp',
+            'send-otp': '/api/send-otp',
+            'entitlements': '/api/entitlements',
+            'dub': '/api/dub',
+            'download': '/api/download/<filename>'
+        }
+    })
+
 @app.route('/api/health')
 def health():
-    return jsonify({'status': 'ok', 'timestamp': datetime.utcnow().isoformat()})
+    return jsonify({
+        'status': 'ok',
+        'timestamp': datetime.utcnow().isoformat(),
+        'service': 'sl-Dubbing Backend'
+    })
 
 @app.route('/api/register', methods=['POST'])
 def register():
     """تسجيل مستخدم جديد"""
-    data = request.get_json()
-    email = data.get('email', '').strip().lower()
-    password = data.get('password', '')
-    
-    if not email or '@' not in email:
-        return jsonify({'error': 'بريد غير صحيح'}), 400
-    
-    if User.query.filter_by(email=email).first():
-        return jsonify({'error': 'البريد مسجل'}), 400
-    
-    # إنشاء OTP
-    otp = str(random.randint(100000, 999999))
-    
-    # إنشاء المستخدم
-    user = User(
-        email=email,
-        password=generate_password_hash(password),
-        otp=otp,
-        otp_expiry=datetime.utcnow() + timedelta(minutes=10)
-    )
-    db.session.add(user)
-    db.session.commit()
-    
-    # إرسال OTP
-    send_otp_email(email, otp)
-    
-    return jsonify({'success': True, 'message': 'تم التسجيل'})
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        
+        if not email or '@' not in email:
+            return jsonify({'error': 'بريد إلكتروني غير صحيح'}), 400
+        
+        if User.query.filter_by(email=email).first():
+            return jsonify({'error': 'البريد مسجل بالفعل'}), 400
+        
+        # إنشاء OTP
+        otp = str(random.randint(100000, 999999))
+        
+        # إنشاء المستخدم
+        new_user = User(
+            email=email,
+            password=generate_password_hash(password),
+            otp=otp,
+            otp_expiry=datetime.utcnow() + timedelta(minutes=10),
+            is_verified=False
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        
+        # إرسال OTP
+        send_otp_email(email, otp)
+        
+        logger.info(f"New user registered: {email}")
+        return jsonify({
+            'success': True,
+            'message': 'تم التسجيل بنجاح',
+            'email': email
+        }), 201
+        
+    except Exception as e:
+        logger.error(f"Register Error: {e}")
+        return jsonify({'error': 'حدث خطأ في التسجيل'}), 500
 
 @app.route('/api/send-otp', methods=['POST'])
 def send_otp():
     """إرسال OTP جديد"""
-    data = request.get_json()
-    email = data.get('email', '').strip().lower()
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({'error': 'مستخدم غير موجود'}), 404
-    
-    # إنشاء OTP جديد
-    otp = str(random.randint(100000, 999999))
-    user.otp = otp
-    user.otp_expiry = datetime.utcnow() + timedelta(minutes=10)
-    db.session.commit()
-    
-    send_otp_email(email, otp)
-    
-    return jsonify({'success': True})
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'error': 'مستخدم غير موجود'}), 404
+        
+        # إنشاء OTP جديد
+        otp = str(random.randint(100000, 999999))
+        user.otp = otp
+        user.otp_expiry = datetime.utcnow() + timedelta(minutes=10)
+        db.session.commit()
+        
+        send_otp_email(email, otp)
+        
+        return jsonify({'success': True, 'message': 'تم إرسال الكود'})
+        
+    except Exception as e:
+        logger.error(f"Send OTP Error: {e}")
+        return jsonify({'error': 'حدث خطأ'}), 500
 
 @app.route('/api/verify-otp', methods=['POST'])
 def verify_otp():
     """التحقق من OTP"""
-    data = request.get_json()
-    email = data.get('email', '').strip().lower()
-    otp = data.get('otp', '')
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({'error': 'مستخدم غير موجود'}), 404
-    
-    if user.otp != otp:
-        return jsonify({'error': 'كود خاطئ'}), 400
-    
-    if user.otp_expiry and user.otp_expiry < datetime.utcnow():
-        return jsonify({'error': 'الكود منتهي'}), 400
-    
-    # تفعيل الحساب
-    user.is_verified = True
-    user.otp = None
-    user.otp_expiry = None
-    db.session.commit()
-    
-    return jsonify({'success': True})
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        otp = data.get('otp', '')
+        
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'error': 'مستخدم غير موجود'}), 404
+        
+        if user.otp != otp:
+            return jsonify({'error': 'كود غير صحيح'}), 400
+        
+        if user.otp_expiry and user.otp_expiry < datetime.utcnow():
+            return jsonify({'error': 'الكود منتهي الصلاحية'}), 400
+        
+        # تفعيل الحساب
+        user.is_verified = True
+        user.otp = None
+        user.otp_expiry = None
+        db.session.commit()
+        
+        logger.info(f"User verified: {email}")
+        return jsonify({
+            'success': True,
+            'message': 'تم تفعيل الحساب بنجاح'
+        })
+        
+    except Exception as e:
+        logger.error(f"Verify OTP Error: {e}")
+        return jsonify({'error': 'حدث خطأ'}), 500
 
 @app.route('/api/login', methods=['POST'])
 def login():
     """تسجيل الدخول"""
-    data = request.get_json()
-    email = data.get('email', '').strip().lower()
-    password = data.get('password', '')
-    
-    user = User.query.filter_by(email=email).first()
-    if not user or not check_password_hash(user.password, password):
-        return jsonify({'error': 'بيانات خاطئة'}), 401
-    
-    if not user.is_verified:
-        return jsonify({'error': 'الحساب غير مفعل', 'not_verified': True}), 403
-    
-    return jsonify({
-        'success': True,
-        'email': user.email,
-        'unlocked': {
-            'tts': user.unlocked_tts,
-            'dub': user.unlocked_dub,
-            'srt': user.unlocked_srt
-        }
-    })
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        
+        if not email or not password:
+            return jsonify({'error': 'البريد وكلمة المرور مطلوبان'}), 400
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            return jsonify({'error': 'البريد أو كلمة المرور غير صحيحة'}), 401
+        
+        if not check_password_hash(user.password, password):
+            return jsonify({'error': 'البريد أو كلمة المرور غير صحيحة'}), 401
+        
+        if not user.is_verified:
+            return jsonify({
+                'error': 'يجب تفعيل الحساب أولاً',
+                'not_verified': True
+            }), 403
+        
+        logger.info(f"User logged in: {email}")
+        return jsonify({
+            'success': True,
+            'email': user.email,
+            'unlocked': {
+                'tts': user.unlocked_tts,
+                'dub': user.unlocked_dub,
+                'srt': user.unlocked_srt
+            },
+            'usage': {
+                'tts': user.usage_tts,
+                'dub': user.usage_dub,
+                'srt': user.usage_srt
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Login Error: {e}")
+        return jsonify({'error': 'حدث خطأ في تسجيل الدخول'}), 500
 
-@app.route('/api/entitlements')
+@app.route('/api/entitlements', methods=['GET'])
 def get_entitlements():
     """جلب صلاحيات المستخدم"""
-    email = request.args.get('email', '').strip().lower()
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({'error': 'مستخدم غير موجود'}), 404
-    
-    return jsonify({
-        'unlocked': {
-            'tts': user.unlocked_tts,
-            'dub': user.unlocked_dub,
-            'srt': user.unlocked_srt
-        },
-        'usage': {
-            'tts': user.usage_tts,
-            'dub': user.usage_dub,
-            'srt': user.usage_srt
-        }
-    })
+    try:
+        email = request.args.get('email', '').strip().lower()
+        
+        if not email:
+            return jsonify({'error': 'البريد الإلكتروني مطلوب'}), 400
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            return jsonify({'error': 'المستخدم غير موجود'}), 404
+        
+        return jsonify({
+            'success': True,
+            'email': user.email,
+            'unlocked': {
+                'tts': user.unlocked_tts,
+                'dub': user.unlocked_dub,
+                'srt': user.unlocked_srt
+            },
+            'usage': {
+                'tts': user.usage_tts,
+                'dub': user.usage_dub,
+                'srt': user.usage_srt
+            },
+            'limits': {
+                'tts': GUEST_LIMIT if not user.unlocked_tts else 'unlimited',
+                'dub': GUEST_LIMIT if not user.unlocked_dub else 'unlimited',
+                'srt': GUEST_LIMIT if not user.unlocked_srt else 'unlimited'
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Entitlements Error: {e}")
+        return jsonify({'error': 'حدث خطأ'}), 500
 
 @app.route('/api/dub', methods=['POST'])
 def dub():
     """معالجة الدبلجة/النطق"""
-    data = request.get_json()
-    text = data.get('text', '')
-    lang = data.get('lang', 'ar')
-    email = data.get('email', '').strip().lower() if data.get('email') else None
-    feature = data.get('feature', 'dub')
-    
-    if feature not in ['tts', 'dub', 'srt']:
-        feature = 'dub'
-    
-    # فحص الحد للضيوف
-    if not email:
-        ip = request.remote_addr
-        reset_guest_usage_if_needed(ip)
+    try:
+        data = request.get_json()
+        text = data.get('text', '')
+        lang = data.get('lang', 'ar')
+        email = data.get('email', '').strip().lower() if data.get('email') else None
+        feature = data.get('feature', 'dub')
         
-        if GUEST_USAGE[ip].get(feature, 0) >= GUEST_LIMIT:
-            return jsonify({'error': 'انتهى الحد', 'limit_reached': True}), 403
+        if feature not in ['tts', 'dub', 'srt']:
+            feature = 'dub'
         
-        GUEST_USAGE[ip][feature] = GUEST_USAGE[ip].get(feature, 0) + 1
-        remaining = GUEST_LIMIT - GUEST_USAGE[ip][feature]
-    else:
-        user = User.query.filter_by(email=email).first()
-        if not user or not user.is_verified:
-            return jsonify({'error': 'يجب التفعيل', 'not_verified': True}), 403
-        
-        unlocked_field = f'unlocked_{feature}'
-        usage_field = f'usage_{feature}'
-        
-        if not getattr(user, unlocked_field, False):
-            current_usage = getattr(user, usage_field, 0)
-            if current_usage >= GUEST_LIMIT:
-                return jsonify({'error': 'انتهى الحد', 'limit_reached': True}), 403
+        # فحص الحد للضيوف
+        if not email:
+            ip = request.remote_addr
+            reset_guest_usage_if_needed(ip)
             
-            setattr(user, usage_field, current_usage + 1)
-            db.session.commit()
-            remaining = GUEST_LIMIT - getattr(user, usage_field, 0)
+            if GUEST_USAGE[ip].get(feature, 0) >= GUEST_LIMIT:
+                return jsonify({
+                    'error': 'انتهى الحد المجاني',
+                    'limit_reached': True
+                }), 403
+            
+            GUEST_USAGE[ip][feature] = GUEST_USAGE[ip].get(feature, 0) + 1
+            remaining = GUEST_LIMIT - GUEST_USAGE[ip][feature]
         else:
-            remaining = 'unlimited'
-    
-    # هنا تضع كود المعالجة الفعلي
-    # مثال: إنشاء ملف صوتي باستخدام gTTS
-    
-    return jsonify({
-        'success': True,
-        'remaining': remaining,
-        'message': 'تمت المعالجة'
-    })
+            user = User.query.filter_by(email=email).first()
+            if not user or not user.is_verified:
+                return jsonify({
+                    'error': 'يجب التفعيل',
+                    'not_verified': True
+                }), 403
+            
+            unlocked_field = f'unlocked_{feature}'
+            usage_field = f'usage_{feature}'
+            
+            if not getattr(user, unlocked_field, False):
+                current_usage = getattr(user, usage_field, 0)
+                if current_usage >= GUEST_LIMIT:
+                    return jsonify({
+                        'error': 'انتهى الحد المجاني',
+                        'limit_reached': True
+                    }), 403
+                
+                setattr(user, usage_field, current_usage + 1)
+                db.session.commit()
+                remaining = GUEST_LIMIT - getattr(user, usage_field, 0)
+            else:
+                remaining = 'unlimited'
+        
+        # هنا تضع كود المعالجة الفعلي
+        # مثال: إنشاء ملف صوتي باستخدام gTTS
+        
+        return jsonify({
+            'success': True,
+            'remaining': remaining,
+            'message': 'تمت المعالجة'
+        })
+        
+    except Exception as e:
+        logger.error(f"Dub Error: {e}")
+        return jsonify({'error': 'حدث خطأ'}), 500
+
+@app.route('/api/download/<filename>')
+def download(filename):
+    """تنزيل الملفات"""
+    try:
+        filepath = os.path.join('/tmp', filename)
+        
+        if not os.path.exists(filepath):
+            return jsonify({'error': 'الملف غير موجود'}), 404
+        
+        return send_file(
+            filepath,
+            as_attachment=True,
+            download_name=filename,
+            mimetype='audio/mpeg'
+        )
+        
+    except Exception as e:
+        logger.error(f"Download Error: {e}")
+        return jsonify({'error': 'فشل تنزيل الملف'}), 500
 
 @app.route('/api/webhook/lemonsqueezy', methods=['POST'])
 def lemonsqueezy_webhook():
     """Webhook لاستلام تأكيدات الدفع"""
-    data = request.get_json()
-    event_name = data.get('event_name', '')
-    
-    if event_name == 'order_created':
-        order_data = data.get('data', {}).get('attributes', {})
-        customer_email = order_data.get('email', '').lower()
-        custom_data = order_data.get('custom', {})
-        feature_hint = custom_data.get('feature_hint', '')
+    try:
+        data = request.get_json()
+        event_name = data.get('event_name', '')
         
-        if customer_email and feature_hint in ['tts', 'dub', 'srt']:
-            user = User.query.filter_by(email=customer_email).first()
-            if user:
-                unlocked_field = f'unlocked_{feature_hint}'
-                setattr(user, unlocked_field, True)
-                db.session.commit()
-                logger.info(f"User {customer_email} unlocked {feature_hint}")
-    
-    return jsonify({'success': True})
+        if event_name == 'order_created':
+            order_data = data.get('data', {}).get('attributes', {})
+            customer_email = order_data.get('email', '').lower()
+            custom_data = order_data.get('custom', {})
+            feature_hint = custom_data.get('feature_hint', '')
+            
+            if customer_email and feature_hint in ['tts', 'dub', 'srt']:
+                user = User.query.filter_by(email=customer_email).first()
+                if user:
+                    unlocked_field = f'unlocked_{feature_hint}'
+                    setattr(user, unlocked_field, True)
+                    db.session.commit()
+                    logger.info(f"User {customer_email} unlocked {feature_hint}")
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        logger.error(f"Webhook Error: {e}")
+        return jsonify({'error': 'Webhook failed'}), 500
 
 # =============================================================
 # تشغيل التطبيق
 # =============================================================
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
