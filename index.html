@@ -240,6 +240,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 }
 </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -1174,39 +1175,216 @@ function parseSRT(txt) {
 
 function cpySRT() { navigator.clipboard.writeText(srtData.map(s => s.text).join('\n')); }
 
-// Dubbing Functions
+// Dubbing Functions - Server Integration
+const API_BASE_URL = 'https://dubbing-api-v2.onrender.com';
 let serverOnline = false;
+let currentDubbingJob = null;
 
-function stDub() {
-    if (!serverOnline) {
-        if (confirm(currentLang === 'ar' ? 'تشغيل وضع العرض التجريبي؟' : 'Start demo mode?')) {
+// Check server status on load
+async function checkServerStatus() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/health`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
             serverOnline = true;
-            document.getElementById('serverStatus').classList.add('online');
-            document.querySelector('#serverStatus span').textContent = translations[currentLang].serverOnline;
-            runDubbing();
+            updateServerStatus(true);
+        } else {
+            throw new Error('Server not responding');
         }
+    } catch (e) {
+        serverOnline = false;
+        updateServerStatus(false);
+        console.log('Server offline:', e.message);
+    }
+}
+
+function updateServerStatus(online) {
+    const statusEl = document.getElementById('serverStatus');
+    const statusText = statusEl.querySelector('span');
+    const statusIcon = statusEl.querySelector('.server-status-icon');
+
+    if (online) {
+        statusEl.classList.add('online');
+        statusText.textContent = translations[currentLang].serverOnline || '✅ سيرفر الدبلجة متصل';
+        statusIcon.style.background = '#34d399';
+    } else {
+        statusEl.classList.remove('online');
+        statusText.textContent = translations[currentLang].serverOffline || '⚠️ سيرفر الدبلجة غير متصل - انقر للمحاولة';
+        statusIcon.style.background = '#f87171';
+    }
+}
+
+// Retry connection when clicking status
+async function retryConnection() {
+    document.getElementById('serverStatus').querySelector('span').textContent = 
+        currentLang === 'ar' ? '🔄 جاري الاتصال...' : '🔄 Connecting...';
+    await checkServerStatus();
+}
+
+async function stDub() {
+    // Validate SRT data exists
+    if (!srtData || srtData.length === 0) {
+        showDubStatus('error', currentLang === 'ar' ? '❌ الرجاء إضافة ملف SRT أولاً' : '❌ Please add SRT file first');
         return;
     }
-    runDubbing();
-}
 
-function runDubbing() {
-    document.getElementById('dubP').style.display = 'block';
-    document.getElementById('genBtn').style.display = 'none';
-    let p = 0;
-    const int = setInterval(() => {
-        p += 10;
-        document.getElementById('pFill').style.width = p + '%';
-        if (p >= 100) {
-            clearInterval(int);
-            document.getElementById('dubP').style.display = 'none';
-            document.getElementById('dubRes').style.display = 'block';
+    // Check server first
+    if (!serverOnline) {
+        await checkServerStatus();
+        if (!serverOnline) {
+            showDubStatus('error', currentLang === 'ar' ? 
+                '❌ السيرفر غير متصل. انقر على حالة السيرفر أعلاه للمحاولة مرة أخرى.' : 
+                '❌ Server offline. Click server status above to retry.');
+            return;
         }
-    }, 200);
+    }
+
+    // Check user limits
+    if (!currentUser) {
+        openAuth();
+        return;
+    }
+
+    const left = FREE_LIMIT - (currentUser.usage.dub || 0);
+    if (left <= 0 && !currentUser.unlocked?.dub) {
+        scrollToPayment();
+        return;
+    }
+
+    // Start dubbing process
+    await startDubbingProcess();
 }
 
-function cnclDub() { document.getElementById('dubP').style.display = 'none'; document.getElementById('genBtn').style.display = 'flex'; }
-function dlRes() { alert('Download started!'); }
+async function startDubbingProcess() {
+    const btn = document.getElementById('genBtn');
+    const progressDiv = document.getElementById('dubP');
+    const resultDiv = document.getElementById('dubRes');
+
+    btn.style.display = 'none';
+    progressDiv.style.display = 'block';
+    resultDiv.style.display = 'none';
+
+    showDubStatus('info', currentLang === 'ar' ? '🎬 جاري توليد الدبلجة...' : '🎬 Generating dubbing...');
+
+    try {
+        // Prepare data
+        const texts = srtData.map(item => item.text).join('\n');
+
+        const requestData = {
+            text: texts,
+            lang: selDubLang,
+            email: currentUser.email,
+            feature: 'dub'
+        };
+
+        // Simulate progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            document.getElementById('pFill').style.width = progress + '%';
+
+            // Update timer
+            updateDubbingTimer();
+        }, 1000);
+
+        // Send request to server
+        const response = await fetch(`${API_BASE_URL}/api/dub`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        clearInterval(progressInterval);
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Server error');
+        }
+
+        // Success
+        document.getElementById('pFill').style.width = '100%';
+
+        // Update user usage
+        if (result.remaining !== 'unlimited') {
+            currentUser.usage.dub = (currentUser.usage.dub || 0) + 1;
+            updateUsageUI();
+        }
+
+        // Show result
+        setTimeout(() => {
+            progressDiv.style.display = 'none';
+            resultDiv.style.display = 'block';
+
+            // Setup audio player if URL provided
+            if (result.audio_url) {
+                const audio = document.getElementById('dubAu');
+                audio.src = result.audio_url.startsWith('http') ? 
+                    result.audio_url : `${API_BASE_URL}${result.audio_url}`;
+            }
+
+            showDubStatus('success', currentLang === 'ar' ? '✅ تم توليد الدبلجة بنجاح!' : '✅ Dubbing generated successfully!');
+        }, 500);
+
+    } catch (error) {
+        console.error('Dubbing error:', error);
+        progressDiv.style.display = 'none';
+        btn.style.display = 'flex';
+        showDubStatus('error', currentLang === 'ar' ? 
+            `❌ خطأ: ${error.message}` : 
+            `❌ Error: ${error.message}`);
+    }
+}
+
+let dubbingStartTime = null;
+function updateDubbingTimer() {
+    if (!dubbingStartTime) dubbingStartTime = Date.now();
+
+    const elapsed = Math.floor((Date.now() - dubbingStartTime) / 1000);
+    const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+    const secs = (elapsed % 60).toString().padStart(2, '0');
+
+    document.getElementById('clkE').textContent = `00:${mins}:${secs}`;
+}
+
+function showDubStatus(type, message) {
+    const statusEl = document.getElementById('dubSt');
+    statusEl.textContent = message;
+    statusEl.className = `st ${type === 'error' ? 'er' : type === 'success' ? 'ok' : 'i'}`;
+}
+
+function cnclDub() {
+    document.getElementById('dubP').style.display = 'none';
+    document.getElementById('genBtn').style.display = 'flex';
+    document.getElementById('pFill').style.width = '0%';
+    dubbingStartTime = null;
+    showDubStatus('info', currentLang === 'ar' ? '⏹ تم الإلغاء' : '⏹ Cancelled');
+}
+
+function dlRes() {
+    const audio = document.getElementById('dubAu');
+    if (audio.src) {
+        const link = document.createElement('a');
+        link.href = audio.src;
+        link.download = `dubbed_${selDubLang}_${Date.now()}.wav`;
+        link.click();
+    } else {
+        alert(currentLang === 'ar' ? '❌ لا يوجد ملف للتنزيل' : '❌ No file to download');
+    }
+}
+
+// Check server on load and add click handler
+document.addEventListener('DOMContentLoaded', () => {
+    checkServerStatus();
+    document.getElementById('serverStatus').style.cursor = 'pointer';
+    document.getElementById('serverStatus').onclick = retryConnection;
+});
 
 // Translation Functions
 function startTrans() {
