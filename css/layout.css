@@ -1,0 +1,33 @@
+/* الشريط الجانبي */
+.sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--bg-card);
+    border-left: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    z-index: 1000;
+    transition: var(--transition);
+}
+
+.main-content {
+    margin-right: 280px;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.workspace {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .sidebar { transform: translateX(100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .workspace { grid-template-columns: 1fr; }
+}
