@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تسجيل الدخول - sl-Dubbing</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
   <style>
+    /* CSS احتياطي مضمّن في حال فشل تحميل الملف الخارجي */
+    :root{--primary:#7c3aed;--primary-light:#a78bfa;--secondary:#60a5fa;--accent:#34d399;--dark:#0a0a1a;--card:rgba(255,255,255,.03);--border:rgba(255,255,255,.08);--text:#e0e0ff;--text-muted:#9ca3af;--text-dim:#6b7280}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--dark);color:var(--text);min-height:100vh;background:linear-gradient(135deg,#1a0533 0%,#0a0a1a 50%,#001233 100%)}
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;padding:16px 32px;border-radius:12px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,.4);transition:transform .3s;z-index:2000}
+    .toast.show{transform:translateX(-50%) translateY(0)}
     .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
     .login-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(167,139,250,.2);border-radius:24px;padding:50px;width:100%;max-width:480px;box-shadow:0 25px 80px rgba(0,0,0,.6)}
     .login-logo{text-align:center;margin-bottom:20px}
-    .login-logo img{width:60px;height:60px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(167,139,250,.5))}
+    .login-logo img{width:60px;height:60px;object-fit:contain}
     .login-title{font-size:1.8rem;font-weight:900;color:white;text-align:center;margin-bottom:8px}
     .login-sub{color:#9ca3af;text-align:center;font-size:.95rem;margin-bottom:30px}
     .login-sub a{color:#60a5fa;text-decoration:none}
@@ -26,9 +33,9 @@
     .form-group{margin-bottom:18px}
     .form-group label{display:block;font-weight:600;color:white;font-size:.95rem;margin-bottom:8px}
     .form-group input{width:100%;padding:14px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;color:white;font-size:.95rem;transition:all .3s;box-sizing:border-box}
-    .form-group input:focus{outline:none;border-color:#a78bfa;background:rgba(167,139,250,.05);box-shadow:0 0 15px rgba(167,139,250,.2)}
+    .form-group input:focus{outline:none;border-color:#a78bfa;box-shadow:0 0 15px rgba(167,139,250,.2)}
     .form-group input::placeholder{color:#6b7280}
-    .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:10px;color:white;font-weight:700;font-size:1rem;cursor:pointer;transition:all .3s;box-shadow:0 4px 15px rgba(124,58,237,.4);margin-top:8px}
+    .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:10px;color:white;font-weight:700;font-size:1rem;cursor:pointer;transition:all .3s;margin-top:8px}
     .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(124,58,237,.6)}
     .login-links{display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:.85rem}
     .login-links a{color:#60a5fa;text-decoration:none}
@@ -40,27 +47,15 @@
   </style>
 </head>
 <body>
-
-<div class="bg"></div>
-
 <div class="login-page">
   <div class="login-card">
-
     <div class="login-logo">
       <img src="logo.gif" onerror="this.src='logo.png'" alt="sl-Dubbing">
     </div>
-
     <h2 class="login-title">تسجيل الدخول</h2>
-    <p class="login-sub">
-      هل أنت مستخدم جديد؟
-      <a href="#" onclick="showToast('التسجيل قريباً')">اضغط هنا للتسجيل</a>
-    </p>
-
-    <!-- حسابات Google -->
+    <p class="login-sub">هل أنت مستخدم جديد؟ <a href="#" onclick="showToast('التسجيل قريباً')">اضغط هنا للتسجيل</a></p>
     <div class="google-accounts" id="googleAccounts"></div>
-
     <div class="divider"><span>أو</span></div>
-
     <form onsubmit="handleLogin(event)">
       <div class="form-group">
         <label>البريد الإلكتروني</label>
@@ -72,124 +67,47 @@
       </div>
       <button type="submit" class="submit-btn">تسجيل الدخول</button>
     </form>
-
     <div class="login-links">
-      <a href="#" onclick="showToast('استعادة كلمة المرور قريباً')">هل نسيت كلمة المرور؟</a>
+      <a href="#" onclick="showToast('قريباً')">هل نسيت كلمة المرور؟</a>
       <label style="cursor:pointer;display:flex;align-items:center;gap:6px;color:#9ca3af">
-        <input type="checkbox" id="rememberMe"> تذكرني
+        <input type="checkbox"> تذكرني
       </label>
     </div>
-
-    <div class="signup-link">
-      ليس لديك حساب؟
-      <a href="#" onclick="showToast('التسجيل قريباً')">إنشاء حساب جديد</a>
-    </div>
-
-    <div class="back-link">
-      <a href="index.html">← العودة للرئيسية</a>
-    </div>
+    <div class="signup-link">ليس لديك حساب؟ <a href="#" onclick="showToast('قريباً')">إنشاء حساب جديد</a></div>
+    <div class="back-link"><a href="index.html">← العودة للرئيسية</a></div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-/* ─── Toast ─── */
-function showToast(msg, duration = 3000) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), duration);
+const ACCOUNTS=[{name:'Mona Alhil',email:'ahlil.ma@gmail.com',i:'MA'},{name:'ALHASHMI Design',email:'abd199641@gmail.com',i:'AD'},{name:'Rhf Alhil',email:'rhfalhil@gmail.com',i:'RA'}];
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000)}
+function init(){
+  document.getElementById('googleAccounts').innerHTML=ACCOUNTS.map(a=>`
+    <div class="google-account-item" onclick="loginWithGoogle('${a.email}','${a.name}','${a.i}')">
+      <div class="account-avatar">${a.i}</div>
+      <div><div class="account-name">${a.name}</div><div class="account-email">${a.email}</div></div>
+    </div>`).join('');
 }
-
-/* ─── حسابات Google ─── */
-const GOOGLE_ACCOUNTS = [
-  { name: 'Mona Alhil',      email: 'ahlil.ma@gmail.com',  initials: 'MA' },
-  { name: 'ALHASHMI Design', email: 'abd199641@gmail.com',  initials: 'AD' },
-  { name: 'Rhf Alhil',       email: 'rhfalhil@gmail.com',   initials: 'RA' },
-];
-
-function loadGoogleAccounts() {
-  const container = document.getElementById('googleAccounts');
-  container.innerHTML = GOOGLE_ACCOUNTS.map(a => `
-    <div class="google-account-item" onclick="loginWithGoogle('${a.email}','${a.name}','${a.initials}')">
-      <div class="account-avatar">${a.initials}</div>
-      <div>
-        <div class="account-name">${a.name}</div>
-        <div class="account-email">${a.email}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function loginWithGoogle(email, name, initials) {
+function loginWithGoogle(email,name,i){
   showToast('جاري تسجيل الدخول...');
-  const user = {
-    email, name, avatar: initials,
-    method: 'google',
-    usage: { tts:0, dub:0, srt:0 },
-    unlocked: { tts:false, dub:false, srt:false },
-    timestamp: Date.now()
-  };
-  localStorage.setItem('sl_user', JSON.stringify(user));
-  completeLogin(name);
+  localStorage.setItem('sl_user',JSON.stringify({email,name,avatar:i,method:'google',usage:{tts:0,dub:0,srt:0},unlocked:{tts:false,dub:false,srt:false}}));
+  setTimeout(()=>{window.location.href=sessionStorage.getItem('returnUrl')||'index.html';sessionStorage.removeItem('returnUrl')},1000);
 }
-
-function handleLogin(event) {
-  event.preventDefault();
-  const email    = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
+function handleLogin(e){
+  e.preventDefault();
+  const email=document.getElementById('loginEmail').value;
+  const password=document.getElementById('loginPassword').value;
   showToast('جاري التحقق...');
-
-  fetch('https://sl-dubbing.onrender.com/api/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-    signal: AbortSignal.timeout(8000)
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.success) {
-      const user = {
-        email: data.email,
-        name: data.email.split('@')[0],
-        avatar: data.email[0].toUpperCase(),
-        usage: data.usage || { tts:0, dub:0, srt:0 },
-        unlocked: data.unlocked || { tts:false, dub:false, srt:false },
-        timestamp: Date.now()
-      };
-      localStorage.setItem('sl_user', JSON.stringify(user));
-      completeLogin(user.name);
-    } else {
-      showToast('❌ ' + (data.error || 'بيانات غير صحيحة'));
-    }
-  })
-  .catch(() => {
-    // وضع offline
-    const user = {
-      email, name: email.split('@')[0],
-      avatar: email[0].toUpperCase(),
-      method: 'email',
-      usage: { tts:0, dub:0, srt:0 },
-      unlocked: { tts:false, dub:false, srt:false },
-      timestamp: Date.now()
-    };
-    localStorage.setItem('sl_user', JSON.stringify(user));
-    completeLogin(user.name);
+  fetch('https://sl-dubbing.onrender.com/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password}),signal:AbortSignal.timeout(8000)})
+  .then(r=>r.json()).then(data=>{
+    if(data.success){localStorage.setItem('sl_user',JSON.stringify({email:data.email,name:data.email.split('@')[0],avatar:data.email[0].toUpperCase(),usage:data.usage||{tts:0,dub:0,srt:0},unlocked:data.unlocked||{tts:false,dub:false,srt:false}}));showToast('مرحباً 👋');setTimeout(()=>{window.location.href=sessionStorage.getItem('returnUrl')||'index.html';sessionStorage.removeItem('returnUrl')},1000);}
+    else{showToast('❌ '+(data.error||'بيانات غير صحيحة'));}
+  }).catch(()=>{
+    localStorage.setItem('sl_user',JSON.stringify({email,name:email.split('@')[0],avatar:email[0].toUpperCase(),method:'email',usage:{tts:0,dub:0,srt:0},unlocked:{tts:false,dub:false,srt:false}}));
+    showToast('مرحباً 👋');setTimeout(()=>{window.location.href=sessionStorage.getItem('returnUrl')||'index.html';sessionStorage.removeItem('returnUrl')},1000);
   });
 }
-
-function completeLogin(name) {
-  showToast('مرحباً ' + name + '! 👋');
-  const returnUrl = sessionStorage.getItem('returnUrl') || 'index.html';
-  sessionStorage.removeItem('returnUrl');
-  setTimeout(() => window.location.href = returnUrl, 1000);
-}
-
-/* ─── تشغيل ─── */
-loadGoogleAccounts();
+init();
 </script>
-
 </body>
 </html>
