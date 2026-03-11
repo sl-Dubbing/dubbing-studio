@@ -3,68 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل الدخول</title><!-- يُعدَّل من JS -->
+  <title>تسجيل الدخول - sl-Dubbing</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .login-card{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:1px solid rgba(167,139,250,.2);border-radius:24px;padding:50px;width:100%;max-width:480px;box-shadow:0 25px 80px rgba(0,0,0,.6)}
+    .login-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(167,139,250,.2);border-radius:24px;padding:50px;width:100%;max-width:480px;box-shadow:0 25px 80px rgba(0,0,0,.6)}
     .login-logo{text-align:center;margin-bottom:20px}
     .login-logo img{width:60px;height:60px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(167,139,250,.5))}
-    .login-title{font-size:2rem;font-weight:900;margin-bottom:10px;color:white;text-align:center}
-    .login-subtitle{color:var(--text-muted);margin-bottom:30px;text-align:center;font-size:.95rem}
-    .login-subtitle a{color:#60a5fa;text-decoration:none}
-    .google-accounts{margin-bottom:25px;max-height:220px;overflow-y:auto;border:1px solid rgba(167,139,250,.1);border-radius:12px;background:rgba(0,0,0,.3)}
-    .google-account-item{display:flex;align-items:center;gap:12px;padding:15px;cursor:pointer;border-bottom:1px solid rgba(167,139,250,.1);transition:all .3s}
-    .google-account-item:last-child{border-bottom:none}
-    .google-account-item:hover{background:rgba(167,139,250,.1)}
-    .account-avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:white}
-    .account-info{flex:1}
-    .account-name{font-weight:600;color:white;margin-bottom:3px}
-    .account-email{font-size:.85rem;color:var(--text-muted)}
-    .divider{display:flex;align-items:center;margin:25px 0;color:#6b7280}
+    .login-title{font-size:1.8rem;font-weight:900;color:white;text-align:center;margin-bottom:8px}
+    .login-sub{color:var(--text-muted);text-align:center;font-size:.9rem;margin-bottom:30px}
+    .login-sub a{color:#60a5fa;text-decoration:none}
+    .google-accounts{margin-bottom:25px;border:1px solid rgba(167,139,250,.1);border-radius:12px;background:rgba(0,0,0,.3)}
+    .g-item{display:flex;align-items:center;gap:12px;padding:15px;cursor:pointer;border-bottom:1px solid rgba(167,139,250,.1);transition:all .3s}
+    .g-item:last-child{border-bottom:none}
+    .g-item:hover{background:rgba(167,139,250,.1)}
+    .g-avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;flex-shrink:0}
+    .g-name{font-weight:600;color:white;font-size:.9rem}
+    .g-email{font-size:.8rem;color:var(--text-muted)}
+    .divider{display:flex;align-items:center;margin:20px 0;color:#6b7280}
     .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(167,139,250,.2)}
-    .divider-text{padding:0 15px;font-size:.85rem}
-    .login-form{display:flex;flex-direction:column;gap:18px}
-    .form-group{display:flex;flex-direction:column;gap:8px}
-    .form-group label{font-weight:600;color:white;font-size:.95rem}
-    .form-group input{padding:14px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;color:white;font-size:.95rem;transition:all .3s}
-    .form-group input:focus{outline:none;border-color:#a78bfa;background:rgba(167,139,250,.05);box-shadow:0 0 15px rgba(167,139,250,.2)}
+    .divider span{padding:0 15px;font-size:.85rem}
+    .form-group{margin-bottom:18px}
+    .form-group label{display:block;font-weight:600;color:white;margin-bottom:8px;font-size:.9rem}
+    .form-group input{width:100%;padding:14px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;color:white;font-size:.95rem;transition:all .3s;outline:none}
+    .form-group input:focus{border-color:#a78bfa;box-shadow:0 0 15px rgba(167,139,250,.2)}
     .form-group input::placeholder{color:#6b7280}
-    .submit-btn{padding:14px 20px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:10px;color:white;font-weight:700;font-size:1rem;cursor:pointer;transition:all .3s;margin-top:10px;box-shadow:0 4px 15px rgba(124,58,237,.4)}
+    .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:10px;color:white;font-weight:700;font-size:1rem;cursor:pointer;transition:all .3s;box-shadow:0 4px 15px rgba(124,58,237,.4);margin-top:8px}
     .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(124,58,237,.6)}
-    .login-links{display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:.85rem}
-    .login-links a{color:#60a5fa;text-decoration:none}
-    .signup-link{text-align:center;margin-top:25px;font-size:.9rem;color:var(--text-muted)}
-    .signup-link a{color:#60a5fa;text-decoration:none;font-weight:600}
+    .bottom-links{display:flex;justify-content:space-between;margin-top:20px;font-size:.85rem}
+    .bottom-links a{color:#60a5fa;text-decoration:none}
     .back-link{text-align:center;margin-top:20px}
     .back-link a{color:var(--text-muted);text-decoration:none;font-size:.9rem}
     .back-link a:hover{color:#a78bfa}
   </style>
 </head>
 <body>
-
 <div class="bg"></div>
-
 <div class="login-page">
   <div class="login-card">
 
-    <!-- لوغو من CONFIG -->
     <div class="login-logo">
-      <img src="" id="login-logo-img" alt="logo">
+      <img src="logo.gif" onerror="this.src='logo.png'" alt="sl-Dubbing">
+    </div>
+    <h2 class="login-title">تسجيل الدخول</h2>
+    <p class="login-sub">هل أنت مستخدم جديد؟ <a href="#" onclick="showToast('التسجيل قريباً')">اضغط هنا</a></p>
+
+    <!-- حسابات Google -->
+    <div class="google-accounts">
+      <div class="g-item" onclick="loginGoogle('Mona Alhil','ahlil.ma@gmail.com','MA')">
+        <div class="g-avatar">MA</div>
+        <div><div class="g-name">Mona Alhil</div><div class="g-email">ahlil.ma@gmail.com</div></div>
+      </div>
+      <div class="g-item" onclick="loginGoogle('ALHASHMI Design','abd199641@gmail.com','AD')">
+        <div class="g-avatar">AD</div>
+        <div><div class="g-name">ALHASHMI Design</div><div class="g-email">abd199641@gmail.com</div></div>
+      </div>
+      <div class="g-item" onclick="loginGoogle('Rhf Alhil','rhfalhil@gmail.com','RA')">
+        <div class="g-avatar">RA</div>
+        <div><div class="g-name">Rhf Alhil</div><div class="g-email">rhfalhil@gmail.com</div></div>
+      </div>
     </div>
 
-    <h2 class="login-title" id="login-app-name"></h2>
-    <p class="login-subtitle">
-      هل أنت مستخدم جديد؟
-      <a href="#" onclick="showToast('التسجيل قريباً')">اضغط هنا للتسجيل</a>
-    </p>
+    <div class="divider"><span>أو</span></div>
 
-    <!-- حسابات Google من CONFIG.googleAccounts -->
-    <div class="google-accounts" id="googleAccounts"></div>
-
-    <div class="divider"><span class="divider-text">أو</span></div>
-
-    <form class="login-form" onsubmit="handleLogin(event)">
+    <form onsubmit="handleLogin(event)">
       <div class="form-group">
         <label>البريد الإلكتروني</label>
         <input type="email" id="loginEmail" placeholder="you@gmail.com" required>
@@ -76,107 +78,95 @@
       <button type="submit" class="submit-btn">تسجيل الدخول</button>
     </form>
 
-    <div class="login-links">
-      <a href="#" onclick="showToast('استعادة كلمة المرور قريباً')">هل نسيت كلمة المرور؟</a>
-      <label style="cursor:pointer;display:flex;align-items:center;gap:6px">
+    <div class="bottom-links">
+      <a href="#" onclick="showToast('استعادة كلمة المرور قريباً')">نسيت كلمة المرور؟</a>
+      <label style="cursor:pointer;color:var(--text-muted);font-size:.85rem;display:flex;align-items:center;gap:6px">
         <input type="checkbox" id="rememberMe"> تذكرني
       </label>
     </div>
 
-    <div class="signup-link">
-      ليس لديك حساب؟
-      <a href="#" onclick="showToast('التسجيل قريباً')">إنشاء حساب جديد</a>
-    </div>
-
     <div class="back-link">
-      <!-- رابط الرجوع من CONFIG -->
-      <a href="" id="login-back-link">← العودة للرئيسية</a>
+      <a href="index.html">← العودة للرئيسية</a>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script src="js/config.js"></script>
-<script src="js/main.js"></script>
-<script src="js/auth.js"></script>
-
 <script>
-function initLogin() {
-  // عنوان من CONFIG
-  document.title = CONFIG.pageTitles.login;
-
-  // لوغو واسم التطبيق من CONFIG
-  document.getElementById('login-logo-img').src = CONFIG.app.logoGif;
-  document.getElementById('login-app-name').textContent = 'تسجيل الدخول';
-
-  // رابط الرجوع من CONFIG
-  document.getElementById('login-back-link').href = CONFIG.urls.pages.home;
-
-  // حسابات Google من CONFIG.googleAccounts
-  renderGoogleAccounts('googleAccounts', loginWithGoogle);
+function showToast(msg, duration=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), duration);
 }
 
-async function loginWithGoogle(account) {
+function saveUser(user) {
+  localStorage.setItem('sl_user', JSON.stringify(user));
+}
+
+function loginGoogle(name, email, initials) {
   showToast('جاري تسجيل الدخول...');
   const user = {
-    email: account.email,
-    name:  account.name,
-    avatar: account.initials,
+    email, name, avatar: initials,
     method: 'google',
-    usage: { tts:0, dub:0, srt:0 },
-    unlocked: { tts:false, dub:false, srt:false },
+    usage: {tts:0, dub:0, srt:0},
+    unlocked: {tts:false, dub:false, srt:false},
     timestamp: Date.now()
   };
-  await completeLogin(user);
+  saveUser(user);
+  goBack();
 }
 
-async function handleLogin(event) {
-  event.preventDefault();
-  const email    = document.getElementById('loginEmail').value;
+function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
   showToast('جاري التحقق...');
 
-  try {
-    const success = await Auth.login(email, password);
-    if (success) {
-      completeLogin(Auth.getCurrentUser());
-    } else {
-      const user = {
-        email, name: email.split('@')[0],
-        avatar: email[0].toUpperCase(),
-        method: 'email',
-        usage: { tts:0, dub:0, srt:0 },
-        unlocked: { tts:false, dub:false, srt:false },
+  fetch('https://sl-dubbing.onrender.com/api/login', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({email, password}),
+    signal: AbortSignal.timeout(8000)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      saveUser({
+        email: data.email,
+        name: data.email.split('@')[0],
+        avatar: data.email[0].toUpperCase(),
+        usage: data.usage || {tts:0,dub:0,srt:0},
+        unlocked: data.unlocked || {tts:false,dub:false,srt:false},
         timestamp: Date.now()
-      };
-      Auth.saveUser(user);
-      completeLogin(user);
+      });
+      goBack();
+    } else {
+      showToast('❌ ' + (data.error || 'خطأ في تسجيل الدخول'));
     }
-  } catch {
-    const user = {
+  })
+  .catch(() => {
+    // وضع عدم الاتصال
+    saveUser({
       email, name: email.split('@')[0],
       avatar: email[0].toUpperCase(),
       method: 'email',
-      usage: { tts:0, dub:0, srt:0 },
-      unlocked: { tts:false, dub:false, srt:false },
+      usage: {tts:0,dub:0,srt:0},
+      unlocked: {tts:false,dub:false,srt:false},
       timestamp: Date.now()
-    };
-    Auth.saveUser(user);
-    completeLogin(user);
-  }
+    });
+    goBack();
+  });
 }
 
-function completeLogin(user) {
-  showToast(`مرحباً ${user.name}! 👋`);
-  // URL الرجوع أو الصفحة الرئيسية من CONFIG
-  const returnUrl = sessionStorage.getItem('returnUrl') || CONFIG.urls.pages.home;
+function goBack() {
+  showToast('مرحباً! 👋');
+  const url = sessionStorage.getItem('returnUrl') || 'index.html';
   sessionStorage.removeItem('returnUrl');
-  setTimeout(() => window.location.href = returnUrl, 1000);
+  setTimeout(() => window.location.href = url, 1000);
 }
-
-window.addEventListener('DOMContentLoaded', initLogin);
 </script>
-
 </body>
 </html>
