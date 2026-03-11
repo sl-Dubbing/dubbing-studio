@@ -1,20 +1,152 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SL-Dubbing | منصة الدبلجة الذكية</title>
-    
-    <!-- ربط ملفات CSS -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/pages.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- العنوان يُعيَّن من config.js في JS -->
+  <title>sl-Dubbing</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- محتوى HTML هنا (انسخ من body في الكود السابق) -->
-    
-    <!-- ربط ملفات JS -->
-    <script src="js/main.js"></script>
+
+<div class="bg"></div>
+
+<div class="wrap">
+
+  <!-- ─── Header: يُرسم تلقائياً من components.js ─── -->
+  <div id="app-header"></div>
+
+  <!-- ─── حالة الخادم ─────────────────────────────── -->
+  <div id="server-status"></div>
+
+  <!-- ─── Hero ─────────────────────────────────────── -->
+  <section class="hero" style="text-align:center;padding:60px 0 40px">
+    <h1 style="font-size:clamp(2rem,5vw,3.5rem);font-weight:900;
+               background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);
+               -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+               margin-bottom:16px" id="hero-title"></h1>
+    <p style="color:var(--text-muted);font-size:1.1rem;max-width:600px;
+              margin:0 auto 40px" id="hero-tagline"></p>
+  </section>
+
+  <!-- ─── أدوات ─────────────────────────────────────── -->
+  <section style="margin-bottom:60px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px"
+         id="tools-grid"></div>
+  </section>
+
+  <!-- ─── خطط الشراء ────────────────────────────────── -->
+  <section class="payment-section">
+    <div class="payment-header">
+      <h2 id="pricing-title">احصل على وصول مدى الحياة</h2>
+      <p id="pricing-subtitle"></p>
+    </div>
+    <div class="payment-grid" id="pricing-grid"></div>
+  </section>
+
+  <!-- ─── مؤشر الاستخدام ──────────────────────────── -->
+  <div id="usage-display" style="max-width:400px;margin:0 auto 40px"></div>
+
+  <!-- ─── Footer ───────────────────────────────────── -->
+  <div id="app-footer"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ① config أولاً ② auth ③ main ④ components آخراً -->
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/components.js"></script>
+
+<script>
+/* ─── بيانات أدوات الصفحة الرئيسية ─────────────── */
+const TOOLS = [
+  {
+    key:   'tts',
+    icon:  '🎙️',
+    title: 'نطق النصوص',
+    desc:  'حوّل أي نص إلى صوت طبيعي بـ 13 لغة مع تحكم كامل بالسرعة والطبقة.',
+    color: '#6366f1',
+    page:  CONFIG.urls.pages.tts,
+  },
+  {
+    key:   'dub',
+    icon:  '🎬',
+    title: 'دبلجة AI',
+    desc:  'دبلج مقاطع الفيديو بصوتك أو بصوت ذكاء اصطناعي عبر ملفات SRT.',
+    color: '#f59e0b',
+    page:  CONFIG.urls.pages.dubbing,
+  },
+  {
+    key:   'srt',
+    icon:  '📝',
+    title: 'ترجمة SRT',
+    desc:  'ترجم ملفات الترجمة تلقائياً مع حفظ التوقيتات كاملةً.',
+    color: '#10b981',
+    page:  CONFIG.urls.pages.tts, // عدّل لصفحة SRT حين تُنشئها
+  },
+];
+
+/* ─── تهيئة الصفحة ──────────────────────────────── */
+function initIndex() {
+  // عنوان الصفحة من CONFIG
+  document.title = CONFIG.pageTitles.home;
+
+  // Hero
+  document.getElementById('hero-title').textContent   = CONFIG.app.name;
+  document.getElementById('hero-tagline').textContent = CONFIG.app.tagline;
+
+  // Pricing subtitle
+  document.getElementById('pricing-subtitle').textContent =
+    `دفعة واحدة — وصول ${CONFIG.ui.unlimitedLabel} — بدون رسوم شهرية`;
+
+  // بناء كروت الأدوات
+  const grid = document.getElementById('tools-grid');
+  grid.innerHTML = TOOLS.map(t => `
+    <div class="tool-card" onclick="goTool('${t.page}', '${t.key}')"
+         style="background:var(--card);border:1px solid var(--border);
+                border-radius:24px;padding:32px;cursor:pointer;
+                transition:all .3s;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;
+                  background:${t.color};border-radius:4px 4px 0 0"></div>
+      <div style="font-size:3rem;margin-bottom:16px">${t.icon}</div>
+      <h3 style="font-size:1.3rem;font-weight:800;color:white;margin-bottom:10px">${t.title}</h3>
+      <p style="color:var(--text-muted);font-size:.9rem;line-height:1.7;margin-bottom:20px">${t.desc}</p>
+      <span style="display:inline-flex;align-items:center;gap:6px;
+                   color:${t.color};font-weight:700;font-size:.9rem">
+        ابدأ الآن ←
+      </span>
+    </div>
+  `).join('');
+
+  // بناء كروت الأسعار من CONFIG
+  renderPricingCards('pricing-grid');
+}
+
+function goTool(page, key) {
+  const user = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : null;
+  if (!user) {
+    sessionStorage.setItem('returnUrl', page);
+    window.location.href = CONFIG.urls.pages.login;
+    return;
+  }
+  window.location.href = page;
+}
+
+// hover effect على كروت الأدوات
+document.addEventListener('mouseover', e => {
+  const card = e.target.closest('.tool-card');
+  if (card) { card.style.transform = 'translateY(-8px)'; card.style.boxShadow = '0 30px 60px rgba(0,0,0,.4)'; }
+});
+document.addEventListener('mouseout', e => {
+  const card = e.target.closest('.tool-card');
+  if (card) { card.style.transform = ''; card.style.boxShadow = ''; }
+});
+
+window.addEventListener('DOMContentLoaded', initIndex);
+</script>
+
 </body>
 </html>
