@@ -1,5 +1,5 @@
 /**
- * sl-Dubbing — components.js (نسخة مصححة)
+ * sl-Dubbing — components.js (نسخة مصححة نهائية)
  */
 
 const Components = {
@@ -105,7 +105,7 @@ const Components = {
             <span style="color:${unlocked[key]?'#34d399':'#a78bfa'}">${info}</span>
           </div>
           <div style="height:4px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#7c3aed,#34d399);border-radius:3px;transition:width .5s"></div>
+            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#7c3aed,#34d399);border-radius:3px"></div>
           </div>
         </div>`;
     };
@@ -119,13 +119,21 @@ const Components = {
       </div>`;
   },
 
+  // ← الإصلاح الرئيسي: نشغل مباشرة بدون انتظار DOMContentLoaded
   autoInit() {
-    document.addEventListener('DOMContentLoaded', () => {
+    const run = () => {
       Components.renderHeader();
       Components.renderFooter();
-      if (document.getElementById('server-status'))   Components.renderServerStatus();
-      if (document.getElementById('usage-display'))   Components.renderUsageBars();
-    });
+      if (document.getElementById('server-status'))  Components.renderServerStatus();
+      if (document.getElementById('usage-display'))  Components.renderUsageBars();
+    };
+
+    // إذا الصفحة جاهزة شغّل مباشرة، وإلا انتظر
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', run);
+    } else {
+      run(); // الـ DOM جاهز بالفعل
+    }
   }
 };
 
