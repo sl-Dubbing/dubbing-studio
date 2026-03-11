@@ -1,208 +1,181 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - sl-Dubbing</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-        .login-card{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:1px solid rgba(167,139,250,.2);border-radius:24px;padding:50px;width:100%;max-width:480px;box-shadow:0 25px 80px rgba(0,0,0,.6)}
-        .login-title{font-size:2rem;font-weight:900;margin-bottom:10px;color:white;text-align:center}
-        .login-subtitle{color:var(--text-muted);margin-bottom:30px;text-align:center;font-size:.95rem}
-        .login-subtitle a{color:#60a5fa;text-decoration:none}
-
-        .google-accounts{margin-bottom:25px;max-height:220px;overflow-y:auto;border:1px solid rgba(167,139,250,.1);border-radius:12px;background:rgba(0,0,0,.3)}
-        .google-account-item{display:flex;align-items:center;gap:12px;padding:15px;cursor:pointer;border-bottom:1px solid rgba(167,139,250,.1);transition:all .3s}
-        .google-account-item:last-child{border-bottom:none}
-        .google-account-item:hover{background:rgba(167,139,250,.1)}
-        .account-avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:white}
-        .account-info{flex:1}
-        .account-name{font-weight:600;color:white;margin-bottom:3px}
-        .account-email{font-size:.85rem;color:var(--text-muted)}
-
-        .divider{display:flex;align-items:center;margin:25px 0;color:#6b7280}
-        .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(167,139,250,.2)}
-        .divider-text{padding:0 15px;font-size:.85rem}
-
-        .login-form{display:flex;flex-direction:column;gap:18px}
-        .form-group{display:flex;flex-direction:column;gap:8px}
-        .form-group label{font-weight:600;color:white;font-size:.95rem}
-        .form-group input{padding:14px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;color:white;font-size:.95rem;transition:all .3s}
-        .form-group input:focus{outline:none;border-color:#a78bfa;background:rgba(167,139,250,.05);box-shadow:0 0 15px rgba(167,139,250,.2)}
-        .form-group input::placeholder{color:#6b7280}
-
-        .submit-btn{padding:14px 20px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:10px;color:white;font-weight:700;font-size:1rem;cursor:pointer;transition:all .3s;margin-top:10px;box-shadow:0 4px 15px rgba(124,58,237,.4)}
-        .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(124,58,237,.6)}
-
-        .facebook-btn{padding:14px 20px;background:#1877f2;border:none;border-radius:10px;color:white;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .3s;width:100%;margin-top:10px}
-        .facebook-btn:hover{background:#166fe5;transform:translateY(-2px)}
-
-        .login-links{display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:.85rem}
-        .login-links a{color:#60a5fa;text-decoration:none}
-        .signup-link{text-align:center;margin-top:25px;font-size:.9rem;color:var(--text-muted)}
-        .signup-link a{color:#60a5fa;text-decoration:none;font-weight:600}
-
-        .back-link{text-align:center;margin-top:20px}
-        .back-link a{color:var(--text-muted);text-decoration:none;font-size:.9rem}
-        .back-link a:hover{color:#a78bfa}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول</title><!-- يُعدَّل من JS -->
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .login-card{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:1px solid rgba(167,139,250,.2);border-radius:24px;padding:50px;width:100%;max-width:480px;box-shadow:0 25px 80px rgba(0,0,0,.6)}
+    .login-logo{text-align:center;margin-bottom:20px}
+    .login-logo img{width:60px;height:60px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(167,139,250,.5))}
+    .login-title{font-size:2rem;font-weight:900;margin-bottom:10px;color:white;text-align:center}
+    .login-subtitle{color:var(--text-muted);margin-bottom:30px;text-align:center;font-size:.95rem}
+    .login-subtitle a{color:#60a5fa;text-decoration:none}
+    .google-accounts{margin-bottom:25px;max-height:220px;overflow-y:auto;border:1px solid rgba(167,139,250,.1);border-radius:12px;background:rgba(0,0,0,.3)}
+    .google-account-item{display:flex;align-items:center;gap:12px;padding:15px;cursor:pointer;border-bottom:1px solid rgba(167,139,250,.1);transition:all .3s}
+    .google-account-item:last-child{border-bottom:none}
+    .google-account-item:hover{background:rgba(167,139,250,.1)}
+    .account-avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:white}
+    .account-info{flex:1}
+    .account-name{font-weight:600;color:white;margin-bottom:3px}
+    .account-email{font-size:.85rem;color:var(--text-muted)}
+    .divider{display:flex;align-items:center;margin:25px 0;color:#6b7280}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(167,139,250,.2)}
+    .divider-text{padding:0 15px;font-size:.85rem}
+    .login-form{display:flex;flex-direction:column;gap:18px}
+    .form-group{display:flex;flex-direction:column;gap:8px}
+    .form-group label{font-weight:600;color:white;font-size:.95rem}
+    .form-group input{padding:14px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;color:white;font-size:.95rem;transition:all .3s}
+    .form-group input:focus{outline:none;border-color:#a78bfa;background:rgba(167,139,250,.05);box-shadow:0 0 15px rgba(167,139,250,.2)}
+    .form-group input::placeholder{color:#6b7280}
+    .submit-btn{padding:14px 20px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:10px;color:white;font-weight:700;font-size:1rem;cursor:pointer;transition:all .3s;margin-top:10px;box-shadow:0 4px 15px rgba(124,58,237,.4)}
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(124,58,237,.6)}
+    .login-links{display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:.85rem}
+    .login-links a{color:#60a5fa;text-decoration:none}
+    .signup-link{text-align:center;margin-top:25px;font-size:.9rem;color:var(--text-muted)}
+    .signup-link a{color:#60a5fa;text-decoration:none;font-weight:600}
+    .back-link{text-align:center;margin-top:20px}
+    .back-link a{color:var(--text-muted);text-decoration:none;font-size:.9rem}
+    .back-link a:hover{color:#a78bfa}
+  </style>
 </head>
 <body>
 
 <div class="bg"></div>
 
 <div class="login-page">
-    <div class="login-card">
-        <h2 class="login-title">تسجيل الدخول</h2>
-        <p class="login-subtitle">هل أنت مستخدم جديد؟ <a href="#" onclick="showToast('التسجيل قريباً')">اضغط هنا للتسجيل</a></p>
+  <div class="login-card">
 
-        <div class="google-accounts" id="googleAccounts"></div>
-
-        <div class="divider">
-            <span class="divider-text">أو</span>
-        </div>
-
-        <form class="login-form" onsubmit="handleLogin(event)">
-            <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="loginEmail" placeholder="you@example.com" required>
-            </div>
-            
-            <div class="form-group">
-                <label>كلمة المرور</label>
-                <input type="password" id="loginPassword" placeholder="••••••••" required>
-            </div>
-
-            <button type="submit" class="submit-btn">تسجيل الدخول</button>
-        </form>
-
-        <button class="facebook-btn" onclick="showToast('Facebook قريباً')">
-            👍 متابعة مع Facebook
-        </button>
-
-        <div class="login-links">
-            <a href="#" onclick="showToast('استعادة كلمة المرور قريباً')">هل نسيت كلمة المرور؟</a>
-            <label style="cursor:pointer;display:flex;align-items:center;gap:6px">
-                <input type="checkbox" id="rememberMe"> تذكرني
-            </label>
-        </div>
-
-        <div class="signup-link">
-            ليس لديك حساب؟ <a href="#" onclick="showToast('التسجيل قريباً')">إنشاء حساب جديد</a>
-        </div>
-
-        <div class="back-link">
-            <a href="index.html">← العودة للرئيسية</a>
-        </div>
+    <!-- لوغو من CONFIG -->
+    <div class="login-logo">
+      <img src="" id="login-logo-img" alt="logo">
     </div>
+
+    <h2 class="login-title" id="login-app-name"></h2>
+    <p class="login-subtitle">
+      هل أنت مستخدم جديد؟
+      <a href="#" onclick="showToast('التسجيل قريباً')">اضغط هنا للتسجيل</a>
+    </p>
+
+    <!-- حسابات Google من CONFIG.googleAccounts -->
+    <div class="google-accounts" id="googleAccounts"></div>
+
+    <div class="divider"><span class="divider-text">أو</span></div>
+
+    <form class="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="loginEmail" placeholder="you@gmail.com" required>
+      </div>
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="submit-btn">تسجيل الدخول</button>
+    </form>
+
+    <div class="login-links">
+      <a href="#" onclick="showToast('استعادة كلمة المرور قريباً')">هل نسيت كلمة المرور؟</a>
+      <label style="cursor:pointer;display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="rememberMe"> تذكرني
+      </label>
+    </div>
+
+    <div class="signup-link">
+      ليس لديك حساب؟
+      <a href="#" onclick="showToast('التسجيل قريباً')">إنشاء حساب جديد</a>
+    </div>
+
+    <div class="back-link">
+      <!-- رابط الرجوع من CONFIG -->
+      <a href="" id="login-back-link">← العودة للرئيسية</a>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="js/config.js"></script>
 <script src="js/main.js"></script>
 <script src="js/auth.js"></script>
+
 <script>
-// حسابات Google (للعرض التوضيحي)
-const googleAccounts=[
-    {name:'Mona Alhil',email:'ahlil.ma@gmail.com',initials:'MA'},
-    {name:'ALHASHMI Design',email:'abd199641@gmail.com',initials:'AD'},
-    {name:'Rhf Alhil',email:'rhfalhil@gmail.com',initials:'RA'}
-];
+function initLogin() {
+  // عنوان من CONFIG
+  document.title = CONFIG.pageTitles.login;
 
-function init(){
-    loadGoogleAccounts();
+  // لوغو واسم التطبيق من CONFIG
+  document.getElementById('login-logo-img').src = CONFIG.app.logoGif;
+  document.getElementById('login-app-name').textContent = 'تسجيل الدخول';
+
+  // رابط الرجوع من CONFIG
+  document.getElementById('login-back-link').href = CONFIG.urls.pages.home;
+
+  // حسابات Google من CONFIG.googleAccounts
+  renderGoogleAccounts('googleAccounts', loginWithGoogle);
 }
 
-function loadGoogleAccounts(){
-    const container=document.getElementById('googleAccounts');
-    container.innerHTML='';
-    
-    googleAccounts.forEach(account=>{
-        const div=document.createElement('div');
-        div.className='google-account-item';
-        div.innerHTML=`
-            <div class="account-avatar">${account.initials}</div>
-            <div class="account-info">
-                <div class="account-name">${account.name}</div>
-                <div class="account-email">${account.email}</div>
-            </div>
-        `;
-        div.onclick=()=>loginWithGoogle(account);
-        container.appendChild(div);
-    });
+async function loginWithGoogle(account) {
+  showToast('جاري تسجيل الدخول...');
+  const user = {
+    email: account.email,
+    name:  account.name,
+    avatar: account.initials,
+    method: 'google',
+    usage: { tts:0, dub:0, srt:0 },
+    unlocked: { tts:false, dub:false, srt:false },
+    timestamp: Date.now()
+  };
+  await completeLogin(user);
 }
 
-async function loginWithGoogle(account){
-    showToast('جاري تسجيل الدخول...');
-    
-    const user={
-        email:account.email,
-        name:account.name,
-        avatar:account.initials,
-        method:'google',
-        timestamp:Date.now()
-    };
-    
-    await completeLogin(user);
-}
+async function handleLogin(event) {
+  event.preventDefault();
+  const email    = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  showToast('جاري التحقق...');
 
-async function handleLogin(event){
-    event.preventDefault();
-    
-    const email=document.getElementById('loginEmail').value;
-    const password=document.getElementById('loginPassword').value;
-    
-    showToast('جاري التحقق...');
-    
-    // محاولة الاتصال بالخادم
-    try{
-        const success=await Auth.login(email,password);
-        if(success){
-            completeLogin(Auth.getCurrentUser());
-        }else{
-            // تسجيل دخول محلي
-            const user={
-                email:email,
-                name:email.split('@')[0],
-                avatar:email[0].toUpperCase(),
-                method:'email',
-                usage:{tts:0,dub:0,srt:0},
-                unlocked:{tts:false,dub:false,srt:false},
-                timestamp:Date.now()
-            };
-            Auth.saveUser(user);
-            completeLogin(user);
-        }
-    }catch(e){
-        // وضع عدم الاتصال
-        const user={
-            email:email,
-            name:email.split('@')[0],
-            avatar:email[0].toUpperCase(),
-            method:'email',
-            usage:{tts:0,dub:0,srt:0},
-            unlocked:{tts:false,dub:false,srt:false},
-            timestamp:Date.now()
-        };
-        Auth.saveUser(user);
-        completeLogin(user);
+  try {
+    const success = await Auth.login(email, password);
+    if (success) {
+      completeLogin(Auth.getCurrentUser());
+    } else {
+      const user = {
+        email, name: email.split('@')[0],
+        avatar: email[0].toUpperCase(),
+        method: 'email',
+        usage: { tts:0, dub:0, srt:0 },
+        unlocked: { tts:false, dub:false, srt:false },
+        timestamp: Date.now()
+      };
+      Auth.saveUser(user);
+      completeLogin(user);
     }
+  } catch {
+    const user = {
+      email, name: email.split('@')[0],
+      avatar: email[0].toUpperCase(),
+      method: 'email',
+      usage: { tts:0, dub:0, srt:0 },
+      unlocked: { tts:false, dub:false, srt:false },
+      timestamp: Date.now()
+    };
+    Auth.saveUser(user);
+    completeLogin(user);
+  }
 }
 
-function completeLogin(user){
-    showToast(`مرحباً ${user.name}! 👋`);
-    
-    // العودة للصفحة السابقة أو الرئيسية
-    const returnUrl=sessionStorage.getItem('returnUrl')||'index.html';
-    sessionStorage.removeItem('returnUrl');
-    
-    setTimeout(()=>{
-        window.location.href=returnUrl;
-    },1000);
+function completeLogin(user) {
+  showToast(`مرحباً ${user.name}! 👋`);
+  // URL الرجوع أو الصفحة الرئيسية من CONFIG
+  const returnUrl = sessionStorage.getItem('returnUrl') || CONFIG.urls.pages.home;
+  sessionStorage.removeItem('returnUrl');
+  setTimeout(() => window.location.href = returnUrl, 1000);
 }
 
-window.addEventListener('DOMContentLoaded',init);
+window.addEventListener('DOMContentLoaded', initLogin);
 </script>
 
 </body>
