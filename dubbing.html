@@ -388,7 +388,22 @@ async function toggleRec(){
 async function uploadVoice(){
   if(!voiceBlob){showToast('الرجاء اختيار أو تسجيل عينة أولاً');return;}
   const btn=document.getElementById('uploadVoiceBtn');
-  btn.disabled=true; btn.textContent='جاري الرفع...';
+  btn.disabled=true;
+
+  const steps=[
+    {p:15, msg:'📤 جاري رفع الملف...'},
+    {p:35, msg:'🔍 تحليل خصائص الصوت...'},
+    {p:55, msg:'🎵 استخراج نبرة الصوت...'},
+    {p:75, msg:'🧠 تدريب نموذج النبرة...'},
+    {p:90, msg:'⚙️ تجهيز العينة للدبلجة...'},
+  ];
+
+  showVoiceProgress(0,'📤 جاري الرفع...');
+  let si=0;
+  const iv=setInterval(()=>{
+    if(si<steps.length){ showVoiceProgress(steps[si].p, steps[si].msg); si++; }
+  },600);
+
   try{
     const fd=new FormData();
     const ext=voiceBlob.type.includes('wav')?'.wav':voiceBlob.name?'.'+voiceBlob.name.split('.').pop():'.wav';
@@ -397,17 +412,54 @@ async function uploadVoice(){
     if(user.email) fd.append('email', user.email);
     const res=await fetch(BE+'/api/upload-voice',{method:'POST',body:fd,signal:AbortSignal.timeout(30000)});
     const d=await res.json();
+    clearInterval(iv);
     if(d.success){
-      voiceUploaded=true;
-      setVoiceStatus('ok','✅ تم رفع العينة — سيُستخدم صوتك في كل اللغات');
-      showToast('✅ تم رفع العينة بنجاح!');
+      showVoiceProgress(100,'✅ تم التعرف على الصوت!');
+      setTimeout(()=>{
+        hideVoiceProgress();
+        voiceUploaded=true;
+        setVoiceStatus('ok','✅ تم التعرف على صوتك — سيُستخدم في كل اللغات 🎤');
+        showToast('✅ تم التعرف على الصوت بنجاح!');
+        btn.disabled=false;
+      },800);
+      return;
     }else{
+      hideVoiceProgress();
       showToast('❌ '+(d.error||'فشل الرفع'));
     }
   }catch(e){
+    clearInterval(iv);
+    hideVoiceProgress();
     showToast('❌ تعذر الاتصال بالخادم');
   }
-  btn.disabled=false; btn.textContent='☁️ رفع العينة إلى الخادم';
+  btn.disabled=false;
+}
+
+function showVoiceProgress(pct, msg){
+  let box=document.getElementById('voiceProgBox');
+  if(!box){
+    box=document.createElement('div');
+    box.id='voiceProgBox';
+    box.style.cssText='margin-top:14px;background:rgba(0,0,0,.3);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:16px';
+    document.getElementById('uploadVoiceBtn').insertAdjacentElement('afterend',box);
+  }
+  const dots=pct<100?
+    '<div style="margin-top:10px;display:flex;gap:6px;align-items:center">'+
+    '<span style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:blink 1s infinite;display:inline-block"></span>'+
+    '<span style="width:8px;height:8px;border-radius:50%;background:#60a5fa;animation:blink 1s .3s infinite;display:inline-block"></span>'+
+    '<span style="width:8px;height:8px;border-radius:50%;background:#34d399;animation:blink 1s .6s infinite;display:inline-block"></span>'+
+    '<span style="color:#6b7280;font-size:.8rem;margin-right:4px">جاري التحليل</span></div>':'<div style="text-align:center;margin-top:8px;font-size:1.4rem">🎉</div>';
+  box.innerHTML=
+    '<div style="display:flex;justify-content:space-between;margin-bottom:8px">'+
+    '<span style="color:#a78bfa;font-weight:600;font-size:.88rem">'+msg+'</span>'+
+    '<span style="color:#6b7280;font-size:.85rem">'+pct+'%</span></div>'+
+    '<div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden">'+
+    '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#7c3aed,#34d399);border-radius:4px;transition:width .5s ease"></div></div>'+dots;
+}
+
+function hideVoiceProgress(){
+  const box=document.getElementById('voiceProgBox');
+  if(box) box.remove();
 }
 
 function setVoiceStatus(type, msg){
