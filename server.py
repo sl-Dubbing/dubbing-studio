@@ -17,14 +17,9 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# CORS - مهم جداً للسماح لـ GitHub Pages بالاتصال
+# CORS - مهم جداً
 CORS(app, resources={r"/api/*": {
-    "origins": [
-        "https://sl-dubbing.github.io",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000",
-        "*"
-    ],
+    "origins": ["https://sl-dubbing.github.io", "http://localhost:*", "*"],
     "methods": ["GET", "POST", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization"]
 }})
@@ -99,15 +94,24 @@ def reset_guest(ip):
         GUEST_USAGE[ip] = {'tts': 0, 'dub': 0, 'srt': 0, 'ts': time.time()}
 
 def get_voice_sample(email=None):
+    """البحث عن عينة الصوت"""
     if email:
         user = User.query.filter_by(email=email).first()
         if user and user.voice_sample and Path(user.voice_sample).exists():
-            logger.info(f"Found voice sample for {email}")
+            logger.info(f"✅ Found voice sample for {email}")
             return user.voice_sample
+    
+    # البحث العام - ✅ تصحيح glob
     samples = list(VOICE_DIR.glob('*.wav')) + list(VOICE_DIR.glob('*.mp3'))
-    return str(samples[-1]) if samples else None
+    if samples:
+        logger.info(f"📁 Found {len(samples)} samples")
+        return str(samples[-1])
+    
+    logger.warning("⚠️ No voice sample found")
+    return None
 
 def synthesize_xtts(text, lang_code, voice_path, output_path):
+    """توليد بـ XTTS v2"""
     tts = load_tts()
     if not tts:
         return False
@@ -115,6 +119,8 @@ def synthesize_xtts(text, lang_code, voice_path, output_path):
         xtts_lang = XTTS_LANG_MAP.get(lang_code)
         if not xtts_lang:
             return False
+        
+        logger.info(f"🎙️ XTTS v2: lang={xtts_lang}, voice={voice_path}")
         tts.tts_to_file(
             text=text,
             speaker_wav=voice_path,
@@ -123,29 +129,39 @@ def synthesize_xtts(text, lang_code, voice_path, output_path):
         )
         return True
     except Exception as e:
-        logger.error(f"XTTS error: {e}")
+        logger.error(f"❌ XTTS error: {e}")
         return False
 
 def synthesize_gtts(text, lang_code, output_path):
+    """توليد بـ gTTS"""
     try:
         from gtts import gTTS
         gtts_lang = GTTS_LANG_MAP.get(lang_code, 'en')
         gTTS(text=text, lang=gtts_lang, slow=False).save(str(output_path))
+        logger.info(f"📢 gTTS: lang={gtts_lang}")
         return True
     except Exception as e:
-        logger.error(f"gTTS error: {e}")
+        logger.error(f"❌ gTTS error: {e}")
         return False
 
 def generate_audio(text, lang_code, email=None, voice_override=None):
+    """
+    توليد الصوت:
+    1. إذا كانت عينة موجودة → XTTS v2
+    2. وإلا → gTTS
+    """
     output_file = AUDIO_DIR / f"{uuid.uuid4()}.wav"
+    
+    # ✅ استخدام العينة المرفوعة مباشرة أولاً
     voice_path = voice_override if voice_override else get_voice_sample(email)
     
     if voice_path and XTTS_LANG_MAP.get(lang_code):
-        logger.info(f"Using XTTS v2 with voice for {lang_code}")
+        logger.info(f"🎤 Using XTTS v2 with voice sample")
         if synthesize_xtts(text, lang_code, voice_path, output_file):
             return str(output_file), 'xtts_v2', True
     
-    logger.info(f"Using gTTS for {lang_code}")
+    # Fallback → gTTS
+    logger.info(f"📢 Using gTTS (default voice)")
     mp3_file = output_file.with_suffix('.mp3')
     if synthesize_gtts(text, lang_code, mp3_file):
         return str(mp3_file), 'gtts', False
@@ -210,7 +226,7 @@ def login():
 def upload_voice():
     try:
         email = request.form.get('email', '').strip().lower()
-        logger.info(f"Upload voice request - Email: {email}")
+        logger.info(f"📥 Upload voice - Email: {email}")
         
         if 'voice' not in request.files:
             return jsonify({'error': 'لم يتم رفع ملف'}), 400
@@ -223,9 +239,11 @@ def upload_voice():
         if ext not in ['.wav', '.mp3', '.ogg', '.m4a']:
             return jsonify({'error': 'WAV/MP3/OGG/M4A فقط'}), 400
         
+        # حفظ الملف
         filename = f"voice_{uuid.uuid4()}{ext}"
         save_path = VOICE_DIR / filename
         file.save(str(save_path))
+        logger.info(f"💾 Saved: {save_path}")
         
         # تحويل إلى WAV
         if ext != '.wav':
@@ -239,16 +257,18 @@ def upload_voice():
                 if wav_path.exists():
                     os.remove(str(save_path))
                     save_path = wav_path
+                    logger.info(f"✅ Converted to WAV: {save_path}")
             except Exception as e:
-                logger.warning(f"FFmpeg error: {e}")
+                logger.warning(f"⚠️ FFmpeg error: {e}")
         
+        # ربط بالمستخدم
         if email:
             user = User.query.filter_by(email=email).first()
             if user:
                 user.voice_sample = str(save_path)
                 db.session.commit()
+                logger.info(f"✅ Linked to user {email}")
         
-        logger.info(f"Voice saved: {save_path}")
         return jsonify({
             'success': True,
             'message': 'تم الحفظ بنجاح ✅',
@@ -261,6 +281,8 @@ def upload_voice():
 @app.route('/api/dub', methods=['POST'])
 def dub():
     try:
+        logger.info("🎬 Dub request received")
+        
         if request.content_type and 'multipart' in request.content_type:
             text = request.form.get('text', '')
             lang = request.form.get('lang', 'ar')
@@ -276,22 +298,25 @@ def dub():
         if not text:
             return jsonify({'error': 'النص فارغ'}), 400
         
-        # حفظ العينة المرفوعة
+        logger.info(f"📝 Text: {text[:50]}... | Lang: {lang} | Email: {email}")
+        
+        # ✅ حفظ العينة المرفوعة مباشرة
         temp_voice_path = None
         if inline_voice and inline_voice.filename:
             ext = Path(inline_voice.filename).suffix.lower() or '.wav'
             temp_path = VOICE_DIR / f"tmp_{uuid.uuid4()}{ext}"
             inline_voice.save(str(temp_path))
             temp_voice_path = str(temp_path)
-            logger.info(f"Inline voice uploaded: {temp_voice_path}")
+            logger.info(f"🎙️ Inline voice uploaded: {temp_voice_path}")
             
             if email:
                 user = User.query.filter_by(email=email).first()
                 if user:
                     user.voice_sample = temp_voice_path
                     db.session.commit()
+                    logger.info(f"✅ Inline voice linked to {email}")
         
-        # توليد الصوت
+        # ✅ توليد الصوت مع تمرير العينة مباشرة
         audio_path, method, used_voice = generate_audio(
             text, lang, email, voice_override=temp_voice_path
         )
@@ -302,6 +327,7 @@ def dub():
                 stored = get_voice_sample(email)
                 if temp_voice_path != stored:
                     os.remove(temp_voice_path)
+                    logger.info(f"🗑️ Cleaned temp voice")
             except:
                 pass
         
@@ -311,7 +337,7 @@ def dub():
         filename = Path(audio_path).name
         audio_url = f"{request.host_url}api/download/{filename}"
         
-        logger.info(f"Dub OK: {method}, used_voice={used_voice}")
+        logger.info(f"✅ Dub OK: {method}, used_voice={used_voice}")
         
         return jsonify({
             'success': True,
@@ -321,7 +347,7 @@ def dub():
             'used_voice': used_voice
         })
     except Exception as e:
-        logger.error(f"Dub error: {e}")
+        logger.error(f"❌ Dub error: {e}")
         import traceback
         logger.error(traceback.format_exc())
         return jsonify({'error': f'خطأ: {str(e)}'}), 500
@@ -357,5 +383,5 @@ def entitlements():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    logger.info(f"Starting server on port {port}")
+    logger.info(f"🚀 Starting server on port {port}")
     app.run(host='0.0.0.0', port=port, debug=False)
