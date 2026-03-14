@@ -283,6 +283,18 @@ def debug():
         'xtts_loaded': TTS_ENGINE is not None
     })
 
+# ── الأسعار — غيّرها من هنا فقط ────────────────────────────
+PRICES = {
+    'tts':     {'price': 10,  'currency': '$', 'url': 'https://payhip.com/b/jQdFJ'},
+    'dubbing': {'price': 50,  'currency': '$', 'url': 'https://payhip.com/b/5XbaQ'},
+    'srt':     {'price': 10,  'currency': '$', 'url': 'https://payhip.com/b/2E6sT'},
+}
+
+@app.route('/api/prices')
+def prices():
+    """يُرجع الأسعار الحالية — غيّرها في PRICES أعلاه"""
+    return jsonify({'success': True, 'prices': PRICES})
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port, debug=False)
