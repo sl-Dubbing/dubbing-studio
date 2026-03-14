@@ -1,225 +1,188 @@
-# =============================================================
+# ---------------------------------------------------------------
 # voice_engine.py — محرك الصوت الاحترافي
-# يُستخدم من app.py لتوليد الصوت بنبرة ABDU SELAM
-# =============================================================
-import os, uuid, logging, requests, hashlib
+# يُستدعى من الـ backend (server.py) لتوليد صوت بنبرة ABDU SELAM
+# ---------------------------------------------------------------
+
+import os, uuid, logging
 from pathlib import Path
 
+# -----------------------------------------------------------------
+# إعدادات Logging
+# -----------------------------------------------------------------
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    # في حال تم استيراد الملف من سكريبت آخر قد تكون الإعدادات مُعرَّفة مسبقًا
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
 
-# ── إعدادات Cloudinary ───────────────────────────────────────
-CLOUD_NAME    = os.environ.get('CLOUDINARY_CLOUD_NAME', 'dxbmvzsiz')
-API_KEY       = os.environ.get('CLOUDINARY_API_KEY',    '432687952743126')
-API_SECRET    = os.environ.get('CLOUDINARY_API_SECRET', 'BrFvzlPFXBJZ-B-cZyxCc-0wHRo')
-FOLDER        = "sl_voices"
-DEFAULT_VOICE = os.environ.get('DEFAULT_VOICE_ID', '5_gtygjb')
-
+# -----------------------------------------------------------------
 # مسارات مؤقتة
+# -----------------------------------------------------------------
 TMP = Path('/tmp')
-TMP.mkdir(exist_ok=True)
+TMP.mkdir(parents=True, exist_ok=True)
 
-# ── خريطة اللغات ─────────────────────────────────────────────
+# -----------------------------------------------------------------
+# خريطة اللغات ── XTTS & gTTS
+# -----------------------------------------------------------------
 XTTS_LANGS = {
-    'ar':'ar', 'en':'en', 'es':'es', 'fr':'fr', 'de':'de',
-    'it':'it', 'ru':'ru', 'tr':'tr', 'zh':'zh-cn', 'hi':'hi', 'nl':'nl'
+    'ar': 'ar', 'en': 'en', 'es': 'es', 'fr': 'fr', 'de': 'de',
+    'it': 'it', 'ru': 'ru', 'tr': 'tr',
+    'zh': 'zh-cn', 'hi': 'hi', 'nl': 'nl'
 }
 GTTS_LANGS = {
-    'ar':'ar', 'en':'en', 'es':'es', 'fr':'fr', 'de':'de', 'it':'it',
-    'ru':'ru', 'tr':'tr', 'zh':'zh-TW', 'hi':'hi', 'fa':'fa', 'sv':'sv', 'nl':'nl'
+    'ar': 'ar', 'en': 'en', 'es': 'es', 'fr': 'fr',
+    'de': 'de', 'it': 'it', 'ru': 'ru', 'tr': 'tr',
+    'zh': 'zh', 'hi': 'hi', 'fa': 'fa',
+    'sv': 'sv', 'nl': 'nl'
 }
 
-# ── XTTS v2 ───────────────────────────────────────────────────
+# -----------------------------------------------------------------
+# استيراد الأدوات المساعدة من utils.py
+# -----------------------------------------------------------------
+from utils import (
+    fetch_voice_sample,        # تحميل (أو إرجاع) عينة صوتية مخزَّنة على Cloudinary
+    mp3_to_wav,               # تحويل mp3 → wav باستخدام ffmpeg
+)
+
+# -----------------------------------------------------------------
+# تحميل نموذج XTTS (يُحمل مرة واحدة فقط)
+# -----------------------------------------------------------------
 _TTS_ENGINE = None
 
-def get_tts_engine():
+def _load_xtts():
+    """تحميل نموذج XTTS v2 في الذاكرة (مجرد مرة واحدة)."""
     global _TTS_ENGINE
     if _TTS_ENGINE is not None:
         return _TTS_ENGINE
+
     try:
         from TTS.api import TTS
-        logger.info("⏳ Loading XTTS v2 model...")
+        logger.info("⏳ Loading XTTS v2 model…")
         _TTS_ENGINE = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
         logger.info("✅ XTTS v2 loaded")
         return _TTS_ENGINE
-    except Exception as e:
-        logger.error(f"❌ XTTS load failed: {e}")
+    except Exception as exc:
+        logger.error(f"❌ Failed to load XTTS model: {exc}")
         return None
 
-# ── Cloudinary ────────────────────────────────────────────────
-def _cloudinary_url(public_id):
-    return f"https://res.cloudinary.com/{CLOUD_NAME}/raw/upload/{FOLDER}/{public_id}"
 
-def fetch_voice_sample(public_id=None):
+# -----------------------------------------------------------------
+# توليد الصوت بـ XTTS
+# -----------------------------------------------------------------
+def _synthesize_xtts(text: str, lang: str, voice_path: str, out_path: str) -> bool:
     """
-    تحميل عينة الصوت من Cloudinary إلى /tmp
-    يُخزّن محلياً لتجنب التحميل في كل مرة
+    توليد ملف صوتي باستخدام XTTS مع عينة صوت `voice_path`.
+    يُعيد True عند النجاح.
     """
-    vid   = public_id or DEFAULT_VOICE
-    local = TMP / f"voice_{vid}.wav"
-
-    # إذا موجود محلياً وحجمه طبيعي → استخدمه مباشرة
-    if local.exists() and local.stat().st_size > 5000:
-        logger.info(f"✅ Using cached voice: {local}")
-        return str(local)
-
-    # حمّله من Cloudinary
-    url = _cloudinary_url(vid)
-    logger.info(f"⬇️ Downloading voice from Cloudinary: {url}")
-    try:
-        r = requests.get(url, timeout=30)
-        if r.status_code == 200:
-            with open(local, 'wb') as f:
-                f.write(r.content)
-            logger.info(f"✅ Voice saved: {local} ({local.stat().st_size} bytes)")
-            return str(local)
-        else:
-            logger.error(f"❌ Cloudinary returned {r.status_code}")
-    except Exception as e:
-        logger.error(f"❌ Download error: {e}")
-    return None
-
-# ── توليد الصوت بـ XTTS v2 ───────────────────────────────────
-def generate_xtts(text: str, lang: str, voice_path: str, out_path: str) -> bool:
-    """
-    توليد صوت بنفس نبرة voice_path
-    يدعم: ar en es fr de it ru tr zh hi nl
-    """
-    tts = get_tts_engine()
-    if tts is None:
+    tts = _load_xtts()
+    if not tts:
         return False
 
     xtts_lang = XTTS_LANGS.get(lang)
     if not xtts_lang:
-        logger.warning(f"XTTS لا يدعم اللغة: {lang}")
+        logger.warning(f"XTTS does not support language '{lang}'")
         return False
 
-    # تقسيم النص إذا كان طويلاً (XTTS يدعم حتى ~400 حرف)
-    chunks = _split_text(text, max_chars=350)
-    if len(chunks) == 1:
-        try:
-            tts.tts_to_file(
-                text=text,
-                speaker_wav=voice_path,
-                language=xtts_lang,
-                file_path=out_path
-            )
-            logger.info(f"✅ XTTS generated: {out_path}")
-            return True
-        except Exception as e:
-            logger.error(f"❌ XTTS error: {e}")
-            return False
-    else:
-        # دمج أجزاء متعددة
-        return _generate_xtts_chunked(tts, chunks, xtts_lang, voice_path, out_path)
-
-def _generate_xtts_chunked(tts, chunks, lang, voice_path, out_path):
-    """توليد ودمج أجزاء النص الطويل"""
     try:
-        import wave, array
-        parts = []
-        for i, chunk in enumerate(chunks):
-            part = TMP / f"chunk_{uuid.uuid4()}.wav"
-            tts.tts_to_file(text=chunk, speaker_wav=voice_path,
-                            language=lang, file_path=str(part))
-            parts.append(part)
-
-        # دمج WAV files
-        _merge_wav(parts, out_path)
-        for p in parts:
-            p.unlink(missing_ok=True)
-        logger.info(f"✅ XTTS chunked ({len(chunks)} parts) → {out_path}")
+        tts.tts_to_file(
+            text=text,
+            speaker_wav=voice_path,
+            language=xtts_lang,
+            file_path=out_path,
+        )
+        logger.info(f"✅ XTTS generated → {out_path}")
         return True
-    except Exception as e:
-        logger.error(f"❌ XTTS chunked error: {e}")
+    except Exception as exc:
+        logger.error(f"❌ XTTS generation error: {exc}")
         return False
 
-def _merge_wav(files, output):
-    """دمج ملفات WAV"""
-    import wave
-    data = []
-    params = None
-    for f in files:
-        with wave.open(str(f), 'rb') as w:
-            if params is None:
-                params = w.getparams()
-            data.append(w.readframes(w.getnframes()))
-    with wave.open(str(output), 'wb') as out:
-        out.setparams(params)
-        for d in data:
-            out.writeframes(d)
 
-def _split_text(text, max_chars=350):
-    """تقسيم النص إلى أجزاء عند علامات الترقيم"""
-    if len(text) <= max_chars:
-        return [text]
-    chunks, current = [], ""
-    for sentence in text.replace('،', '.').replace('؟', '.').replace('!', '.').split('.'):
-        sentence = sentence.strip()
-        if not sentence:
-            continue
-        if len(current) + len(sentence) < max_chars:
-            current += sentence + '. '
-        else:
-            if current:
-                chunks.append(current.strip())
-            current = sentence + '. '
-    if current:
-        chunks.append(current.strip())
-    return chunks if chunks else [text]
-
-# ── توليد بـ gTTS ────────────────────────────────────────────
-def generate_gtts(text: str, lang: str, out_path: str) -> bool:
-    """توليد صوت افتراضي بـ gTTS — يدعم كل اللغات"""
+# -----------------------------------------------------------------
+# توليد الصوت بـ gTTS (fallback)
+# -----------------------------------------------------------------
+def _synthesize_gtts(text: str, lang: str, out_path: str) -> bool:
+    """
+    توليد ملف صوتي بصوت افتراضي عبر gTTS.
+    يُعيد True إذا نجح.
+    """
     try:
         from gtts import gTTS
         gtts_lang = GTTS_LANGS.get(lang, 'en')
         gTTS(text=text, lang=gtts_lang, slow=False).save(out_path)
-        logger.info(f"✅ gTTS generated: {out_path}")
+        logger.info(f"✅ gTTS generated → {out_path}")
         return True
-    except Exception as e:
-        logger.error(f"❌ gTTS error: {e}")
+    except Exception as exc:
+        logger.error(f"❌ gTTS error: {exc}")
         return False
 
-# ── الدالة الرئيسية ───────────────────────────────────────────
+
+# -----------------------------------------------------------------
+# الدالة العامة `synthesize`
+# -----------------------------------------------------------------
 def synthesize(text: str, lang: str, use_custom_voice: bool = False) -> tuple:
     """
-    الدالة الرئيسية لتوليد الصوت
+    توليد ملف صوت (WAV أو MP3) من النص.
 
-    Args:
-        text: النص المراد تحويله
-        lang: رمز اللغة (ar, en, es, ...)
-        use_custom_voice: True = صوت ABDU SELAM | False = صوت افتراضي
+    المعاملات
+    ----------
+    text               : النص المراد تحويله.
+    lang               : رمز اللغة (ar, en, …).
+    use_custom_voice   : إذا كان True ستُستعمل عينة صوت ABDU SELAM
+                         المخزَّنة على Cloudinary؛ وإلا يُستعمل gTTS
+                         (الصوت الافتراضي).
 
-    Returns:
-        (file_path, method) أو (None, None) عند الفشل
+    تُعيد
+    -----
+    (file_path, method)   – حيث `method` إما "xtts_v2" أو "gtts"
+    أو (None, None) إذا فشل التوليد.
     """
+    # مسارات مؤقتة فريدة
     out_wav = TMP / f"out_{uuid.uuid4()}.wav"
     out_mp3 = TMP / f"out_{uuid.uuid4()}.mp3"
 
+    # 1️⃣  إذا طلبنا صوت مخصَّص (XTTS)
     if use_custom_voice:
-        voice = fetch_voice_sample()
-        if voice:
-            if generate_xtts(text, lang, voice, str(out_wav)):
+        voice_path = fetch_voice_sample()          # يحمّل العينة من Cloudinary (أو يستخدم cached)
+        if voice_path:
+            if _synthesize_xtts(text, lang, voice_path, str(out_wav)):
                 return str(out_wav), 'xtts_v2'
-            logger.warning("XTTS فشل → gTTS fallback")
+            logger.warning("XTTS generation failed → fallback إلى gTTS")
         else:
-            logger.warning("العينة غير متاحة → gTTS fallback")
+            logger.warning("Voice sample غير متوفرة → fallback إلى gTTS")
 
-    # gTTS fallback
-    if generate_gtts(text, lang, str(out_mp3)):
+    # 2️⃣  fallback إلى gTTS (صوت افتراضي)
+    if _synthesize_gtts(text, lang, str(out_mp3)):
+        # نُحوِّل MP3 إلى WAV لتوحيد الصيغة (يستقبل باقي الـ API WAV)
+        if mp3_to_wav(out_mp3, out_wav):
+            return str(out_wav), 'gtts'
+        # إذا فشل التحويل نستمر بـ MP3 (قد يتم إرساله للعميل مباشرة)
         return str(out_mp3), 'gtts'
 
+    # لا شيء نجح
     return None, None
 
-# ── اختبار مباشر ─────────────────────────────────────────────
+
+# -----------------------------------------------------------------
+# تشغيل اختبار سريع عند استدعاء الملف مباشرة
+# -----------------------------------------------------------------
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    print("🧪 اختبار voice_engine...")
+    print("\n🧪 اختبار voice_engine →")
 
-    # اختبار gTTS
-    path, method = synthesize("مرحباً بك في sl-Dubbing", "ar", use_custom_voice=False)
-    print(f"gTTS: {method} → {path}")
+    # اختبار gTTS (بدون عينة مخصَّسة)
+    path, method = synthesize(
+        text="مرحباً بكم في sl‑Dubbing",
+        lang="ar",
+        use_custom_voice=False,
+    )
+    print(f"gTTS   → method: {method}, file: {path}")
 
-    # اختبار XTTS (يحتاج اتصال Cloudinary)
-    path, method = synthesize("Hello from sl-Dubbing", "en", use_custom_voice=True)
-    print(f"XTTS: {method} → {path}")
+    # اختبار XTTS (يحتاج اتصال بـ Cloudinary وعينة صوتية)
+    path, method = synthesize(
+        text="Hello from sl‑Dubbing",
+        lang="en",
+        use_custom_voice=True,
+    )
+    print(f"XTTS   → method: {method}, file: {path}")
+
+    print("\n✅ الاختبار انتهى")
