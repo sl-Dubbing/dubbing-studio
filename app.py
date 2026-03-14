@@ -1,239 +1,178 @@
 # =============================================================
-# app.py (server.py) — sl-Dubbing Backend
-# HF Spaces + Cloudinary + XTTS v2 + gTTS
+# xtts_server — خادم XTTS v2 مخصص
+# HF Space منفصل — يستقبل نص + عينة ويولّد WAV
 # =============================================================
-import os, uuid, time, logging, subprocess, json as _json
+import os, uuid, logging, threading, time, requests, hashlib
 from pathlib import Path
-from datetime import datetime
-
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 
-from utils import upload_to_cloudinary, fetch_voice_sample, mp3_to_wav, purge_tmp_folder
-from voice_engine import synthesize as voice_synthesize
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app, origins=["https://sl-dubbing.github.io", "http://localhost:*", "*"])
+CORS(app, origins=["*"])
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-
-AUDIO_DIR = Path('/tmp/sl_audio')
+TMP       = Path('/tmp')
+AUDIO_DIR = TMP / 'xtts_out'
+VOICE_DIR = TMP / 'xtts_voices'
 AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+VOICE_DIR.mkdir(parents=True, exist_ok=True)
 
-# ── نموذج المستخدم ────────────────────────────────────────────
-class User(db.Model):
-    __tablename__ = 'users'
-    id              = db.Column(db.Integer, primary_key=True)
-    email           = db.Column(db.String(120), unique=True, nullable=False)
-    password        = db.Column(db.String(200), nullable=False)
-    voice_public_id = db.Column(db.String(255))
-    usage_tts       = db.Column(db.Integer, default=0)
-    usage_dub       = db.Column(db.Integer, default=0)
-    usage_srt       = db.Column(db.Integer, default=0)
-    unlocked_tts    = db.Column(db.Boolean, default=False)
-    unlocked_dub    = db.Column(db.Boolean, default=False)
-    unlocked_srt    = db.Column(db.Boolean, default=False)
+# ── Cloudinary ────────────────────────────────────────────────
+CLOUD_NAME    = os.environ.get('CLOUDINARY_CLOUD_NAME', 'dxbmvzsiz')
+API_SECRET    = os.environ.get('CLOUDINARY_API_SECRET', 'BrFvzlPFXBJZ-B-cZyxCc-0wHRo')
+DEFAULT_VOICE = os.environ.get('DEFAULT_VOICE_ID', '5_gtygjb')
+FOLDER        = "sl_voices"
 
-with app.app_context():
-    db.create_all()
+def fetch_voice() -> str | None:
+    """تحميل العينة من Cloudinary مع cache محلي"""
+    local = VOICE_DIR / f"{DEFAULT_VOICE}.wav"
+    if local.exists() and local.stat().st_size > 5000:
+        return str(local)
+    # جرب WAV أولاً
+    for url in [
+        f"https://res.cloudinary.com/{CLOUD_NAME}/raw/upload/{FOLDER}/{DEFAULT_VOICE}",
+        f"https://res.cloudinary.com/{CLOUD_NAME}/video/upload/v1773450710/{DEFAULT_VOICE}.mp3",
+    ]:
+        try:
+            r = requests.get(url, timeout=30)
+            if r.status_code == 200:
+                ext = '.wav' if 'raw' in url else '.mp3'
+                tmp = VOICE_DIR / f"{DEFAULT_VOICE}{ext}"
+                tmp.write_bytes(r.content)
+                if ext == '.mp3':
+                    import subprocess
+                    subprocess.run(['ffmpeg','-y','-i',str(tmp),
+                                    '-ar','22050','-ac','1',str(local)],
+                                   capture_output=True, timeout=30)
+                    tmp.unlink(missing_ok=True)
+                else:
+                    tmp.rename(local)
+                if local.exists():
+                    logger.info(f"✅ Voice ready: {local.stat().st_size/1024:.1f}KB")
+                    return str(local)
+        except Exception as e:
+            logger.warning(f"fetch attempt failed: {e}")
+    return None
 
-GUEST_LIMIT = 6
-GUEST_USAGE = {}
+# ── XTTS v2 ───────────────────────────────────────────────────
+_TTS   = None
+_READY = False
+_LOCK  = threading.Lock()
 
-def reset_guest(ip):
-    now = time.time()
-    if ip not in GUEST_USAGE or now - GUEST_USAGE[ip].get('ts',0) > 86400:
-        GUEST_USAGE[ip] = {'tts':0,'dub':0,'srt':0,'ts':now}
+XTTS_LANGS = {
+    'ar':'ar','en':'en','es':'es','fr':'fr','de':'de',
+    'it':'it','ru':'ru','tr':'tr','zh':'zh-cn','hi':'hi','nl':'nl'
+}
 
-@app.before_request
-def before_any():
-    purge_tmp_folder()
+def _load():
+    global _TTS, _READY
+    try:
+        os.environ['COQUI_TOS_AGREED'] = '1'
+        from TTS.api import TTS
+        logger.info("⏳ Loading XTTS v2...")
+        _TTS   = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+        _READY = True
+        logger.info("✅ XTTS v2 ready!")
+        # حمّل العينة فوراً بعد جاهزية النموذج
+        fetch_voice()
+    except Exception as e:
+        logger.error(f"❌ XTTS load: {e}")
+
+threading.Thread(target=_load, daemon=True).start()
+
+def _split(text, max_chars=300):
+    if len(text) <= max_chars:
+        return [text]
+    chunks, cur = [], ""
+    for s in text.replace('،','.').replace('؟','.').split('.'):
+        s = s.strip()
+        if not s: continue
+        if len(cur)+len(s) < max_chars: cur += s+'. '
+        else:
+            if cur: chunks.append(cur.strip())
+            cur = s+'. '
+    if cur: chunks.append(cur.strip())
+    return chunks or [text]
+
+def _merge_wav(files, output):
+    import wave
+    params, data = None, []
+    for f in files:
+        with wave.open(str(f),'rb') as w:
+            if not params: params = w.getparams()
+            data.append(w.readframes(w.getnframes()))
+    with wave.open(output,'wb') as out:
+        out.setparams(params)
+        for d in data: out.writeframes(d)
 
 # ══════════════════════════════════════════════════════════════
 # Routes
 # ══════════════════════════════════════════════════════════════
 
 @app.route('/')
-@app.route('/api/health')
+@app.route('/health')
 def health():
+    voice = fetch_voice() if _READY else None
     return jsonify({
-        'status':     'ok',
-        'service':    'sl-Dubbing Backend',
-        'cloudinary': os.environ.get('CLOUDINARY_CLOUD_NAME','dxbmvzsiz')
+        'status':      'ok',
+        'xtts_ready':  _READY,
+        'voice_ready': voice is not None,
+        'service':     'XTTS v2 Server'
     })
 
-# ── تسجيل ─────────────────────────────────────────────────────
-@app.route('/api/register', methods=['POST'])
-def register():
+@app.route('/synthesize', methods=['POST'])
+def synthesize():
+    """
+    POST JSON:
+      { "text": "...", "lang": "ar" }
+    Returns: WAV audio file
+    """
     try:
-        d     = request.get_json() or {}
-        email = d.get('email','').strip().lower()
-        pw    = d.get('password','')
-        if not email or '@' not in email:
-            return jsonify({'error':'بريد غير صالح'}), 400
-        if User.query.filter_by(email=email).first():
-            return jsonify({'error':'البريد مسجّل مسبقاً'}), 400
-        db.session.add(User(email=email, password=generate_password_hash(pw)))
-        db.session.commit()
-        return jsonify({'success':True,'email':email}), 201
-    except Exception as e:
-        logger.error(f"register: {e}")
-        return jsonify({'error':'خطأ داخلي'}), 500
+        if not _READY:
+            return jsonify({'error': 'XTTS لم يكتمل تحميله بعد، انتظر قليلاً'}), 503
 
-# ── دخول ──────────────────────────────────────────────────────
-@app.route('/api/login', methods=['POST'])
-def login():
-    try:
-        d     = request.get_json() or {}
-        email = d.get('email','').strip().lower()
-        pw    = d.get('password','')
-        user  = User.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.password, pw):
-            return jsonify({'error':'بيانات غير صحيحة'}), 401
-        return jsonify({
-            'success':   True,
-            'email':     user.email,
-            'has_voice': bool(user.voice_public_id),
-            'usage':    {'tts':user.usage_tts,'dub':user.usage_dub,'srt':user.usage_srt},
-            'unlocked': {'tts':user.unlocked_tts,'dub':user.unlocked_dub,'srt':user.unlocked_srt}
-        })
-    except Exception as e:
-        logger.error(f"login: {e}")
-        return jsonify({'error':'خطأ داخلي'}), 500
-
-# ── رفع عينة صوت ─────────────────────────────────────────────
-@app.route('/api/upload-voice', methods=['POST'])
-def upload_voice():
-    try:
-        email = request.form.get('email','').strip().lower()
-        if 'voice' not in request.files:
-            return jsonify({'error':'لم يتم رفع ملف'}), 400
-        file = request.files['voice']
-        ext  = Path(file.filename).suffix.lower() or '.wav'
-        if ext not in {'.wav','.mp3','.ogg','.m4a'}:
-            return jsonify({'error':'امتداد غير مدعوم'}), 400
-
-        tmp = Path('/tmp') / f"voice_{uuid.uuid4()}{ext}"
-        file.save(str(tmp))
-
-        wav = tmp
-        if ext != '.wav':
-            w = tmp.with_suffix('.wav')
-            try:
-                subprocess.run(['ffmpeg','-y','-i',str(tmp),'-ar','22050','-ac','1',str(w)],
-                               capture_output=True, timeout=30)
-                if w.exists(): tmp.unlink(missing_ok=True); wav = w
-            except Exception as e:
-                logger.warning(f"ffmpeg: {e}")
-
-        public_id = f"{email}_{uuid.uuid4()}" if email else f"guest_{uuid.uuid4()}"
-        url = upload_to_cloudinary(str(wav), public_id)
-        wav.unlink(missing_ok=True)
-
-        if not url:
-            return jsonify({'error':'فشل الرفع إلى Cloudinary'}), 500
-
-        if email:
-            user = User.query.filter_by(email=email).first()
-            if user:
-                user.voice_public_id = public_id
-                db.session.commit()
-
-        return jsonify({'success':True,'message':'تم حفظ العينة ✅','url':url,'public_id':public_id})
-    except Exception as e:
-        logger.error(f"upload_voice: {e}")
-        return jsonify({'error':str(e)}), 500
-
-# ── دبلجة ─────────────────────────────────────────────────────
-@app.route('/api/dub', methods=['POST'])
-def dub():
-    try:
-        d          = request.get_json() or {}
-        text       = d.get('text','').strip()
-        lang       = d.get('lang','ar')
-        email      = (d.get('email') or '').strip().lower()
-        voice_mode = d.get('voice_mode','gtts').lower()
+        d    = request.get_json() or {}
+        text = d.get('text','').strip()
+        lang = d.get('lang','ar')
 
         if not text:
-            return jsonify({'error':'النص فارغ'}), 400
+            return jsonify({'error': 'النص فارغ'}), 400
 
-        ip = request.remote_addr
-        reset_guest(ip)
-        if GUEST_USAGE[ip].get('dub',0) >= GUEST_LIMIT:
-            return jsonify({'error':'انتهى الحد المجاني','limit_reached':True}), 403
-        GUEST_USAGE[ip]['dub'] += 1
-        remaining = GUEST_LIMIT - GUEST_USAGE[ip]['dub']
+        xl = XTTS_LANGS.get(lang)
+        if not xl:
+            return jsonify({'error': f'اللغة {lang} غير مدعومة في XTTS'}), 400
 
-        file_path, method = voice_synthesize(
-            text=text,
-            lang=lang,
-            use_custom_voice=(voice_mode == 'xtts')
-        )
+        voice = fetch_voice()
+        if not voice:
+            return jsonify({'error': 'العينة الصوتية غير متاحة'}), 503
 
-        if not file_path:
-            return jsonify({'error':'فشل توليد الصوت'}), 500
+        out = str(AUDIO_DIR / f"xtts_{uuid.uuid4()}.wav")
 
-        filename  = Path(file_path).name
-        audio_url = f"{request.host_url.rstrip('/')}/api/download/{filename}"
+        with _LOCK:
+            chunks = _split(text)
+            if len(chunks) == 1:
+                _TTS.tts_to_file(text=text, speaker_wav=voice,
+                                 language=xl, file_path=out)
+            else:
+                parts = []
+                for chunk in chunks:
+                    p = str(AUDIO_DIR / f"c_{uuid.uuid4()}.wav")
+                    _TTS.tts_to_file(text=chunk, speaker_wav=voice,
+                                     language=xl, file_path=p)
+                    parts.append(p)
+                _merge_wav(parts, out)
+                for p in parts: Path(p).unlink(missing_ok=True)
 
-        return jsonify({
-            'success':True,'audio_url':audio_url,'filename':filename,
-            'method':method,'remaining':remaining,'lang':lang
-        })
+        logger.info(f"✅ Synthesized: {out}")
+        return send_file(out, mimetype='audio/wav',
+                        as_attachment=True, download_name='dubbed.wav')
+
     except Exception as e:
-        logger.error(f"dub: {e}")
-        return jsonify({'error':str(e)}), 500
-
-# ── تحميل ─────────────────────────────────────────────────────
-@app.route('/api/download/<filename>')
-def download(filename):
-    safe = Path(filename).name
-    p    = AUDIO_DIR / safe
-    if not p.exists():
-        return jsonify({'error':'الملف غير موجود'}), 404
-    mime = 'audio/wav' if safe.endswith('.wav') else 'audio/mpeg'
-    return send_file(str(p), as_attachment=True, download_name=safe, mimetype=mime)
-
-# ── الأسعار ───────────────────────────────────────────────────
-PRICES_FILE = Path(__file__).parent / 'prices.json'
-
-@app.route('/api/status')
-def status():
-    from voice_engine import get_status
-    return jsonify({'success': True, **get_status()})
-
-@app.route('/api/prices')
-def prices():
-    try:
-        with open(PRICES_FILE, encoding='utf-8') as f:
-            return jsonify({'success':True,'prices':_json.load(f)})
-    except Exception as e:
-        return jsonify({'error':str(e)}), 500
-
-# ── Webhook Lemon Squeezy / Payhip ───────────────────────────
-@app.route('/api/webhook/payment', methods=['POST'])
-def webhook():
-    try:
-        data  = request.get_json() or {}
-        email = (data.get('email') or '').lower()
-        feat  = data.get('feature','')
-        if email and feat in ['tts','dub','srt']:
-            user = User.query.filter_by(email=email).first()
-            if user:
-                setattr(user, f'unlocked_{feat}', True)
-                db.session.commit()
-                logger.info(f"✅ Unlocked {feat} for {email}")
-        return jsonify({'success':True})
-    except Exception as e:
-        return jsonify({'error':str(e)}), 500
+        logger.error(f"synthesize: {e}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
