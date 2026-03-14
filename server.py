@@ -1,16 +1,17 @@
 # server.py
-# ==========================================================
+# ==============================================================
 # sl‑Dubbing & Translation – Backend (Render / HF Spaces)
 # يدعم:
 #   • تسجيل/دخول مستخدمين (SQLite)
-#   • رفع عينة صوت (Cloudinary) وربطها بالحساب
-#   • دبلجة نصوص باستخدام XTTS أو gTTS
-#   • تحميل الملفات الصوتية
-#   • حدود للضيوف (6 طلبات/يوم)
-# ==========================================================
+#   • رفع عينة صوت إلى Cloudinary وربطها بالحساب
+#   • دبلجة النصوص بـ XTTS (عينة مخصَّصة) أو gTTS
+#   • حدود للضيوف (6 طلبات/يوم) و Rate‑Limiting
+# ==============================================================
+
 import os, uuid, time, logging, subprocess
 from pathlib import Path
 from datetime import datetime
+
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -25,17 +26,20 @@ from utils import (
     upload_to_cloudinary,
     fetch_voice_sample,
     mp3_to_wav,
+    purge_tmp_folder,
 )
 
 # -----------------------------------------------------------------
-# إعداد Logging
+# Logging
 # -----------------------------------------------------------------
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+)
 logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------
-# Flask & CORS
+# Flask & CORS (محدّد أصولًا موثوقة)
 # -----------------------------------------------------------------
 app = Flask(__name__)
 
@@ -70,8 +74,7 @@ class User(db.Model):
     id               = db.Column(db.Integer, primary_key=True)
     email            = db.Column(db.String(120), unique=True, nullable=False)
     password         = db.Column(db.String(200), nullable=False)
-
-    # معرف العينة الصوتية المخزَّنة على Cloudinary (public_id)
+    # معرف العينة الصوتية في Cloudinary (public_id)
     voice_public_id  = db.Column(db.String(255), nullable=True)
 
     usage_tts        = db.Column(db.Integer, default=0)
@@ -88,7 +91,7 @@ with app.app_context():
 
 
 # -----------------------------------------------------------------
-# إعدادات الملفات المؤقتة
+# إعدادات المجلدات المؤقتة
 # -----------------------------------------------------------------
 AUDIO_DIR = Path('/tmp/sl_audio')
 VOICE_DIR = Path('/tmp/sl_voices')
@@ -96,13 +99,17 @@ AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 VOICE_DIR.mkdir(parents=True, exist_ok=True)
 
 # -----------------------------------------------------------------
-# حد الضيوف (6 طلبات/يوم)
+# المتغيّر الافتراضي للـ voice (يتقارن مع utils.DEFAULT_VOICE_ID)
+# -----------------------------------------------------------------
+DEFAULT_VOICE_ID = os.getenv('DEFAULT_VOICE_ID', '5_gtygjb')   # يطابق ما في Cloudinary
+
+# -----------------------------------------------------------------
+# ضبط حد الضيوف (6 طلبات/يوم)
 # -----------------------------------------------------------------
 GUEST_LIMIT = 6
 GUEST_USAGE = {}
 
 def reset_guest(ip: str):
-    """إعادة ضبط عداد الضيف كل 24 ساعة."""
     now = time.time()
     usage = GUEST_USAGE.get(ip)
     if usage is None or now - usage.get('ts', 0) > 86400:
@@ -110,42 +117,34 @@ def reset_guest(ip: str):
 
 
 # -----------------------------------------------------------------
-# معرف العينة الافتراضية (ABDU SELAM) – يُقرأ من المتغيّر البيئي
-# -----------------------------------------------------------------
-DEFAULT_VOICE_ID = os.getenv('DEFAULT_VOICE_ID', '5_gtygjb')
-
-
-# -----------------------------------------------------------------
-# مساعدة للحصول على مسار عينة صوت للمستخدم (أو الافتراضية)
+# مساعدة للحصول على مسار عينة صوت للمستخدم
 # -----------------------------------------------------------------
 def get_user_voice_path(email: str | None) -> Path | None:
     """
-    إذا كان للمستخدم عينة صوتية (voice_public_id) تُحمَّل من Cloudinary.
-    وإلا تُعيد عينة الـ DEFAULT_VOICE_ID.
+    إذا كان للمستخدم عينة صوتية (voice_public_id) → يتم تحميلها من Cloudinary.
+    إذا لم يكن، تُعيد العينة الافتراضية المعرّفة في utils.
     """
     if email:
         user = User.query.filter_by(email=email.lower()).first()
         if user and user.voice_public_id:
             return fetch_voice_sample(user.voice_public_id)
 
-    # لا توجد عينة مخصَّصة → استعمل العينة الافتراضية
+    # لا توجد عينة مخصَّصة → استخدم الافتراضية
     return fetch_voice_sample()
 
 
 # -----------------------------------------------------------------
-# توليد الصوت (XTTS أو gTTS)
+# استدعاء محرك الصوت من voice_engine.py
 # -----------------------------------------------------------------
-def synthesize_xtts(text: str, lang: str, voice_path: str, out_path: str) -> bool:
-    """يستخدم الدالة الموجودة في voice_engine عبر استيراد مباشر."""
-    # الآن نستدعي الدالة من voice_engine مباشرةً لتوحيد المنطق
-    from voice_engine import _synthesize_xtts as _xtts
-    return _xtts(text, lang, voice_path, out_path)
+from voice_engine import synthesize as voice_synthesize
 
 
-def synthesize_gtts(text: str, lang: str, out_path: str) -> bool:
-    """يستخدم الدالة الموجودة في voice_engine."""
-    from voice_engine import _synthesize_gtts as _gtts
-    return _gtts(text, lang, out_path)
+# -----------------------------------------------------------------
+# قبل كل طلب: تنظيف /tmp من الملفات القديمة
+# -----------------------------------------------------------------
+@app.before_request
+def before_any_request():
+    purge_tmp_folder()
 
 
 # -----------------------------------------------------------------
@@ -154,9 +153,9 @@ def synthesize_gtts(text: str, lang: str, out_path: str) -> bool:
 @app.route('/')
 def root():
     return jsonify({
-        'status': 'ok',
-        'service': 'sl‑Dubbing Backend',
-        'xtts_ready': True,          # في الواقع يتم تحميل النموذج عند الحاجة
+        'status'   : 'ok',
+        'service'  : 'sl‑Dubbing Backend',
+        'xtts_ready': True,          # سيُحمَّل عند الاستدعاء الأول لـ voice_engine
         'cloudinary': os.getenv('CLOUDINARY_CLOUD_NAME')
     })
 
@@ -164,14 +163,14 @@ def root():
 @app.route('/api/health')
 def health():
     return jsonify({
-        'status': 'ok',
+        'status'    : 'ok',
         'xtts_ready': True,
         'cloudinary': os.getenv('CLOUDINARY_CLOUD_NAME')
     })
 
 
 # -----------------------------------------------------------------
-# التسجيل
+# تسجيل مستخدم جديد
 # -----------------------------------------------------------------
 @app.route('/api/register', methods=['POST'])
 @limiter.limit("10 per hour")
@@ -187,9 +186,10 @@ def register():
             return jsonify({'error': 'كلمة المرور فارغة'}), 400
 
         if User.query.filter_by(email=email).first():
-            return jsonify({'error': 'البريد مسجَّل'}), 400
+            return jsonify({'error': 'البريد مسجَّل مسبقًا'}), 400
 
-        user = User(email=email, password=generate_password_hash(pw))
+        user = User(email=email,
+                    password=generate_password_hash(pw))
         db.session.add(user)
         db.session.commit()
         logger.info(f"✅ New user registered: {email}")
@@ -201,7 +201,7 @@ def register():
 
 
 # -----------------------------------------------------------------
-# الدخول
+# تسجيل الدخول
 # -----------------------------------------------------------------
 @app.route('/api/login', methods=['POST'])
 @limiter.limit("15 per hour")
@@ -236,7 +236,7 @@ def login():
 
 
 # -----------------------------------------------------------------
-# رفع عينة صوت (Cloudinary) وربطها بالحساب إذا تم إرسال email
+# رفع عينة صوت (حفظ في Cloudinary وربط بالحساب إذا أُرسل email)
 # -----------------------------------------------------------------
 @app.route('/api/upload-voice', methods=['POST'])
 @limiter.limit("20 per hour")
@@ -252,13 +252,13 @@ def upload_voice():
 
         ext = Path(file.filename).suffix.lower()
         if ext not in {'.wav', '.mp3', '.ogg', '.m4a'}:
-            return jsonify({'error': 'الامتداد غير مدعوم (wav/mp3/ogg/m4a)'}), 400
+            return jsonify({'error': 'امتداد غير مدعوم (wav/mp3/ogg/m4a)'}), 400
 
-        # حفظ ملف مؤقتاً
+        # حفظ مؤقت
         tmp_path = Path('/tmp') / f"voice_{uuid.uuid4()}{ext}"
         file.save(str(tmp_path))
 
-        # إذا كان غير WAV → تحويله إلى WAV
+        # إذا لم يكن WAV → تحويله إلى WAV
         wav_path = tmp_path
         if ext != '.wav':
             wav_path = tmp_path.with_suffix('.wav')
@@ -270,11 +270,11 @@ def upload_voice():
                 if wav_path.exists():
                     tmp_path.unlink(missing_ok=True)
                 else:
-                    wav_path = tmp_path   # fallback إلى الملف الأصلي
+                    wav_path = tmp_path   # fallback إلى الملف الأصلي إذا فشل التحويل
             except Exception as exc:
                 logger.warning(f"ffmpeg conversion error: {exc}")
 
-        # بناء public_id فريد (إذا كان email موجودًا ندمجه مع UUID لتفادي التصادم)
+        # توليد public_id فريد (إذا كان email مُرسلًا ندمجه مع UUID لتفادي التصادم)
         uid_part = email if email else f"guest_{uuid.uuid4()}"
         public_id = f"{uid_part}_{uuid.uuid4()}"
         url = upload_to_cloudinary(str(wav_path), public_id)
@@ -283,7 +283,7 @@ def upload_voice():
         if not url:
             return jsonify({'error': 'فشل الرفع إلى Cloudinary'}), 500
 
-        # ربط العينة بالحساب (إن كان موجوداً)
+        # ربط العينة بالمستخدم (إن كان مسجَّلاً)
         if email:
             user = User.query.filter_by(email=email).first()
             if user:
@@ -303,17 +303,17 @@ def upload_voice():
 
 
 # -----------------------------------------------------------------
-# دبلجة النص (XTTS أو gTTS)
+# دبلجة نص (XTTS إذا طلبت voice_mode='xtts' وعينة متوفرة، وإلا fallback إلى gTTS)
 # -----------------------------------------------------------------
 @app.route('/api/dub', methods=['POST'])
 @limiter.limit("30 per hour")
 def dub():
     try:
         data = request.get_json() or {}
-        text      = data.get('text', '').strip()
-        lang      = data.get('lang', 'ar')
-        email     = (data.get('email') or '').strip().lower()
-        voice_mode = data.get('voice_mode', 'gtts').lower()   # "gtts" أو "xtts"
+        text        = data.get('text', '').strip()
+        lang        = data.get('lang', 'ar')
+        email       = (data.get('email') or '').strip().lower()
+        voice_mode  = data.get('voice_mode', 'gtts').lower()   # "gtts" أو "xtts"
 
         if not text:
             return jsonify({'error': 'النص فارغ'}), 400
@@ -326,38 +326,25 @@ def dub():
         GUEST_USAGE[ip]['dub'] += 1
         remaining = GUEST_LIMIT - GUEST_USAGE[ip]['dub']
 
-        # ---- اختيار مسار عينة الصوت (إن طلب XTTS) ----
-        voice_path = None
-        if voice_mode == 'xtts':
-            voice_path = get_user_voice_path(email)   # إرجاع Path أو None
+        # ---- تحديد ما إذا كان يجب استخدام XTTS ----
+        use_xtts = (voice_mode == 'xtts')
+        # نمرّر use_custom_voice=True فقط عندما نريد XTTS؛
+        # داخل voice_synthesize سيحاول جلب العينة (مخصَّصة أو الافتراضية)
+        file_path, method = voice_synthesize(
+            text=text,
+            lang=lang,
+            use_custom_voice=use_xtts
+        )
 
-        # ---- توليد الصوت ----
-        out_path = AUDIO_DIR / f"dub_{uuid.uuid4()}.wav"
-        method   = 'gtts'   # افتراض fallback
+        if not file_path:
+            return jsonify({'error': 'فشل توليد الصوت'}), 500
 
-        if voice_path:
-            if synthesize_xtts(text, lang, str(voice_path), str(out_path)):
-                method = 'xtts_v2'
-            else:
-                logger.warning("XTTS generation failed → fallback إلى gTTS")
-                voice_path = None   # للـ fallback
-
-        if not voice_path:
-            # gTTS ينتج MP3 → نحوله إلى WAV
-            tmp_mp3 = AUDIO_DIR / f"dub_{uuid.uuid4()}.mp3"
-            if not synthesize_gtts(text, lang, str(tmp_mp3)):
-                return jsonify({'error': 'فشل توليد صوت gTTS'}), 500
-            if not mp3_to_wav(tmp_mp3, out_path):
-                return jsonify({'error': 'فشل تحويل MP3 إلى WAV'}), 500
-            method = 'gtts'
-
-        if not out_path.exists():
-            return jsonify({'error': 'ملف الصوت غير موجود'}), 500
-
-        filename  = out_path.name
+        # ---- تحضير رابط التحميل ----
+        filename = Path(file_path).name
         audio_url = f"{request.host_url.rstrip('/')}/api/download/{filename}"
 
         logger.info(f"✅ Dub OK – method={method} – remaining={remaining}")
+
         return jsonify({
             'success'   : True,
             'audio_url' : audio_url,
@@ -372,7 +359,7 @@ def dub():
 
 
 # -----------------------------------------------------------------
-# تحميل ملف صوتي (wav أو mp3)
+# تحميل ملف الصوت المُولَّد
 # -----------------------------------------------------------------
 @app.route('/api/download/<filename>')
 def download(filename):
@@ -391,7 +378,7 @@ def download(filename):
 
 
 # -----------------------------------------------------------------
-# إرجاع الأسعار (من ملف prices.json)
+# الأسعار (من ملف prices.json)
 # -----------------------------------------------------------------
 import json as _json
 PRICES_FILE = Path(__file__).parent / 'prices.json'
@@ -406,18 +393,17 @@ def load_prices():
 
 @app.route('/api/prices')
 def prices():
-    """إرجاع الأسعار – عدّل الأسعار في ملف prices.json فقط."""
+    """إرجاع الأسعار – غير قابل للتعديل إلا عبر تعديل ملف prices.json."""
     return jsonify({'success': True, 'prices': load_prices()})
 
 
 # -----------------------------------------------------------------
-# معلومات (entitlements) – هل للمستخدم عينة صوتية؟
+# معلومات ما إذا كان للمستخدم عينة صوتية (للـ frontend)
 # -----------------------------------------------------------------
 @app.route('/api/entitlements')
 def entitlements():
     """
-    تُستَخدم من الـ frontend لتحديد ما إذا كان للمستخدم
-    عينة صوت مخصَّصة أم لا.
+    تُستَخدم من الواجهة لمعرفة ما إذا كان للمستخدم عينة صوتية مخصَّصة.
     """
     email = request.args.get('email', '').strip().lower()
     user = User.query.filter_by(email=email).first()
@@ -432,17 +418,7 @@ def entitlements():
 
 
 # -----------------------------------------------------------------
-# تنظيف مؤقت قبل كل طلب (حذف ملفات قديمة)
-# -----------------------------------------------------------------
-@app.before_request
-def before_any_request():
-    # (وظيفة purge_tmp_folder موجودة في utils.py)
-    from utils import purge_tmp_folder
-    purge_tmp_folder()
-
-
-# -----------------------------------------------------------------
-# تشغيل التطبيق (للـ development فقط)
+# تشغيل التطبيق (لـ development فقط)
 # -----------------------------------------------------------------
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
