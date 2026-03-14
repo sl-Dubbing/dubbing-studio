@@ -246,7 +246,7 @@ footer a:hover{color:#a78bfa}
         <div class="price-num" style="background:linear-gradient(135deg,#6366f1,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent" id="price-tts">$10</div>
         <div class="price-note">دفعة واحدة — مدى الحياة</div>
       </div>
-      <a href="https://payhip.com/b/jQdFJ" target="_blank" class="buy-btn" style="background:linear-gradient(135deg,#4f46e5,#6366f1);box-shadow:0 5px 18px rgba(79,70,229,.4)">🛒 شراء مدى الحياة</a>
+      <a href="https://payhip.com/b/jQdFJ" class="buy-btn buy-tts" target="_blank" class="buy-btn" style="background:linear-gradient(135deg,#4f46e5,#6366f1);box-shadow:0 5px 18px rgba(79,70,229,.4)">🛒 شراء مدى الحياة</a>
     </div>
 
     <div class="plan">
@@ -260,7 +260,7 @@ footer a:hover{color:#a78bfa}
         <div class="price-num" style="background:linear-gradient(135deg,#f59e0b,#fcd34d);-webkit-background-clip:text;-webkit-text-fill-color:transparent" id="price-dubbing">$50</div>
         <div class="price-note">دفعة واحدة — مدى الحياة</div>
       </div>
-      <a href="https://payhip.com/b/5XbaQ" target="_blank" class="buy-btn" style="background:linear-gradient(135deg,#d97706,#f59e0b);box-shadow:0 5px 18px rgba(217,119,6,.4)">🛒 شراء مدى الحياة</a>
+      <a href="https://payhip.com/b/5XbaQ" class="buy-btn buy-dubbing" target="_blank" class="buy-btn" style="background:linear-gradient(135deg,#d97706,#f59e0b);box-shadow:0 5px 18px rgba(217,119,6,.4)">🛒 شراء مدى الحياة</a>
     </div>
 
     <div class="plan">
@@ -274,7 +274,7 @@ footer a:hover{color:#a78bfa}
         <div class="price-num" style="background:linear-gradient(135deg,#10b981,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent" id="price-srt">$10</div>
         <div class="price-note">دفعة واحدة — مدى الحياة</div>
       </div>
-      <a href="https://payhip.com/b/2E6sT" target="_blank" class="buy-btn" style="background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 5px 18px rgba(5,150,105,.4)">🛒 شراء مدى الحياة</a>
+      <a href="https://payhip.com/b/2E6sT" class="buy-btn buy-srt" target="_blank" class="buy-btn" style="background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 5px 18px rgba(5,150,105,.4)">🛒 شراء مدى الحياة</a>
     </div>
   </div>
 
@@ -296,23 +296,37 @@ function goTool(p){try{if(JSON.parse(localStorage.getItem('sl_user'))){location.
 async function checkServer(){try{const r=await fetch(BE+'/api/health',{signal:AbortSignal.timeout(6000)});document.getElementById('srv').className='srv-badge'+(r.ok?' on':'');document.getElementById('srvTxt').textContent=r.ok?'الخادم متصل ✓':'الخادم غير متاح';}catch{document.getElementById('srvTxt').textContent='الخادم غير متاح';}}
 checkServer();
 
-// ── جلب الأسعار من الخادم ─────────────────────────────────
+// ── جلب الأسعار من prices.json ───────────────────────────
 (async function loadPrices(){
   try{
-    const res = await fetch(BE+'/api/prices', {signal: AbortSignal.timeout(5000)});
-    const d   = await res.json();
-    if(!d.success) return;
-    const p = d.prices;
-    // تحديث الأسعار
-    if(p.tts)     document.getElementById('price-tts').textContent     = p.tts.currency + p.tts.price;
-    if(p.dubbing) document.getElementById('price-dubbing').textContent = p.dubbing.currency + p.dubbing.price;
-    if(p.srt)     document.getElementById('price-srt').textContent     = p.srt.currency + p.srt.price;
-    // تحديث روابط الشراء
-    if(p.tts)     document.querySelectorAll('a[href*="payhip.com/b/jQdFJ"]').forEach(a=>a.href=p.tts.url);
-    if(p.dubbing) document.querySelectorAll('a[href*="payhip.com/b/5XbaQ"]').forEach(a=>a.href=p.dubbing.url);
-    if(p.srt)     document.querySelectorAll('a[href*="payhip.com/b/2E6sT"]').forEach(a=>a.href=p.srt.url);
-  }catch(e){ /* يبقى السعر الافتراضي */ }
+    // أولاً: من prices.json المحلي (أسرع)
+    const res = await fetch('prices.json?v='+Date.now(), {signal: AbortSignal.timeout(3000)});
+    const p   = await res.json();
+    applyPrices(p);
+  }catch(e){
+    // ثانياً: fallback من الخادم
+    try{
+      const res = await fetch(BE+'/api/prices', {signal: AbortSignal.timeout(5000)});
+      const d   = await res.json();
+      if(d.success) applyPrices(d.prices);
+    }catch(e2){ /* يبقى السعر الافتراضي */ }
+  }
 })();
+
+function applyPrices(p){
+  if(p.tts){
+    document.getElementById('price-tts').textContent = p.tts.currency + p.tts.price;
+    document.querySelectorAll('.buy-tts').forEach(a=>a.href=p.tts.url);
+  }
+  if(p.dubbing){
+    document.getElementById('price-dubbing').textContent = p.dubbing.currency + p.dubbing.price;
+    document.querySelectorAll('.buy-dubbing').forEach(a=>a.href=p.dubbing.url);
+  }
+  if(p.srt){
+    document.getElementById('price-srt').textContent = p.srt.currency + p.srt.price;
+    document.querySelectorAll('.buy-srt').forEach(a=>a.href=p.srt.url);
+  }
+}
 
 </script>
 </body>
