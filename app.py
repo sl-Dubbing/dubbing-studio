@@ -101,20 +101,22 @@ def get_voice_id(email):
         return email.replace('@','_').replace('.','_')
     return None
 
-def fetch_voice_for_user(email):
+# ── العينة الثابتة ───────────────────────────────────────────
+# غيّر هذا المتغير باسم الملف الذي رفعته على Cloudinary
+DEFAULT_VOICE_ID = os.environ.get('DEFAULT_VOICE_ID', 'abd199641_gmail_com')
+
+def fetch_voice_for_user(email=None):
     """
-    تحميل عينة الصوت من Cloudinary إلى /tmp للاستخدام في XTTS
-    يُعيد مسار الملف المحلي أو None
+    يحمّل العينة الثابتة من Cloudinary مرة واحدة ويخزنها في /tmp
     """
-    vid = get_voice_id(email)
-    if not vid:
-        return None
-    local = Path('/tmp') / f"voice_{vid}.wav"
+    local = Path('/tmp') / f"voice_{DEFAULT_VOICE_ID}.wav"
     # إذا موجود محلياً لا نحمله مجدداً
-    if local.exists():
+    if local.exists() and local.stat().st_size > 1000:
         return str(local)
-    if download_from_cloudinary(vid, str(local)):
+    logger.info(f"Downloading default voice from Cloudinary: {DEFAULT_VOICE_ID}")
+    if download_from_cloudinary(DEFAULT_VOICE_ID, str(local)):
         return str(local)
+    logger.warning("Default voice not found on Cloudinary → gTTS fallback")
     return None
 
 # ── TTS helpers ───────────────────────────────────────────────
