@@ -5,6 +5,7 @@ flask-limiter==3.5.1
 python-dotenv==1.0.1
 cloudinary==1.41.0
 TTS==0.22.0
-gtts==2.5.1
+gTTS==2.5.1
 gunicorn==22.0.0
 requests==2.32.3
+imageio-ffmpeg==0.4.9
