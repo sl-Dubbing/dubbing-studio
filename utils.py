@@ -1,11 +1,11 @@
 # utils.py
 # ==========================================================
-# وظائف مساعدة للـ backend:
+# مجموعة أدوات مساعدة للـ backend:
 #   • رفع / تحميل عينات صوتية من Cloudinary
 #   • تحويل MP3 → WAV (ffmpeg)
-#   • تنظيف مجلد /tmp من الملفات القديمة
+#   • تنظيف ملفات /tmp القديمة
 # ==========================================================
-import os, logging, uuid, subprocess, time, requests
+import os, logging, uuid, requests, subprocess, time
 from pathlib import Path
 import cloudinary
 import cloudinary.uploader
@@ -13,11 +13,13 @@ import cloudinary.api
 
 logger = logging.getLogger(__name__)
 
-# ---------------------- إعدادات Cloudinary ----------------------
-CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
-API_KEY    = os.getenv('CLOUDINARY_API_KEY')
-API_SECRET = os.getenv('CLOUDINARY_API_SECRET')
-FOLDER     = os.getenv('CLOUDINARY_FOLDER', 'sl_voices')
+# ---------------------- Cloudinary configuration ----------------------
+CLOUD_NAME    = os.getenv('CLOUDINARY_CLOUD_NAME')
+API_KEY       = os.getenv('CLOUDINARY_API_KEY')
+API_SECRET    = os.getenv('CLOUDINARY_API_SECRET')
+# اسم المجلد داخل Cloudinary الذي يُخزن فيه أصواتنا
+FOLDER        = os.getenv('CLOUDINARY_FOLDER', 'sl_voices')
+# معرف العينة الافتراضية (ABDU SELAM) – سيتشّخص من المتغيّر البيئي
 DEFAULT_VOICE_ID = os.getenv('DEFAULT_VOICE_ID', '5_gtygjb')
 
 if not all([CLOUD_NAME, API_KEY, API_SECRET]):
@@ -31,9 +33,35 @@ cloudinary.config(
     timeout    = 30,
 )
 
-# ---------------------- رفع ملف RAW إلى Cloudinary ----------------------
+# ---------------------- TMP directory ----------------------
+TMP_DIR = Path('/tmp')
+TMP_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# -----------------------------------------------------------------
+# بناء URL للملف داخل Cloudinary
+# -----------------------------------------------------------------
+def _cloudinary_url(public_id: str, resource_type: str = "raw") -> str:
+    """
+    إرجاع URL للملف مع الـ public_id المحدد.
+    يتغيّر resource_type بين "raw" (الملفات العادية) و "video"
+    (الحالة التي تُخزن فيها MP3 داخل حاوية video).
+    """
+    url, _ = cloudinary.utils.cloudinary_url(
+        f"{FOLDER}/{public_id}",
+        resource_type = resource_type,
+        sign_url     = False,
+    )
+    return url
+
+
+# -----------------------------------------------------------------
+# رفع ملف RAW إلى Cloudinary
+# -----------------------------------------------------------------
 def upload_to_cloudinary(local_path: str, public_id: str) -> str | None:
-    """يرجع الـ secure_url إذا نجح الرفع، وإلا None."""
+    """
+    يُعيد الـ secure_url إذا نجح الرفع، وإلا None.
+    """
     try:
         result = cloudinary.uploader.upload(
             local_path,
@@ -50,50 +78,80 @@ def upload_to_cloudinary(local_path: str, public_id: str) -> str | None:
         return None
 
 
-# ---------------------- تحميل عينة صوت (مع Cache) ----------------------
-TMP_DIR = Path('/tmp')
-TMP_DIR.mkdir(parents=True, exist_ok=True)
-
+# -----------------------------------------------------------------
+# تحميل عينة صوت (مع Cache) – يدعم RAW و VIDEO
+# -----------------------------------------------------------------
 def fetch_voice_sample(public_id: str | None = None) -> Path | None:
     """
-    تحميل عينة صوت من Cloudinary إلى /tmp (مع caching).
+    يحمّل عينة صوت من Cloudinary إلى /tmp (مع caching).
     إذا لم يُعطى public_id يُستعمل DEFAULT_VOICE_ID.
+    تدعم أولاً تحميل كـ raw، وإذا فشل تحاول كـ video.
+    في كلتا الحالتين تُعيد مسار WAV محليًا (تحويل MP3 → WAV إذا لزم).
     """
     vid = public_id or DEFAULT_VOICE_ID
     local_path = TMP_DIR / f"voice_{vid}.wav"
 
-    # إذا كان الملف موجوداً محلياً (أكبر من 5 KB) نعيده مباشرة
+    # إذا كان موجوداً محلياً (أكبر من 5 KB) نعيده فوراً
     if local_path.exists() and local_path.stat().st_size > 5_000:
         logger.info(f"✅ Using cached voice sample: {local_path}")
         return local_path
 
-    # تحميل من Cloudinary
-    url, _ = cloudinary.utils.cloudinary_url(
-        f"{FOLDER}/{vid}",
-        resource_type = "raw",
-        sign_url = False
-    )
-    logger.info(f"⬇️ Downloading voice sample from Cloudinary: {url}")
-
+    # ==== 1️⃣ حاول تحميل كـ raw ==== #
+    raw_url = _cloudinary_url(vid, resource_type="raw")
+    logger.info(f"⬇️ Trying raw download: {raw_url}")
     try:
-        r = requests.get(url, timeout=30)
-        r.raise_for_status()
-        with open(local_path, "wb") as f:
-            f.write(r.content)
-        logger.info(f"✅ Voice sample saved: {local_path} ({local_path.stat().st_size} B)")
-        return local_path
+        r = requests.get(raw_url, timeout=30)
+        if r.status_code == 200 and len(r.content) > 5_000:
+            with open(local_path, "wb") as f:
+                f.write(r.content)
+            logger.info(f"✅ Raw voice saved: {local_path}")
+            return local_path
+        else:
+            logger.warning(f"⚠️ Raw download failed (status {r.status_code})")
     except Exception as exc:
-        logger.error(f"❌ Failed to download voice sample ({vid}): {exc}")
-        return None
+        logger.warning(f"⚠️ Raw download exception: {exc}")
+
+    # ==== 2️⃣ جرب تحميل كـ video (يتضمن MP3) ==== #
+    video_url = _cloudinary_url(vid, resource_type="video")
+    logger.info(f"⬇️ Trying video download: {video_url}")
+    try:
+        r = requests.get(video_url, timeout=30)
+        if r.status_code == 200 and len(r.content) > 5_000:
+            tmp_mp3 = TMP_DIR / f"{vid}.mp3"
+            with open(tmp_mp3, "wb") as f:
+                f.write(r.content)
+            logger.info(f"✅ Video‑type MP3 downloaded → {tmp_mp3}")
+
+            # تحويل MP3 إلى WAV (22 kHz, mono)
+            if mp3_to_wav(tmp_mp3, local_path):
+                logger.info(f"✅ Converted video MP3 → WAV: {local_path}")
+                return local_path
+            else:
+                logger.error("❌ ffmpeg conversion failed")
+                return None
+        else:
+            logger.error(f"❌ Video download failed (status {r.status_code})")
+    except Exception as exc:
+        logger.error(f"❌ Video download exception: {exc}")
+
+    # ----- إذا وصلنا إلى هنا فكلّ المحاولات فشلت -----
+    logger.error(f"❌ Unable to fetch voice sample for id `{vid}`")
+    return None
 
 
-# ---------------------- تحويل MP3 → WAV (ffmpeg) --------------------
+# -----------------------------------------------------------------
+# تحويل MP3 → WAV (ffmpeg)
+# -----------------------------------------------------------------
 def mp3_to_wav(mp3_path: Path, wav_path: Path) -> bool:
-    """تحويل ملف MP3 إلى WAV (22 kHz, mono) باستخدام ffmpeg."""
+    """
+    يستخدم ffmpeg لتحويل ملف MP3 إلى WAV (22050 Hz, mono).
+    يُعيد True إذا نجح التحويل.
+    """
     try:
         subprocess.run(
             ["ffmpeg", "-y", "-i", str(mp3_path), "-ar", "22050", "-ac", "1", str(wav_path)],
-            capture_output=True, timeout=30
+            capture_output=True,
+            timeout=30,
         )
         if wav_path.exists():
             mp3_path.unlink(missing_ok=True)
@@ -103,9 +161,14 @@ def mp3_to_wav(mp3_path: Path, wav_path: Path) -> bool:
     return False
 
 
-# ---------------------- تنظيف الملفات المؤقتة --------------------
+# -----------------------------------------------------------------
+# تنظيف ملفات /tmp القديمة
+# -----------------------------------------------------------------
 def purge_tmp_folder(older_than_seconds: int = 7_200):
-    """يمسح جميع الملفات داخل /tmp التي مضى عليها أكثر من `older_than_seconds`."""
+    """
+    يمسح جميع الملفات داخل /tmp التي مضى عليها أكثر من
+    `older_than_seconds` (الافتراضي 2 ساعات).
+    """
     now = time.time()
     for p in TMP_DIR.iterdir():
         if p.is_file() and (now - p.stat().st_mtime) > older_than_seconds:
