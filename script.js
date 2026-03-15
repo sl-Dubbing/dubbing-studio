@@ -201,17 +201,21 @@ async function genDub() {
   }, 600);
 
   try {
+    // أرسل SRT كاملاً للتزامن الدقيق
+    const srtContent = document.getElementById('srtTxt')?.value || '';
+
     const res = await fetch(CONFIG.API_BASE + '/api/dub', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         text:       fullText,
+        srt:        srtContent,
         lang:       STATE.lang,
         email:      user.email || '',
         feature:    'dub',
         voice_mode: STATE.voiceMode
       }),
-      signal: AbortSignal.timeout(120000)
+      signal: AbortSignal.timeout(300000)  // 5 دقائق للـ SRT الطويل
     });
 
     clearInterval(iv);
@@ -227,9 +231,11 @@ async function genDub() {
       aud.classList.add('show');
       dl.href = d.audio_url;
       dl.classList.add('show');
-      const method = d.method === 'xtts_v2'
+      const method = d.method?.includes('xtts')
         ? 'بصوت ABDU SELAM 🎤' : 'بصوت افتراضي';
-      showToast('✅ تم التوليد ' + method, 4000);
+      const synced = d.synced ? ' — متزامن مع SRT ⏱️' : '';
+      const timing = d.time_sec ? ` (${d.time_sec}s)` : '';
+      showToast('✅ ' + method + synced + timing, 5000);
       return;
     }
     showToast('❌ ' + (d.error || 'فشل التوليد'));
