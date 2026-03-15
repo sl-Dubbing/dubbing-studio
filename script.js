@@ -265,6 +265,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (saved) CONFIG.API_BASE = saved;
 
   initHeader();
-  initLangs();
+  initLangs('langs');
   checkServer();
 });
