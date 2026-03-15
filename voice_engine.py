@@ -74,6 +74,80 @@ def synthesize(text: str, lang: str, use_custom_voice: bool = False) -> tuple:
 
     return None, None
 
+import wave
+import re
+
+def srt_to_dub(srt_path: str, lang: str, use_custom_voice: bool = False, silence_wav: str = None) -> str:
+    """
+    دبلجة ملف SRT مع توقيتاته، وتوليد ملف صوتي متوافق مع زمن الترجمة
+    السطر: [رقم]
+    زمن البداية --> زمن النهاية
+    النص
+    """
+    def parse_srt(srt_path):
+        pattern = re.compile(r"(\d+)\s*\n(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})\s*\n([\s\S]*?)(?=\n\d+\s*\n|\Z)")
+        with open(srt_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        entries = []
+        for match in pattern.finditer(content):
+            idx, start, end, text = match.groups()
+            entries.append({
+                'start': start,
+                'end': end,
+                'text': text.replace('\n', ' ').strip()
+            })
+        return entries
+
+    def time_to_ms(t):
+        h, m, s = t.split(':')
+        s, ms = s.split(',')
+        return (int(h)*3600 + int(m)*60 + int(s))*1000 + int(ms)
+
+    entries = parse_srt(srt_path)
+    wav_files = []
+    for i, entry in enumerate(entries):
+        start_ms = time_to_ms(entry['start'])
+        end_ms   = time_to_ms(entry['end'])
+        duration = end_ms - start_ms
+        # توليد الصوت
+        wav_path, method = synthesize(entry['text'], lang, use_custom_voice)
+        if not wav_path:
+            # توليد صمت إذا فشل الصوت
+            silence = silence_wav or str(AUDIO_DIR / f'silence_{i}.wav')
+            subprocess.run([
+                'ffmpeg', '-y', '-f', 'lavfi', '-i', f'anullsrc=r=22050:cl=mono',
+                '-t', f'{duration/1000}', silence
+            ], capture_output=True)
+            wav_files.append(silence)
+        else:
+            # إذا كان الصوت أقصر من المدة المطلوبة، نضيف صمت
+            with wave.open(wav_path, 'rb') as w:
+                frames = w.getnframes()
+                rate = w.getframerate()
+                wav_dur = frames / rate
+            if wav_dur < duration/1000:
+                silence = silence_wav or str(AUDIO_DIR / f'silence_{i}.wav')
+                subprocess.run([
+                    'ffmpeg', '-y', '-f', 'lavfi', '-i', f'anullsrc=r=22050:cl=mono',
+                    '-t', f'{duration/1000 - wav_dur}', silence
+                ], capture_output=True)
+                wav_files.append(wav_path)
+                wav_files.append(silence)
+            else:
+                wav_files.append(wav_path)
+
+    # دمج جميع المقاطع
+    output = str(AUDIO_DIR / f'dubbed_{uuid.uuid4()}.wav')
+    with wave.open(output, 'wb') as out:
+        params = None
+        for f in wav_files:
+            with wave.open(f, 'rb') as w:
+                if not params:
+                    params = w.getparams()
+                    out.setparams(params)
+                out.writeframes(w.readframes(w.getnframes()))
+    return output
+
 def get_status() -> dict:
     try:
         r = requests.get(f"{XTTS_SERVER}/health", timeout=5)
