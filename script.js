@@ -5,7 +5,7 @@
 // ── الإعدادات المركزية ────────────────────────────────────────
 const CONFIG = {
   // رابط الخادم — يتغير تلقائياً حسب البيئة
-  API_BASE: 'https://abdulselam1996-sl-dubbing-backend.hf.space',
+  API_BASE: localStorage.getItem('sl_backend_url') || 'https://abdulselam1996-sl-dubbing-backend.hf.space',
   GUEST_LIMIT: 6,
   LANGS: [
     {c:'ar', n:'العربية',   f:'🇸🇦'},
