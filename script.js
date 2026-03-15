@@ -91,8 +91,10 @@ async function checkServer() {
   const txt   = document.getElementById('srvTxt');
   if (!badge) return;
   try {
-    const r = await fetch(CONFIG.API_BASE + '/api/health',
-                          {signal: AbortSignal.timeout(6000)});
+    const r = await fetch(CONFIG.API_BASE + '/api/health', {
+      headers: {'ngrok-skip-browser-warning': '1'},
+      signal: AbortSignal.timeout(6000)
+    });
     const ok = r.ok;
     badge.className = 'srv-badge' + (ok ? ' on' : '');
     txt.textContent = ok ? 'الخادم متصل ✓' : 'الخادم غير متاح';
@@ -206,7 +208,10 @@ async function genDub() {
 
     const res = await fetch(CONFIG.API_BASE + '/api/dub', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': '1'
+      },
       body: JSON.stringify({
         text:       fullText,
         srt:        srtContent,
@@ -253,6 +258,27 @@ function setBackendUrl(url) {
   CONFIG.API_BASE = url.trim().replace(/\/$/, '');
   localStorage.setItem('sl_backend_url', CONFIG.API_BASE);
   showToast('✅ تم تحديث رابط الخادم');
+}
+
+// ── جلب الرابط التلقائي من Cloudinary ───────────────────────
+async function fetchBackendUrl() {
+  try {
+    const url = 'https://res.cloudinary.com/dxbmvzsiz/raw/upload/config/backend_url.json?t=' + Date.now();
+    const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
+    const d   = await res.json();
+    if (d.url && d.url.includes('ngrok')) {
+      const age = (Date.now()/1000) - (d.ts || 0);
+      if (age < 28800) {
+        CONFIG.API_BASE = d.url;
+        localStorage.setItem('sl_backend_url', d.url);
+        console.log('✅ Backend URL:', d.url);
+        return true;
+      }
+    }
+  } catch(e) {
+    console.log('Using cached URL:', CONFIG.API_BASE);
+  }
+  return false;
 }
 
 // ── تهيئة الصفحة ─────────────────────────────────────────────
