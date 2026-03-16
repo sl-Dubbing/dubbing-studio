@@ -269,14 +269,20 @@ async function fetchBackendUrl() {
     if (d.url && d.url.includes('ngrok')) {
       const age = (Date.now()/1000) - (d.ts || 0);
       if (age < 28800) {
+        // احذف القديم وضع الجديد
+        localStorage.removeItem('sl_backend_url');
         CONFIG.API_BASE = d.url;
         localStorage.setItem('sl_backend_url', d.url);
-        console.log('✅ Backend URL:', d.url);
+        console.log('✅ Backend URL updated:', d.url);
         return true;
+      } else {
+        // الرابط منتهي — احذفه
+        localStorage.removeItem('sl_backend_url');
+        console.log('⚠️ Backend URL expired, cleared');
       }
     }
   } catch(e) {
-    console.log('Using cached URL:', CONFIG.API_BASE);
+    console.log('fetchBackendUrl error:', e.message);
   }
   return false;
 }
