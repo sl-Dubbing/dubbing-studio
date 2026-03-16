@@ -266,20 +266,12 @@ async function fetchBackendUrl() {
     const url = 'https://res.cloudinary.com/dxbmvzsiz/raw/upload/config/backend_url.json?t=' + Date.now();
     const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
     const d   = await res.json();
-    if (d.url && d.url.includes('ngrok')) {
-      const age = (Date.now()/1000) - (d.ts || 0);
-      if (age < 28800) {
-        // احذف القديم وضع الجديد
-        localStorage.removeItem('sl_backend_url');
-        CONFIG.API_BASE = d.url;
-        localStorage.setItem('sl_backend_url', d.url);
-        console.log('✅ Backend URL updated:', d.url);
-        return true;
-      } else {
-        // الرابط منتهي — احذفه
-        localStorage.removeItem('sl_backend_url');
-        console.log('⚠️ Backend URL expired, cleared');
-      }
+    if (d.url) {
+      localStorage.removeItem('sl_backend_url');
+      CONFIG.API_BASE = d.url;
+      localStorage.setItem('sl_backend_url', d.url);
+      console.log('✅ Backend URL updated:', d.url);
+      return true;
     }
   } catch(e) {
     console.log('fetchBackendUrl error:', e.message);
