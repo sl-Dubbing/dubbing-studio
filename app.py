@@ -1,7 +1,7 @@
 # ============================================================
-# app.py — sl-Dubbing على Hugging Face Spaces
+# app.py — sl-Dubbing | نظام أصوات متعددة من Cloudinary
 # ============================================================
-import os, uuid, time, re, torch
+import os, uuid, time, re, torch, json
 from pathlib import Path
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
@@ -10,11 +10,11 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.after_request
-def add_cors(response):
-    response.headers["Access-Control-Allow-Origin"]  = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, ngrok-skip-browser-warning"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    return response
+def add_cors(r):
+    r.headers["Access-Control-Allow-Origin"]  = "*"
+    r.headers["Access-Control-Allow-Headers"] = "Content-Type, ngrok-skip-browser-warning"
+    r.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return r
 
 @app.before_request
 def preflight():
@@ -25,103 +25,152 @@ def preflight():
         res.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         return res, 200
 
-OUTPUT_DIR = Path("outputs"); OUTPUT_DIR.mkdir(exist_ok=True)
-VOICE_DIR  = Path("voices");  VOICE_DIR.mkdir(exist_ok=True)
-LATENTS_PATH = Path("voices/latents.pth")
+OUTPUT_DIR  = Path("outputs");       OUTPUT_DIR.mkdir(exist_ok=True)
+VOICES_DIR  = Path("voices_cache");  VOICES_DIR.mkdir(exist_ok=True)
+LATENTS_DIR = Path("latents_cache"); LATENTS_DIR.mkdir(exist_ok=True)
 
-tts_engine   = None
-gpt_cond     = None   # latents محفوظة
-speaker_emb  = None   # latents محفوظة
+CLOUDINARY_CLOUD  = "dxbmvzsiz"
+CLOUDINARY_KEY    = "432687952743126"
+CLOUDINARY_SECRET = "BrFvzlPFXBJZ-B-cZyxCc-0wHRo"
 
-# ── تحميل XTTS ───────────────────────────────────────────────
+tts_engine = None
+
 def load_xtts():
-    global tts_engine, gpt_cond, speaker_emb
+    global tts_engine
     try:
+        os.environ["COQUI_TOS_AGREED"] = "1"
         from TTS.api import TTS
-        tts_engine = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+        tts_engine = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=False)
         print("✅ XTTS v2 محمّل")
-        load_or_compute_latents()
     except Exception as e:
         print(f"⚠️ XTTS فشل: {e}")
 
-# ── Voice Latents ─────────────────────────────────────────────
-def load_or_compute_latents():
-    global gpt_cond, speaker_emb
-
-    # إن وُجدت latents محفوظة → حمّلها مباشرة
-    if LATENTS_PATH.exists():
-        try:
-            data       = torch.load(str(LATENTS_PATH))
-            gpt_cond   = data["gpt_cond"]
-            speaker_emb = data["speaker_emb"]
-            print("✅ Voice latents محمّلة من الملف (سريع)")
-            return
-        except Exception as e:
-            print(f"⚠️ فشل تحميل latents: {e}")
-
-    # لا توجد latents → احسبها من الملف الصوتي
-    voice_file = get_voice()
-    if not voice_file or not tts_engine:
-        print("⚠️ لا يوجد ملف صوتي لحساب latents")
-        return
-
+def get_voices_from_cloudinary():
     try:
-        print("⏳ حساب voice latents (مرة واحدة فقط)...")
-        model = tts_engine.synthesizer.tts_model
-        gpt_cond, speaker_emb = model.get_conditioning_latents(
-            audio_path=[voice_file]
+        import cloudinary, cloudinary.api
+        cloudinary.config(
+            cloud_name=CLOUDINARY_CLOUD,
+            api_key=CLOUDINARY_KEY,
+            api_secret=CLOUDINARY_SECRET
         )
-        # احفظها لكل المرات القادمة
-        torch.save(
-            {"gpt_cond": gpt_cond, "speaker_emb": speaker_emb},
-            str(LATENTS_PATH)
-        )
-        print("✅ Voice latents محسوبة ومحفوظة!")
+        voices = []
+        # جرب كل أنواع الموارد وكل طرق البحث
+        for rtype in ["video", "raw"]:
+            for prefix in ["sl_voices/", ""]:
+                try:
+                    result = cloudinary.api.resources(
+                        type="upload",
+                        prefix=prefix,
+                        resource_type=rtype,
+                        max_results=50
+                    )
+                    for r in result.get("resources", []):
+                        pid = r["public_id"]
+                        # فلتر فقط ملفات sl_voices
+                        if "sl_voices" not in pid and prefix == "":
+                            continue
+                        # تجنب التكرار
+                        if any(v["public_id"] == pid for v in voices):
+                            continue
+                        name = Path(pid).stem
+                        vid  = pid.replace("/","_").replace(" ","_")
+                        voices.append({
+                            "id":        vid,
+                            "name":      name.replace("_"," ").title(),
+                            "url":       r["secure_url"],
+                            "public_id": pid
+                        })
+                except Exception as e:
+                    print(f"cloudinary search {rtype}/{prefix}: {e}")
+
+        # إذا لم نجد شيئاً — ابحث بدون prefix
+        if not voices:
+            try:
+                result = cloudinary.api.resources(
+                    type="upload",
+                    resource_type="video",
+                    max_results=50
+                )
+                for r in result.get("resources", []):
+                    pid  = r["public_id"]
+                    name = Path(pid).stem
+                    vid  = pid.replace("/","_").replace(" ","_")
+                    voices.append({
+                        "id":        vid,
+                        "name":      name.replace("_"," ").title(),
+                        "url":       r["secure_url"],
+                        "public_id": pid
+                    })
+            except Exception as e:
+                print(f"cloudinary fallback: {e}")
+
+        return voices
     except Exception as e:
-        print(f"⚠️ فشل حساب latents: {e}")
+        print(f"⚠️ Cloudinary error: {e}")
+        return []
 
-def get_voice():
-    for ext in ["*.wav","*.mp3","*.ogg","*.m4a"]:
-        f = list(VOICE_DIR.glob(ext))
-        if f: return str(f[0])
-    return None
-
-# ── توليد XTTS باستخدام الـ latents ─────────────────────────
-def synth_xtts(text: str, lang: str, out: str) -> bool:
-    global gpt_cond, speaker_emb
-    if not tts_engine: return False
-
-    # إن لم تكن latents محملة → جرب تحميلها
-    if gpt_cond is None:
-        load_or_compute_latents()
-    if gpt_cond is None: return False
-
+def download_voice(voice_url, voice_id):
+    local = VOICES_DIR / f"{voice_id}.wav"
+    if local.exists(): return str(local)
     try:
+        import urllib.request
+        from pydub import AudioSegment
+        tmp = VOICES_DIR / f"{voice_id}_raw"
+        urllib.request.urlretrieve(voice_url, str(tmp))
+        AudioSegment.from_file(str(tmp)).export(str(local), format="wav")
+        tmp.unlink(missing_ok=True)
+        return str(local)
+    except Exception as e:
+        print(f"⚠️ فشل تحميل {voice_id}: {e}")
+        return None
+
+def get_latents(voice_id, voice_url):
+    latent_file = LATENTS_DIR / f"{voice_id}.pth"
+    if latent_file.exists():
+        try:
+            data = torch.load(str(latent_file), map_location="cpu")
+            print(f"⚡ Latents جاهزة: {voice_id}")
+            return data["gpt_cond"], data["speaker_emb"]
+        except: pass
+    if not tts_engine: return None, None
+    wav = download_voice(voice_url, voice_id)
+    if not wav: return None, None
+    try:
+        print(f"⏳ تحليل: {voice_id}")
         model = tts_engine.synthesizer.tts_model
+        gpt_cond, speaker_emb = model.get_conditioning_latents(audio_path=[wav])
+        torch.save({"gpt_cond": gpt_cond, "speaker_emb": speaker_emb}, str(latent_file))
+        print(f"✅ محفوظ: {voice_id}")
+        return gpt_cond, speaker_emb
+    except Exception as e:
+        print(f"⚠️ latents error: {e}")
+        return None, None
+
+def synth_xtts(text, lang, out, voice_id, voice_url):
+    if not tts_engine or not voice_id: return False
+    gpt_cond, speaker_emb = get_latents(voice_id, voice_url)
+    if gpt_cond is None: return False
+    try:
+        model   = tts_engine.synthesizer.tts_model
         out_wav = model.inference(
-            text          = text,
-            language      = lang,
-            gpt_cond_latent = gpt_cond,
-            speaker_embedding = speaker_emb,
-            speed         = 1.0
+            text=text, language=lang,
+            gpt_cond_latent=gpt_cond,
+            speaker_embedding=speaker_emb,
+            speed=1.0
         )
         import torchaudio
         torchaudio.save(out, torch.tensor(out_wav["wav"]).unsqueeze(0), 24000)
         return True
     except Exception as e:
-        print(f"XTTS err: {e}")
-        return False
+        print(f"XTTS err: {e}"); return False
 
-def synth_gtts(text: str, lang: str, out: str) -> bool:
+def synth_gtts(text, lang, out):
     try:
         from gtts import gTTS
-        gTTS(text=text, lang=lang[:2]).save(out)
-        return True
+        gTTS(text=text, lang=lang[:2]).save(out); return True
     except Exception as e:
-        print(f"gTTS err: {e}")
-        return False
+        print(f"gTTS err: {e}"); return False
 
-# ── SRT ──────────────────────────────────────────────────────
 def srt_time(s):
     s = s.replace(",",".")
     p = s.split(":")
@@ -145,7 +194,7 @@ def parse_srt(content):
     if cur: blocks.append(cur)
     return blocks
 
-def assemble_srt(blocks, lang, voice_mode):
+def assemble_srt(blocks, lang, vm, voice_id, voice_url):
     from pydub import AudioSegment
     timeline = AudioSegment.empty()
     cursor   = 0.0
@@ -153,7 +202,7 @@ def assemble_srt(blocks, lang, voice_mode):
         text = b["text"].strip()
         if not text: continue
         tmp = str(OUTPUT_DIR / f"seg_{uuid.uuid4().hex[:6]}.wav")
-        ok  = synth_xtts(text, lang, tmp) if voice_mode=="xtts" else False
+        ok  = synth_xtts(text, lang, tmp, voice_id, voice_url) if vm=="xtts" else False
         if not ok: ok = synth_gtts(text, lang, tmp)
         if not ok: continue
         seg = AudioSegment.from_file(tmp)
@@ -166,62 +215,53 @@ def assemble_srt(blocks, lang, voice_mode):
     timeline.export(out, format="mp3")
     return out
 
-# ── Endpoints ────────────────────────────────────────────────
 @app.route("/api/health")
 def health():
     return jsonify({
-        "status":  "ok",
-        "xtts":    tts_engine is not None,
-        "latents": LATENTS_PATH.exists(),
-        "voice":   get_voice() is not None,
-        "engine":  "xtts_v2" if tts_engine else "gtts"
+        "status":        "ok",
+        "xtts":          tts_engine is not None,
+        "engine":        "xtts_v2" if tts_engine else "gtts",
+        "voices_cached": len(list(LATENTS_DIR.glob("*.pth")))
     })
 
-@app.route("/api/upload_voice", methods=["POST","OPTIONS"])
-def upload_voice():
-    f = request.files.get("voice")
-    if not f: return jsonify({"success":False,"error":"لا يوجد ملف"}), 400
-    ext = Path(f.filename).suffix.lower()
-    if ext not in [".wav",".mp3",".ogg",".m4a"]:
-        return jsonify({"success":False,"error":"امتداد غير مدعوم"}), 400
-    raw = VOICE_DIR / f"voice_{uuid.uuid4().hex[:8]}{ext}"
-    f.save(str(raw))
-    try:
-        from pydub import AudioSegment
-        AudioSegment.from_file(str(raw)).export(str(VOICE_DIR/"speaker.wav"), format="wav")
-        # احذف latents القديمة لإعادة الحساب
-        if LATENTS_PATH.exists(): LATENTS_PATH.unlink()
-        # احسب latents الجديدة
-        load_or_compute_latents()
-        return jsonify({"success":True,"message":"✅ تم رفع الصوت وحساب latents"})
-    except Exception as e:
-        return jsonify({"success":False,"error":str(e)}), 500
+@app.route("/api/voices")
+def api_voices():
+    voices = get_voices_from_cloudinary()
+    return jsonify({"success": True, "voices": voices, "count": len(voices)})
+
+@app.route("/api/preload_voice", methods=["POST","OPTIONS"])
+def preload_voice():
+    if request.method == "OPTIONS": return jsonify({"ok":True})
+    data = request.get_json(force=True)
+    vid  = data.get("voice_id","")
+    vurl = data.get("voice_url","")
+    if not vid or not vurl:
+        return jsonify({"success":False,"error":"مطلوب voice_id و voice_url"}), 400
+    gpt, _ = get_latents(vid, vurl)
+    return jsonify({"success": gpt is not None, "message":"✅ تم تحليل الصوت" if gpt else "⚠️ فشل"})
 
 @app.route("/api/dub", methods=["POST","OPTIONS"])
 def dub():
     if request.method == "OPTIONS": return jsonify({"ok":True})
-    data   = request.get_json(force=True)
-    srt    = data.get("srt","")
-    text   = data.get("text","")
-    lang   = data.get("lang","ar")
-    vm     = data.get("voice_mode","gtts")
-    t0     = time.time()
+    data  = request.get_json(force=True)
+    srt   = data.get("srt",""); text = data.get("text","")
+    lang  = data.get("lang","ar"); vm = data.get("voice_mode","gtts")
+    vid   = data.get("voice_id",""); vurl = data.get("voice_url","")
+    t0    = time.time()
     if srt.strip():
-        blocks = parse_srt(srt)
-        out    = assemble_srt(blocks, lang, vm)
-        synced = True
+        blocks = parse_srt(srt); out = assemble_srt(blocks,lang,vm,vid,vurl); synced=True
     else:
-        out = str(OUTPUT_DIR / f"dub_{uuid.uuid4().hex[:8]}.mp3")
-        ok  = synth_xtts(text, lang, out) if vm=="xtts" else False
-        if not ok: ok = synth_gtts(text, lang, out)
-        if not ok: return jsonify({"success":False,"error":"فشل"}), 500
-        synced = False
+        out = str(OUTPUT_DIR/f"dub_{uuid.uuid4().hex[:8]}.mp3")
+        ok  = synth_xtts(text,lang,out,vid,vurl) if vm=="xtts" else False
+        if not ok: ok = synth_gtts(text,lang,out)
+        if not ok: return jsonify({"success":False,"error":"فشل"}),500
+        synced=False
     if not out or not Path(out).exists():
-        return jsonify({"success":False,"error":"فشل التجميع"}), 500
-    method = "xtts_v2" if (vm=="xtts" and tts_engine and gpt_cond is not None) else "gtts"
+        return jsonify({"success":False,"error":"فشل التجميع"}),500
+    method = "xtts_v2" if (vm=="xtts" and tts_engine and vid) else "gtts"
     return jsonify({
         "success":   True,
-        "audio_url": f"{request.host_url}api/file/{Path(out).name}",
+        "audio_url": f"https://{request.host}/api/file/{Path(out).name}",
         "method":    method,
         "synced":    synced,
         "time_sec":  round(time.time()-t0,1)
@@ -231,27 +271,24 @@ def dub():
 def tts():
     if request.method == "OPTIONS": return jsonify({"ok":True})
     data = request.get_json(force=True)
-    text = data.get("text","").strip()
-    lang = data.get("lang","ar")
-    vm   = data.get("voice_mode","gtts")
-    if not text: return jsonify({"success":False,"error":"النص فارغ"}), 400
-    out = str(OUTPUT_DIR / f"tts_{uuid.uuid4().hex[:8]}.mp3")
-    ok  = synth_xtts(text, lang, out) if vm=="xtts" else False
-    if not ok: ok = synth_gtts(text, lang, out)
-    if not ok: return jsonify({"success":False,"error":"فشل"}), 500
+    text = data.get("text","").strip(); lang = data.get("lang","ar")
+    vm   = data.get("voice_mode","gtts"); vid = data.get("voice_id",""); vurl = data.get("voice_url","")
+    if not text: return jsonify({"success":False,"error":"النص فارغ"}),400
+    out = str(OUTPUT_DIR/f"tts_{uuid.uuid4().hex[:8]}.mp3")
+    ok  = synth_xtts(text,lang,out,vid,vurl) if vm=="xtts" else False
+    if not ok: ok = synth_gtts(text,lang,out)
+    if not ok: return jsonify({"success":False,"error":"فشل"}),500
     return jsonify({
         "success":   True,
-        "audio_url": f"{request.host_url}api/file/{Path(out).name}"
+        "audio_url": f"https://{request.host}/api/file/{Path(out).name}"
     })
 
 @app.route("/api/file/<filename>")
 def get_file(filename):
-    p = OUTPUT_DIR / filename
-    if not p.exists(): return jsonify({"error":"غير موجود"}), 404
+    p = OUTPUT_DIR/filename
+    if not p.exists(): return jsonify({"error":"غير موجود"}),404
     return send_file(str(p), mimetype="audio/mpeg")
 
-# ── تشغيل ────────────────────────────────────────────────────
 load_xtts()
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7860)
+    app.run(host="0.0.0.0", port=7860, debug=False)
