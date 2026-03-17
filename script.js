@@ -182,9 +182,31 @@ async function preloadVoice(voice_id, voice_url) {
   }
 }
 
+// مشغل المعاينة
+let _previewAudio = null;
+let _previewUrl   = null;
+
 function previewVoice(url) {
-  const audio = new Audio(url);
-  audio.play().catch(() => showToast('⚠️ تعذر تشغيل المعاينة'));
+  if (_previewAudio && _previewUrl === url && !_previewAudio.paused) {
+    _previewAudio.pause();
+    _previewAudio.currentTime = 0;
+    document.querySelectorAll('.voice-play').forEach(b => b.textContent = '▶');
+    return;
+  }
+  if (_previewAudio) {
+    _previewAudio.pause();
+    _previewAudio.currentTime = 0;
+    document.querySelectorAll('.voice-play').forEach(b => b.textContent = '▶');
+  }
+  _previewAudio = new Audio(url);
+  _previewUrl   = url;
+  event.target.textContent = '⏹';
+  _previewAudio.play().catch(() => showToast('⚠️ تعذر تشغيل المعاينة'));
+  _previewAudio.onended = () => {
+    document.querySelectorAll('.voice-play').forEach(b => b.textContent = '▶');
+    _previewAudio = null;
+    _previewUrl   = null;
+  };
 }
 
 // ── دالة مساعدة للرابط الكامل ─────────────────────────────────
