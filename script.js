@@ -177,6 +177,14 @@ function parseSRT() {
   showToast(`✅ تم تحليل ${STATE.srtData.length} جملة`);
 }
 
+// ── دالة مساعدة — تحويل الرابط النسبي إلى كامل ──────────────
+function toFullUrl(audioUrl) {
+  if (!audioUrl) return '';
+  return audioUrl.startsWith('http')
+    ? audioUrl
+    : CONFIG.API_BASE + audioUrl;
+}
+
 // ── توليد الدبلجة ─────────────────────────────────────────────
 async function genDub() {
   if (!STATE.srtData.length) {
@@ -203,7 +211,6 @@ async function genDub() {
   }, 600);
 
   try {
-    // أرسل SRT كاملاً للتزامن الدقيق
     const srtContent = document.getElementById('srtTxt')?.value || '';
 
     const res = await fetch(CONFIG.API_BASE + '/api/dub', {
@@ -220,7 +227,7 @@ async function genDub() {
         feature:    'dub',
         voice_mode: STATE.voiceMode
       }),
-      signal: AbortSignal.timeout(300000)  // 5 دقائق للـ SRT الطويل
+      signal: AbortSignal.timeout(300000)
     });
 
     clearInterval(iv);
@@ -230,11 +237,12 @@ async function genDub() {
     if (d.success && d.audio_url) {
       prog.classList.remove('on');
       btn.disabled = false;
-      const aud = document.getElementById('dubAud');
-      const dl  = document.getElementById('dubDl');
-      aud.src = d.audio_url;
+      const aud     = document.getElementById('dubAud');
+      const dl      = document.getElementById('dubDl');
+      const fullUrl = toFullUrl(d.audio_url);  // ← الإصلاح
+      aud.src = fullUrl;
       aud.classList.add('show');
-      dl.href = d.audio_url;
+      dl.href = fullUrl;
       dl.classList.add('show');
       const method = d.method?.includes('xtts')
         ? 'بصوت ABDU SELAM 🎤' : 'بصوت افتراضي';
@@ -253,6 +261,50 @@ async function genDub() {
   btn.disabled = false;
 }
 
+// ── توليد TTS ─────────────────────────────────────────────────
+async function genTTS() {
+  const text = document.getElementById('ttsText')?.value?.trim();
+  if (!text) { showToast('الرجاء إدخال نص'); return; }
+
+  const user = JSON.parse(localStorage.getItem('sl_user') || '{}');
+  const btn  = document.getElementById('ttsBtn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await fetch(CONFIG.API_BASE + '/api/tts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': '1'
+      },
+      body: JSON.stringify({
+        text:       text,
+        lang:       STATE.lang,
+        email:      user.email || '',
+        feature:    'tts',
+        voice_mode: STATE.voiceMode
+      }),
+      signal: AbortSignal.timeout(60000)
+    });
+
+    const d = await res.json();
+
+    if (d.success && d.audio_url) {
+      const aud     = document.getElementById('ttsAud');
+      const dl      = document.getElementById('ttsDl');
+      const fullUrl = toFullUrl(d.audio_url);  // ← الإصلاح
+      if (aud) { aud.src = fullUrl; aud.classList.add('show'); }
+      if (dl)  { dl.href = fullUrl; dl.classList.add('show'); }
+      showToast('✅ تم توليد الصوت');
+    } else {
+      showToast('❌ ' + (d.error || 'فشل التوليد'));
+    }
+  } catch(e) {
+    showToast('❌ تعذر الاتصال بالخادم');
+  }
+  if (btn) btn.disabled = false;
+}
+
 // ── تحديث رابط الخادم (للـ Colab) ───────────────────────────
 function setBackendUrl(url) {
   CONFIG.API_BASE = url.trim().replace(/\/$/, '');
@@ -264,13 +316,13 @@ function setBackendUrl(url) {
 async function fetchBackendUrl() {
   try {
     const url = 'https://res.cloudinary.com/dxbmvzsiz/raw/upload/config/backend_url.json?t=' + Date.now();
-    const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
-    const d   = await res.json();
+    const res  = await fetch(url, {signal: AbortSignal.timeout(5000)});
+    const text = await res.text();
+    const d    = JSON.parse(text.trim());
     if (d.url) {
-      localStorage.removeItem('sl_backend_url');
-      CONFIG.API_BASE = d.url;
-      localStorage.setItem('sl_backend_url', d.url);
-      console.log('✅ Backend URL updated:', d.url);
+      CONFIG.API_BASE = d.url.trim().replace(/\/$/, '');
+      localStorage.setItem('sl_backend_url', CONFIG.API_BASE);
+      console.log('✅ Backend URL updated:', CONFIG.API_BASE);
       return true;
     }
   } catch(e) {
@@ -284,7 +336,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // جلب الرابط من Cloudinary أولاً
   await fetchBackendUrl();
 
-  // استرجع رابط Colab إن كان محفوظاً
+  // استرجع رابط محفوظ إن وُجد
   const saved = localStorage.getItem('sl_backend_url');
   if (saved) CONFIG.API_BASE = saved;
 
