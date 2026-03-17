@@ -110,6 +110,9 @@ function selectLang(code, btn) {
 // نظام الأصوات المتعددة
 // ══════════════════════════════════════════════════════════════
 
+// رابط voices.json على GitHub — يُحدَّث تلقائياً
+const VOICES_JSON_URL = 'https://sl-dubbing.github.io/dubbing-studio/voices.json';
+
 async function loadVoices() {
   const container = document.getElementById('voicePicker');
   if (!container) return;
@@ -117,16 +120,14 @@ async function loadVoices() {
   container.innerHTML = '<div class="voice-loading">⏳ جاري تحميل الأصوات...</div>';
 
   try {
-    const res    = await fetch(CONFIG.API_BASE + '/api/voices', {
-      headers: {'ngrok-skip-browser-warning': '1'},
-      signal: AbortSignal.timeout(10000)
+    const res    = await fetch(VOICES_JSON_URL + '?t=' + Date.now(), {
+      signal: AbortSignal.timeout(8000)
     });
-    const data   = await res.json();
-    const voices = data.voices || [];
+    const voices = await res.json();
     STATE.voices = voices;
 
     if (!voices.length) {
-      container.innerHTML = '<div class="voice-empty">لا توجد أصوات — أضف عينات إلى Cloudinary/sl_voices</div>';
+      container.innerHTML = '<div class="voice-empty">لا توجد أصوات بعد</div>';
       return;
     }
 
@@ -136,18 +137,15 @@ async function loadVoices() {
            onclick="selectVoice('${v.id}', '${v.url}', '${v.name}', this)">
         <div class="voice-icon">🎙️</div>
         <div class="voice-name">${v.name}</div>
-        <button class="voice-preview"
+        <button class="voice-play"
                 onclick="event.stopPropagation(); previewVoice('${v.url}')">▶</button>
       </div>`).join('');
 
     // اختر الأول تلقائياً
-    if (voices.length > 0) {
-      const first = voices[0];
-      STATE.selectedVoice = first;
-      STATE.voiceMode     = 'xtts';
-      // حمّل latents الصوت الأول مسبقاً
-      preloadVoice(first.id, first.url);
-    }
+    const first = voices[0];
+    STATE.selectedVoice = first;
+    STATE.voiceMode     = 'xtts';
+    preloadVoice(first.id, first.url);
 
   } catch(e) {
     container.innerHTML = '<div class="voice-empty">⚠️ تعذر تحميل الأصوات</div>';
