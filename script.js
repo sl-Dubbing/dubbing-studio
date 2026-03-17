@@ -1,39 +1,33 @@
 // ============================================================
-// script.js — العقل البرمجي لواجهة sl-Dubbing
+// script.js — sl-Dubbing | نظام أصوات متعددة
 // ============================================================
 
-// ── الإعدادات المركزية ────────────────────────────────────────
 const CONFIG = {
-  // رابط الخادم — يتغير تلقائياً حسب البيئة
   API_BASE: localStorage.getItem('sl_backend_url') || 'https://abdulselam1996-sl-dubbing-backend.hf.space',
   GUEST_LIMIT: 6,
   LANGS: [
-    {c:'ar', n:'العربية',   f:'🇸🇦'},
-    {c:'en', n:'English',   f:'🇺🇸'},
-    {c:'es', n:'Español',   f:'🇪🇸'},
-    {c:'fr', n:'Français',  f:'🇫🇷'},
-    {c:'de', n:'Deutsch',   f:'🇩🇪'},
-    {c:'it', n:'Italiano',  f:'🇮🇹'},
-    {c:'ru', n:'Русский',   f:'🇷🇺'},
-    {c:'tr', n:'Türkçe',    f:'🇹🇷'},
-    {c:'zh', n:'中文',       f:'🇨🇳'},
-    {c:'hi', n:'हिन्दी',    f:'🇮🇳'},
-    {c:'fa', n:'فارسی',     f:'🇮🇷'},
-    {c:'sv', n:'Svenska',   f:'🇸🇪'},
+    {c:'ar', n:'العربية',    f:'🇸🇦'},
+    {c:'en', n:'English',    f:'🇺🇸'},
+    {c:'es', n:'Español',    f:'🇪🇸'},
+    {c:'fr', n:'Français',   f:'🇫🇷'},
+    {c:'de', n:'Deutsch',    f:'🇩🇪'},
+    {c:'it', n:'Italiano',   f:'🇮🇹'},
+    {c:'ru', n:'Русский',    f:'🇷🇺'},
+    {c:'tr', n:'Türkçe',     f:'🇹🇷'},
+    {c:'zh', n:'中文',        f:'🇨🇳'},
+    {c:'hi', n:'हिन्दी',     f:'🇮🇳'},
+    {c:'fa', n:'فارسی',      f:'🇮🇷'},
+    {c:'sv', n:'Svenska',    f:'🇸🇪'},
     {c:'nl', n:'Nederlands', f:'🇳🇱'},
   ]
 };
 
-// ── الحالة ────────────────────────────────────────────────────
 const STATE = {
-  lang:        'ar',
-  voiceMode:   'gtts',     // 'gtts' أو 'xtts'
-  srtData:     [],
-  isRecording: false,
-  recorder:    null,
-  chunks:      [],
-  voiceBlob:   null,
-  voiceUploaded: false,
+  lang:         'ar',
+  voiceMode:    'xtts',
+  srtData:      [],
+  selectedVoice: null,   // { id, name, url }
+  voices:       [],
 };
 
 // ── Toast ─────────────────────────────────────────────────────
@@ -51,7 +45,7 @@ function showToast(msg, duration = 3000) {
   t._t = setTimeout(() => t.style.transform = 'translateX(-50%) translateY(120px)', duration);
 }
 
-// ── Header المستخدم ───────────────────────────────────────────
+// ── Header ────────────────────────────────────────────────────
 function initHeader() {
   const hdr = document.getElementById('hdr');
   if (!hdr) return;
@@ -75,16 +69,6 @@ function logout() {
   location.href = 'index.html';
 }
 
-function requireLogin() {
-  try {
-    const u = JSON.parse(localStorage.getItem('sl_user'));
-    if (u) return u;
-  } catch(e) {}
-  sessionStorage.setItem('returnUrl', location.href);
-  location.href = 'login.html';
-  return null;
-}
-
 // ── فحص الخادم ───────────────────────────────────────────────
 async function checkServer() {
   const badge = document.getElementById('srv');
@@ -97,10 +81,10 @@ async function checkServer() {
     });
     const ok = r.ok;
     badge.className = 'srv-badge' + (ok ? ' on' : '');
-    txt.textContent = ok ? 'الخادم متصل ✓' : 'الخادم غير متاح';
+    if (txt) txt.textContent = ok ? 'الخادم متصل ✓' : 'الخادم غير متاح';
   } catch {
-    badge.className = 'srv-badge';
-    if (txt) txt.textContent = 'الخادم غير متاح';
+    if (badge) badge.className = 'srv-badge';
+    if (txt)   txt.textContent = 'الخادم غير متاح';
   }
 }
 
@@ -118,21 +102,97 @@ function initLangs(containerId = 'langs') {
 
 function selectLang(code, btn) {
   STATE.lang = code;
-  document.querySelectorAll('.lang-btn')
-          .forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
 
-// ── اختيار الصوت ─────────────────────────────────────────────
-function selectVoice(mode, el) {
-  STATE.voiceMode = mode;
-  document.querySelectorAll('.voice-choice').forEach(e => {
-    e.style.borderColor = 'rgba(255,255,255,.1)';
-    e.style.background  = 'rgba(255,255,255,.02)';
-  });
-  el.style.borderColor = mode === 'xtts' ? '#a78bfa' : '#60a5fa';
-  el.style.background  = mode === 'xtts'
-    ? 'rgba(124,58,237,.15)' : 'rgba(96,165,250,.12)';
+// ══════════════════════════════════════════════════════════════
+// نظام الأصوات المتعددة
+// ══════════════════════════════════════════════════════════════
+
+async function loadVoices() {
+  const container = document.getElementById('voicePicker');
+  if (!container) return;
+
+  container.innerHTML = '<div class="voice-loading">⏳ جاري تحميل الأصوات...</div>';
+
+  try {
+    const res    = await fetch(CONFIG.API_BASE + '/api/voices', {
+      headers: {'ngrok-skip-browser-warning': '1'},
+      signal: AbortSignal.timeout(10000)
+    });
+    const data   = await res.json();
+    const voices = data.voices || [];
+    STATE.voices = voices;
+
+    if (!voices.length) {
+      container.innerHTML = '<div class="voice-empty">لا توجد أصوات — أضف عينات إلى Cloudinary/sl_voices</div>';
+      return;
+    }
+
+    container.innerHTML = voices.map((v, i) => `
+      <div class="voice-card ${i === 0 ? 'selected' : ''}"
+           id="vc_${v.id}"
+           onclick="selectVoice('${v.id}', '${v.url}', '${v.name}', this)">
+        <div class="voice-icon">🎙️</div>
+        <div class="voice-name">${v.name}</div>
+        <button class="voice-preview"
+                onclick="event.stopPropagation(); previewVoice('${v.url}')">▶</button>
+      </div>`).join('');
+
+    // اختر الأول تلقائياً
+    if (voices.length > 0) {
+      const first = voices[0];
+      STATE.selectedVoice = first;
+      STATE.voiceMode     = 'xtts';
+      // حمّل latents الصوت الأول مسبقاً
+      preloadVoice(first.id, first.url);
+    }
+
+  } catch(e) {
+    container.innerHTML = '<div class="voice-empty">⚠️ تعذر تحميل الأصوات</div>';
+    console.error('loadVoices error:', e);
+  }
+}
+
+function selectVoice(id, url, name, el) {
+  // إزالة التحديد من الكل
+  document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  STATE.selectedVoice = { id, url, name };
+  STATE.voiceMode     = 'xtts';
+  showToast(`✅ تم اختيار: ${name}`);
+
+  // حمّل latents مسبقاً
+  preloadVoice(id, url);
+}
+
+async function preloadVoice(voice_id, voice_url) {
+  try {
+    await fetch(CONFIG.API_BASE + '/api/preload_voice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': '1'
+      },
+      body: JSON.stringify({ voice_id, voice_url }),
+      signal: AbortSignal.timeout(120000)
+    });
+  } catch(e) {
+    console.log('preload error:', e.message);
+  }
+}
+
+function previewVoice(url) {
+  const audio = new Audio(url);
+  audio.play().catch(() => showToast('⚠️ تعذر تشغيل المعاينة'));
+}
+
+// ── دالة مساعدة للرابط الكامل ─────────────────────────────────
+function toFullUrl(audioUrl) {
+  if (!audioUrl) return '';
+  return audioUrl.startsWith('http') ? audioUrl : CONFIG.API_BASE + audioUrl;
 }
 
 // ── SRT ───────────────────────────────────────────────────────
@@ -177,19 +237,10 @@ function parseSRT() {
   showToast(`✅ تم تحليل ${STATE.srtData.length} جملة`);
 }
 
-// ── دالة مساعدة — تحويل الرابط النسبي إلى كامل ──────────────
-function toFullUrl(audioUrl) {
-  if (!audioUrl) return '';
-  return audioUrl.startsWith('http')
-    ? audioUrl
-    : CONFIG.API_BASE + audioUrl;
-}
-
 // ── توليد الدبلجة ─────────────────────────────────────────────
 async function genDub() {
-  if (!STATE.srtData.length) {
-    showToast('الرجاء تحميل ملف SRT أولاً'); return;
-  }
+  if (!STATE.srtData.length) { showToast('الرجاء تحميل ملف SRT أولاً'); return; }
+
   const user = JSON.parse(localStorage.getItem('sl_user') || '{}');
   const btn  = document.getElementById('dubBtn');
   const prog = document.getElementById('prog');
@@ -200,33 +251,32 @@ async function genDub() {
   prog.classList.add('on');
   pf.style.width = '0%';
 
-  const fullText = STATE.srtData.map(i => i.x.trim()).join('\n');
-
-  // شريط تقدم وهمي
   let p = 0;
   const iv = setInterval(() => {
-    p = Math.min(p + 2, 85);
+    p = Math.min(p + 1, 85);
     pf.style.width = p + '%';
     if (pt) pt.textContent = 'جاري التوليد... ' + p + '%';
-  }, 600);
+  }, 800);
 
   try {
     const srtContent = document.getElementById('srtTxt')?.value || '';
+    const fullText   = STATE.srtData.map(i => i.x.trim()).join('\n');
+
+    const body = {
+      text:       fullText,
+      srt:        srtContent,
+      lang:       STATE.lang,
+      email:      user.email || '',
+      feature:    'dub',
+      voice_mode: STATE.selectedVoice ? 'xtts' : 'gtts',
+      voice_id:   STATE.selectedVoice?.id  || '',
+      voice_url:  STATE.selectedVoice?.url || '',
+    };
 
     const res = await fetch(CONFIG.API_BASE + '/api/dub', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': '1'
-      },
-      body: JSON.stringify({
-        text:       fullText,
-        srt:        srtContent,
-        lang:       STATE.lang,
-        email:      user.email || '',
-        feature:    'dub',
-        voice_mode: STATE.voiceMode
-      }),
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' },
+      body: JSON.stringify(body),
       signal: AbortSignal.timeout(300000)
     });
 
@@ -239,15 +289,13 @@ async function genDub() {
       btn.disabled = false;
       const aud     = document.getElementById('dubAud');
       const dl      = document.getElementById('dubDl');
-      const fullUrl = toFullUrl(d.audio_url);  // ← الإصلاح
-      aud.src = fullUrl;
-      aud.classList.add('show');
-      dl.href = fullUrl;
-      dl.classList.add('show');
-      const method = d.method?.includes('xtts')
-        ? 'بصوت ABDU SELAM 🎤' : 'بصوت افتراضي';
-      const synced = d.synced ? ' — متزامن مع SRT ⏱️' : '';
-      const timing = d.time_sec ? ` (${d.time_sec}s)` : '';
+      const fullUrl = toFullUrl(d.audio_url);
+      aud.src = fullUrl; aud.classList.add('show');
+      dl.href = fullUrl; dl.classList.add('show');
+      const voiceName = STATE.selectedVoice?.name || 'افتراضي';
+      const method    = d.method?.includes('xtts') ? `بصوت ${voiceName} 🎤` : 'بصوت افتراضي';
+      const synced    = d.synced ? ' — متزامن ⏱️' : '';
+      const timing    = d.time_sec ? ` (${d.time_sec}s)` : '';
       showToast('✅ ' + method + synced + timing, 5000);
       return;
     }
@@ -273,49 +321,38 @@ async function genTTS() {
   try {
     const res = await fetch(CONFIG.API_BASE + '/api/tts', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': '1'
-      },
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' },
       body: JSON.stringify({
-        text:       text,
+        text,
         lang:       STATE.lang,
         email:      user.email || '',
-        feature:    'tts',
-        voice_mode: STATE.voiceMode
+        voice_mode: STATE.selectedVoice ? 'xtts' : 'gtts',
+        voice_id:   STATE.selectedVoice?.id  || '',
+        voice_url:  STATE.selectedVoice?.url || '',
       }),
       signal: AbortSignal.timeout(60000)
     });
-
     const d = await res.json();
-
     if (d.success && d.audio_url) {
       const aud     = document.getElementById('ttsAud');
       const dl      = document.getElementById('ttsDl');
-      const fullUrl = toFullUrl(d.audio_url);  // ← الإصلاح
+      const fullUrl = toFullUrl(d.audio_url);
       if (aud) { aud.src = fullUrl; aud.classList.add('show'); }
       if (dl)  { dl.href = fullUrl; dl.classList.add('show'); }
       showToast('✅ تم توليد الصوت');
     } else {
-      showToast('❌ ' + (d.error || 'فشل التوليد'));
+      showToast('❌ ' + (d.error || 'فشل'));
     }
   } catch(e) {
-    showToast('❌ تعذر الاتصال بالخادم');
+    showToast('❌ تعذر الاتصال');
   }
   if (btn) btn.disabled = false;
 }
 
-// ── تحديث رابط الخادم (للـ Colab) ───────────────────────────
-function setBackendUrl(url) {
-  CONFIG.API_BASE = url.trim().replace(/\/$/, '');
-  localStorage.setItem('sl_backend_url', CONFIG.API_BASE);
-  showToast('✅ تم تحديث رابط الخادم');
-}
-
-// ── جلب الرابط التلقائي من Cloudinary ───────────────────────
+// ── جلب الرابط من Cloudinary ─────────────────────────────────
 async function fetchBackendUrl() {
   try {
-    const url = 'https://res.cloudinary.com/dxbmvzsiz/raw/upload/config/backend_url.json?t=' + Date.now();
+    const url  = 'https://res.cloudinary.com/dxbmvzsiz/raw/upload/config/backend_url.json?t=' + Date.now();
     const res  = await fetch(url, {signal: AbortSignal.timeout(5000)});
     const text = await res.text();
     const d    = JSON.parse(text.trim());
@@ -326,21 +363,25 @@ async function fetchBackendUrl() {
       return true;
     }
   } catch(e) {
-    console.log('fetchBackendUrl error:', e.message);
+    console.log('fetchBackendUrl:', e.message);
   }
   return false;
 }
 
+function setBackendUrl(url) {
+  CONFIG.API_BASE = url.trim().replace(/\/$/, '');
+  localStorage.setItem('sl_backend_url', CONFIG.API_BASE);
+  showToast('✅ تم تحديث رابط الخادم');
+}
+
 // ── تهيئة الصفحة ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  // جلب الرابط من Cloudinary أولاً
   await fetchBackendUrl();
-
-  // استرجع رابط محفوظ إن وُجد
   const saved = localStorage.getItem('sl_backend_url');
   if (saved) CONFIG.API_BASE = saved;
 
   initHeader();
   initLangs('langs');
   checkServer();
+  loadVoices();  // تحميل الأصوات تلقائياً
 });
