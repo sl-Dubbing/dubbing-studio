@@ -1,0 +1,26 @@
+[
+  {
+    "id": "muhammad_ar",
+    "name": "Muhammad 🇸🇦",
+    "lang": "ar",
+    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3"
+  },
+  {
+    "id": "dmitry_ru",
+    "name": "Dmitry 🇷🇺",
+    "lang": "ru",
+    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3"
+  },
+  {
+    "id": "baris_tr",
+    "name": "Barış 🇹🇷",
+    "lang": "tr",
+    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Bar%C4%B1%C5%9F_tr.mp3"
+  },
+  {
+    "id": "maximilian_ge",
+    "name": "Maximilian 🇩🇪",
+    "lang": "de",
+    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3"
+  }
+]
