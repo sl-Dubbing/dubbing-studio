@@ -1,7 +1,7 @@
 # ============================================================
 # app.py — sl-Dubbing | نظام أصوات متعددة من Cloudinary
 # ============================================================
-import os, uuid, time, re, torch, json
+import os, uuid, time, re, torch
 from pathlib import Path
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
@@ -47,63 +47,31 @@ def load_xtts():
 
 def get_voices_from_cloudinary():
     try:
-        import cloudinary, cloudinary.api
+        import cloudinary
+        from cloudinary import Search
         cloudinary.config(
             cloud_name=CLOUDINARY_CLOUD,
             api_key=CLOUDINARY_KEY,
             api_secret=CLOUDINARY_SECRET
         )
+        result = Search()\
+            .expression("folder=sl_voices")\
+            .with_field("secure_url")\
+            .max_results(50)\
+            .execute()
+
         voices = []
-        # جرب كل أنواع الموارد وكل طرق البحث
-        for rtype in ["video", "raw"]:
-            for prefix in ["sl_voices/", ""]:
-                try:
-                    result = cloudinary.api.resources(
-                        type="upload",
-                        prefix=prefix,
-                        resource_type=rtype,
-                        max_results=50
-                    )
-                    for r in result.get("resources", []):
-                        pid = r["public_id"]
-                        # فلتر فقط ملفات sl_voices
-                        if "sl_voices" not in pid and prefix == "":
-                            continue
-                        # تجنب التكرار
-                        if any(v["public_id"] == pid for v in voices):
-                            continue
-                        name = Path(pid).stem
-                        vid  = pid.replace("/","_").replace(" ","_")
-                        voices.append({
-                            "id":        vid,
-                            "name":      name.replace("_"," ").title(),
-                            "url":       r["secure_url"],
-                            "public_id": pid
-                        })
-                except Exception as e:
-                    print(f"cloudinary search {rtype}/{prefix}: {e}")
-
-        # إذا لم نجد شيئاً — ابحث بدون prefix
-        if not voices:
-            try:
-                result = cloudinary.api.resources(
-                    type="upload",
-                    resource_type="video",
-                    max_results=50
-                )
-                for r in result.get("resources", []):
-                    pid  = r["public_id"]
-                    name = Path(pid).stem
-                    vid  = pid.replace("/","_").replace(" ","_")
-                    voices.append({
-                        "id":        vid,
-                        "name":      name.replace("_"," ").title(),
-                        "url":       r["secure_url"],
-                        "public_id": pid
-                    })
-            except Exception as e:
-                print(f"cloudinary fallback: {e}")
-
+        for r in result.get("resources", []):
+            pid  = r["public_id"]
+            name = Path(pid).stem
+            vid  = pid.replace("/","_").replace(" ","_")
+            voices.append({
+                "id":        vid,
+                "name":      name.replace("_"," ").title(),
+                "url":       r["secure_url"],
+                "public_id": pid
+            })
+        print(f"✅ وجدت {len(voices)} صوت")
         return voices
     except Exception as e:
         print(f"⚠️ Cloudinary error: {e}")
