@@ -43,7 +43,8 @@ const VOICE_MAP = {
   'maximilian': { mode: 'gtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
 };
 
-function showToast(msg, duration = 3000) {
+function showToast(msg, duration) {
+  duration = duration || 3000;
   let t = document.getElementById('toast');
   if (!t) {
     t = document.createElement('div');
@@ -54,7 +55,7 @@ function showToast(msg, duration = 3000) {
   t.textContent = msg;
   t.style.transform = 'translateX(-50%) translateY(0)';
   clearTimeout(t._t);
-  t._t = setTimeout(() => t.style.transform = 'translateX(-50%) translateY(120px)', duration);
+  t._t = setTimeout(function() { t.style.transform = 'translateX(-50%) translateY(120px)'; }, duration);
 }
 
 function initHeader() {
@@ -122,16 +123,25 @@ function selectLang(code, btn) {
 function selectVoice(mode, el) {
   STATE.voiceMode = mode;
   STATE.selectedVoice = VOICE_MAP[mode] || null;
+  
+  console.log('🎤 selectVoice called');
+  console.log('   mode:', mode);
+  console.log('   selectedVoice:', STATE.selectedVoice);
+  console.log('   voice_id:', STATE.selectedVoice ? STATE.selectedVoice.voice_id : 'null');
+  console.log('   voice_url:', STATE.selectedVoice ? STATE.selectedVoice.voice_url : 'null');
+  
   document.querySelectorAll('.voice-choice').forEach(function(e) {
     e.style.borderColor = 'rgba(255,255,255,.1)';
     e.style.background = 'rgba(255,255,255,.02)';
   });
+  
   if (el) {
     el.style.borderColor = mode === 'xtts' ? '#a78bfa' : '#60a5fa';
     el.style.background = mode === 'xtts' ? 'rgba(124,58,237,.15)' : 'rgba(96,165,250,.12)';
   }
-  console.log('🎤 Voice:', mode, STATE.selectedVoice);
+  
   if (STATE.selectedVoice && STATE.selectedVoice.voice_url) {
+    console.log('📥 Preloading voice:', STATE.selectedVoice.voice_id);
     preloadVoice(STATE.selectedVoice.voice_id, STATE.selectedVoice.voice_url);
   }
 }
@@ -216,7 +226,19 @@ async function genDub() {
   try {
     const srtContent = document.getElementById('srtTxt') ? document.getElementById('srtTxt').value : '';
     const voiceData = STATE.selectedVoice || VOICE_MAP[STATE.voiceMode] || {};
-    console.log('🎬 Sending dub...', CONFIG.API_BASE + '/api/dub');
+    
+    console.log('════════════════════════════════════════');
+    console.log('🎬 genDub() - Voice Data Debug:');
+    console.log('   STATE.voiceMode:', STATE.voiceMode);
+    console.log('   STATE.selectedVoice:', STATE.selectedVoice);
+    console.log('   voiceData:', voiceData);
+    console.log('   voiceData.voice_id:', voiceData ? voiceData.voice_id : 'undefined');
+    console.log('   voiceData.voice_url:', voiceData ? voiceData.voice_url : 'undefined');
+    console.log('   voiceData.mode:', voiceData ? voiceData.mode : 'undefined');
+    console.log('════════════════════════════════════════');
+    
+    console.log('🎬 Sending dub to:', CONFIG.API_BASE + '/api/dub');
+    
     const res = await fetch(CONFIG.API_BASE + '/api/dub', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1'},
@@ -232,10 +254,19 @@ async function genDub() {
       }),
       signal: AbortSignal.timeout(300000)
     });
+    
     clearInterval(iv);
     pf.style.width = '100%';
     const d = await res.json();
-    console.log('📦 Response:', d);
+    
+    console.log('📦 Server Response:');
+    console.log('   success:', d.success);
+    console.log('   audio_url:', d.audio_url);
+    console.log('   method:', d.method);
+    console.log('   voice_id:', d.voice_id);
+    console.log('   synced:', d.synced);
+    console.log('   time_sec:', d.time_sec);
+    
     if (d.success && d.audio_url) {
       prog.classList.remove('on');
       btn.disabled = false;
