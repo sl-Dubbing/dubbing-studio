@@ -30,13 +30,25 @@ const STATE = {
   selectedVoice: null,
 };
 
-// ✅ VOICE_MAP موحد - المفاتيح تطابق الأزرار في HTML
+// ✅ VOICE_MAP — يدعم كلا التسميتين (اسم الشخص + xtts_lang)
+const _VOICES = {
+  muhammad: { mode: 'xtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
+  dmitry:   { mode: 'xtts', voice_id: 'dmitry_ru',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
+  baris:    { mode: 'xtts', voice_id: 'baris_tr',    voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
+  maximilian:{ mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
+};
 const VOICE_MAP = {
   'gtts': { mode: 'gtts', voice_id: null, voice_url: null },
-  'muhammad': { mode: 'xtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
-  'dmitry': { mode: 'xtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
-  'baris': { mode: 'xtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
-  'maximilian': { mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
+  // ✅ بالاسم
+  'muhammad': _VOICES.muhammad,
+  'dmitry': _VOICES.dmitry,
+  'baris': _VOICES.baris,
+  'maximilian': _VOICES.maximilian,
+  // ✅ بصيغة xtts_lang (التي تستخدمها أزرار HTML)
+  'xtts_ar': _VOICES.muhammad,
+  'xtts_ru': _VOICES.dmitry,
+  'xtts_tr': _VOICES.baris,
+  'xtts_de': _VOICES.maximilian,
 };
 
 function showToast(msg, duration) {
@@ -84,8 +96,8 @@ async function checkServer() {
     return;
   }
   try {
-    const r = await fetch(CONFIG.API_BASE + '/api/health', {
-      headers: {'ngrok-skip-browser-warning': '1'},
+    // ✅ query param بدل header لتجنب preflight مع ngrok
+    const r = await fetch(CONFIG.API_BASE + '/api/health?ngrok-skip-browser-warning=1', {
       signal: AbortSignal.timeout(6000)
     });
     const ok = r.ok;
@@ -144,9 +156,9 @@ function selectVoice(mode, el) {
 
 async function preloadVoice(voice_id, voice_url) {
   try {
-    await fetch(CONFIG.API_BASE + '/api/preload_voice', {
+    // ✅ text/plain لتجنب preflight مع ngrok المجاني
+    await fetch(CONFIG.API_BASE + '/api/preload_voice?ngrok-skip-browser-warning=1', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1'},
       body: JSON.stringify({ voice_id: voice_id, voice_url: voice_url }),
       signal: AbortSignal.timeout(120000)
     });
@@ -235,10 +247,9 @@ async function genDub() {
     
     console.log('🎬 Sending dub to:', CONFIG.API_BASE + '/api/dub');
     
-    // ✅ زيادة timeout إلى 10 دقائق للأفلام الطويلة
-    const res = await fetch(CONFIG.API_BASE + '/api/dub', {
+    // ✅ بدون Content-Type header لتجنب CORS preflight مع ngrok المجاني
+    const res = await fetch(CONFIG.API_BASE + '/api/dub?ngrok-skip-browser-warning=1', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1'},
       body: JSON.stringify({
         text: fullText,
         srt: srtContent,
@@ -249,7 +260,7 @@ async function genDub() {
         voice_id: voiceData.voice_id || null,
         voice_url: voiceData.voice_url || null
       }),
-      signal: AbortSignal.timeout(600000)  // ✅ 10 دقائق بدلاً من 5
+      signal: AbortSignal.timeout(600000)  // ✅ 10 دقائق
     });
     
     clearInterval(iv);
@@ -315,7 +326,14 @@ function addBackendUrlInput() {
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 Page loaded');
-  console.log('🔗 API_BASE:', CONFIG.API_BASE || '(empty)');
+  // ✅ استعادة الرابط المحفوظ من localStorage
+  const saved = localStorage.getItem('sl_backend_url');
+  if (saved) {
+    CONFIG.API_BASE = saved;
+    console.log('🔗 Restored API_BASE:', CONFIG.API_BASE);
+  } else {
+    console.log('🔗 API_BASE: (empty)');
+  }
   addBackendUrlInput();
   initHeader();
   initLangs('langs');
