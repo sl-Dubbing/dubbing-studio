@@ -127,6 +127,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .srt-item{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:12px;font-size:.82rem}
 .srt-time{color:#a78bfa;font-family:monospace;min-width:110px}
 
+50%{opacity:.6}}
+
 /* ── Audio / Download ── */
 audio{width:100%;margin:18px 0;display:none;border-radius:8px}
 audio.show{display:block}
@@ -134,31 +136,60 @@ audio.show{display:block}
 .dl-btn.show{display:flex}
 .dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(5,150,105,.4)}
 
-/* ── Voice Picker ── */
-#voicePicker{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 24px}
-.voice-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 18px;border-radius:14px;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;transition:all .25s;min-width:110px;position:relative}
-.voice-card:hover{border-color:#7c3aed;background:rgba(124,58,237,.1);transform:translateY(-2px)}
-.voice-card.selected{border-color:#a78bfa;background:rgba(124,58,237,.2);box-shadow:0 0 20px rgba(124,58,237,.3)}
-.voice-icon{font-size:28px}
-.voice-name{font-size:13px;font-weight:600;color:#e2e8f0;text-align:center}
-.voice-play{background:rgba(255,255,255,.1);border:none;border-radius:50%;width:28px;height:28px;color:#fff;cursor:pointer;font-size:11px;transition:background .2s;margin-top:2px}
-.voice-play:hover{background:#7c3aed}
-.voice-loading,.voice-empty{color:#94a3b8;font-size:14px;padding:20px}
-
-/* ── Toast ── */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:14px 28px;border-radius:12px;font-weight:600;box-shadow:0 10px 35px rgba(0,0,0,.4);transition:transform .3s;z-index:9999}
-.toast.show{transform:translateX(-50%) translateY(0)}
+/* ── Login ── */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(167,139,250,.22);border-radius:24px;padding:46px;width:100%;max-width:460px;box-shadow:0 25px 80px rgba(0,0,0,.6)}
+.login-card h2{font-size:1.7rem;font-weight:900;color:white;text-align:center;margin-bottom:6px}
+.login-card .sub{color:#9ca3af;text-align:center;font-size:.9rem;margin-bottom:26px}
+.login-card .sub a{color:#60a5fa;text-decoration:none}
+.gaccounts{margin-bottom:22px;max-height:210px;overflow-y:auto;border:1px solid rgba(167,139,250,.12);border-radius:12px;background:rgba(0,0,0,.3)}
+.gacc-item{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;border-bottom:1px solid rgba(167,139,250,.1);transition:all .3s}
+.gacc-item:last-child{border-bottom:none}
+.gacc-item:hover{background:rgba(167,139,250,.1)}
+.gacc-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;flex-shrink:0}
+.gacc-name{font-weight:600;color:white;font-size:.95rem}
+.gacc-email{font-size:.8rem;color:#9ca3af}
+.divider{display:flex;align-items:center;margin:20px 0;color:#6b7280}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(167,139,250,.2)}
+.divider span{padding:0 14px;font-size:.82rem}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-weight:600;color:white;font-size:.9rem;margin-bottom:7px}
+.fg input{width:100%;padding:13px 15px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;color:white;font-size:.9rem;outline:none;transition:all .3s}
+.fg input:focus{border-color:#a78bfa;box-shadow:0 0 0 3px rgba(167,139,250,.15)}
+.fg input::placeholder{color:#6b7280}
+.submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:10px;color:white;font-weight:700;font-size:1rem;cursor:pointer;margin-top:6px;transition:all .3s}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,.6)}
 
 /* ── Footer ── */
 footer{text-align:center;padding:30px 0 20px;border-top:1px solid rgba(255,255,255,.07);color:#6b7280;font-size:.82rem;margin-top:50px}
 footer a{color:#9ca3af;text-decoration:none;margin:0 8px}
 footer a:hover{color:#a78bfa}
 
+/* ── Toast ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:14px 28px;border-radius:12px;font-weight:600;box-shadow:0 10px 35px rgba(0,0,0,.4);transition:transform .3s;z-index:9999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
 /* ── Responsive ── */
 @media(max-width:720px){
   .tools-row,.plans-row{grid-template-columns:1fr}
   .top-bar{flex-direction:column;align-items:flex-start}
+  .login-card{padding:30px 20px}
 }
+/* extra */
+.voice-upload-area{border:2px dashed rgba(167,139,250,.35);border-radius:12px;padding:28px;text-align:center;cursor:pointer;background:rgba(124,58,237,.04);transition:all .3s;margin-bottom:16px}
+.voice-upload-area:hover,.voice-upload-area.has-file{border-color:#a78bfa;background:rgba(124,58,237,.1)}
+.voice-upload-area input{display:none}
+.method-tabs{display:flex;gap:10px;margin-bottom:20px}
+.mtab{flex:1;padding:11px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.03);color:#9ca3af;cursor:pointer;text-align:center;font-weight:600;transition:all .3s}
+.mtab.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(96,165,250,.15));border-color:#a78bfa;color:#fff}
+.method-panel{display:none}
+.method-panel.active{display:block}
+.voice-preview{margin-top:12px;display:none}
+.voice-preview audio{width:100%;border-radius:8px}
+.voice-preview.show{display:block}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:600;margin-top:10px}
+.status-badge.ok{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.3)}
+.status-badge.warn{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
 </style>
 </head>
 <body>
@@ -179,28 +210,42 @@ footer a:hover{color:#a78bfa}
   <div class="tool-box">
 
     <!-- ── اختيار الصوت ── -->
-    <label class="lbl">🎙️ اختر الصوت:</label>
-    <div id="voicePicker">
-      <div class="voice-loading">⏳ جاري تحميل الأصوات...</div>
+    <label class="lbl">اختر الصوت:</label>
+    <div style="display:flex;gap:12px;margin-bottom:24px">
+      <div class="voice-choice active" id="vc-default" onclick="selectVoice('gtts',this)"
+        style="flex:1;padding:16px;border:2px solid rgba(96,165,250,.3);border-radius:14px;cursor:pointer;text-align:center;background:rgba(96,165,250,.06);transition:all .3s">
+        <div style="font-size:1.8rem">🤖</div>
+        <div style="font-weight:700;color:#60a5fa;margin-top:6px">صوت افتراضي</div>
+        <div style="font-size:.78rem;color:#6b7280;margin-top:3px">سريع ومجاني</div>
+      </div>
+      <div class="voice-choice" id="vc-abdu" onclick="selectVoice('xtts',this)"
+        style="flex:1;padding:16px;border:2px solid rgba(167,139,250,.2);border-radius:14px;cursor:pointer;text-align:center;background:rgba(124,58,237,.04);transition:all .3s">
+        <div style="font-size:1.8rem">🎙️</div>
+        <div style="font-weight:700;color:#a78bfa;margin-top:6px">صوت ABDU SELAM</div>
+        <div style="font-size:.78rem;color:#6b7280;margin-top:3px">نبرة حقيقية بكل اللغات</div>
+      </div>
     </div>
 
     <!-- ── اللغة ── -->
     <label class="lbl">اختر لغة الدبلجة:</label>
-    <div class="lang-grid" id="langs">
-      <button class="lang-btn active" onclick="selectLang('ar',this)"><span class="lang-flag">🇸🇦</span><span>العربية</span></button>
-      <button class="lang-btn" onclick="selectLang('en',this)"><span class="lang-flag">🇺🇸</span><span>English</span></button>
-      <button class="lang-btn" onclick="selectLang('es',this)"><span class="lang-flag">🇪🇸</span><span>Español</span></button>
-      <button class="lang-btn" onclick="selectLang('fr',this)"><span class="lang-flag">🇫🇷</span><span>Français</span></button>
-      <button class="lang-btn" onclick="selectLang('de',this)"><span class="lang-flag">🇩🇪</span><span>Deutsch</span></button>
-      <button class="lang-btn" onclick="selectLang('it',this)"><span class="lang-flag">🇮🇹</span><span>Italiano</span></button>
-      <button class="lang-btn" onclick="selectLang('ru',this)"><span class="lang-flag">🇷🇺</span><span>Русский</span></button>
-      <button class="lang-btn" onclick="selectLang('tr',this)"><span class="lang-flag">🇹🇷</span><span>Türkçe</span></button>
-      <button class="lang-btn" onclick="selectLang('zh',this)"><span class="lang-flag">🇨🇳</span><span>中文</span></button>
-      <button class="lang-btn" onclick="selectLang('hi',this)"><span class="lang-flag">🇮🇳</span><span>हिन्दी</span></button>
-      <button class="lang-btn" onclick="selectLang('fa',this)"><span class="lang-flag">🇮🇷</span><span>فارسی</span></button>
-      <button class="lang-btn" onclick="selectLang('sv',this)"><span class="lang-flag">🇸🇪</span><span>Svenska</span></button>
-      <button class="lang-btn" onclick="selectLang('nl',this)"><span class="lang-flag">🇳🇱</span><span>Nederlands</span></button>
-    </div>
+    
+<div class="lang-grid" id="langs">
+  <button class="lang-btn active" onclick="selectLang('ar',this)"><span class="lang-flag">🇸🇦</span><span>العربية</span></button>
+  <button class="lang-btn" onclick="selectLang('en',this)"><span class="lang-flag">🇺🇸</span><span>English</span></button>
+  <button class="lang-btn" onclick="selectLang('es',this)"><span class="lang-flag">🇪🇸</span><span>Español</span></button>
+  <button class="lang-btn" onclick="selectLang('fr',this)"><span class="lang-flag">🇫🇷</span><span>Français</span></button>
+  <button class="lang-btn" onclick="selectLang('de',this)"><span class="lang-flag">🇩🇪</span><span>Deutsch</span></button>
+  <button class="lang-btn" onclick="selectLang('it',this)"><span class="lang-flag">🇮🇹</span><span>Italiano</span></button>
+  <button class="lang-btn" onclick="selectLang('ru',this)"><span class="lang-flag">🇷🇺</span><span>Русский</span></button>
+  <button class="lang-btn" onclick="selectLang('tr',this)"><span class="lang-flag">🇹🇷</span><span>Türkçe</span></button>
+  <button class="lang-btn" onclick="selectLang('zh',this)"><span class="lang-flag">🇨🇳</span><span>中文</span></button>
+  <button class="lang-btn" onclick="selectLang('hi',this)"><span class="lang-flag">🇮🇳</span><span>हिन्दी</span></button>
+  <button class="lang-btn" onclick="selectLang('fa',this)"><span class="lang-flag">🇮🇷</span><span>فارسی</span></button>
+  <button class="lang-btn" onclick="selectLang('sv',this)"><span class="lang-flag">🇸🇪</span><span>Svenska</span></button>
+  <button class="lang-btn" onclick="selectLang('nl',this)"><span class="lang-flag">🇳🇱</span><span>Nederlands</span></button>
+</div>
+
+    
 
     <!-- ── SRT ── -->
     <label class="lbl">ملف SRT:</label>
@@ -217,7 +262,7 @@ footer a:hover{color:#a78bfa}
     <!-- ── توليد ── -->
     <div class="controls-row">
       <div class="cg"><label>السرعة: <span class="cv" id="rv">1.0x</span></label><input type="range" id="rc" min=".5" max="1" step=".05" value="1" oninput="document.getElementById('rv').textContent=this.value+'x'"></div>
-      <div class="cg"><label>الصوت: <span class="cv" id="vv">1.0x</span></label><input type="range" id="vc2" min=".2" max="2" step=".1" value="1" oninput="document.getElementById('vv').textContent=this.value+'x'"></div>
+      <div class="cg"><label>الصوت: <span class="cv" id="vv">1.0x</span></label><input type="range" id="vc" min=".2" max="2" step=".1" value="1" oninput="document.getElementById('vv').textContent=this.value+'x'"></div>
     </div>
 
     <button class="action-btn" id="dubBtn" onclick="genDub()">🎬 توليد الدبلجة</button>
@@ -228,8 +273,7 @@ footer a:hover{color:#a78bfa}
     </div>
 
     <audio id="dubAud" controls></audio>
-    <a class="dl-btn" id="dubDl" download="dubbed.mp3">⬇️ تحميل الدبلجة</a>
-
+    <a class="dl-btn" id="dubDl" download="dubbed.wav">⬇️ تحميل الدبلجة (WAV)</a>
   </div>
 
   <footer>
@@ -238,6 +282,42 @@ footer a:hover{color:#a78bfa}
   </footer>
 </div>
 <div class="toast" id="toast"></div>
+
+
+
+
+<!-- شريط إدخال رابط Colab -->
+<div id="colabBar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,31,.95);padding:10px 16px;display:flex;gap:8px;z-index:9999;border-top:1px solid rgba(167,139,250,.3);backdrop-filter:blur(10px)">
+  <input id="colabUrl" type="text" placeholder="🔗 الصق رابط ngrok هنا مثال: https://xxxx.ngrok-free.app"
+    style="flex:1;padding:9px 14px;border-radius:8px;border:1px solid rgba(167,139,250,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;outline:none;direction:ltr"
+    onkeydown="if(event.key==='Enter')applyUrl()">
+  <button onclick="applyUrl()"
+    style="padding:9px 18px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap">
+    تطبيق ✓
+  </button>
+  <button onclick="document.getElementById('colabBar').style.display='none'"
+    style="padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#9ca3af;cursor:pointer">
+    ✕
+  </button>
+</div>
+<script>
+function applyUrl(){
+  const url = document.getElementById('colabUrl').value.trim().replace(/\/$/,'');
+  if(!url){alert('الرجاء إدخال الرابط');return;}
+  localStorage.setItem('sl_backend_url', url);
+  if(typeof CONFIG !== 'undefined') CONFIG.API_BASE = url;
+  document.getElementById('colabBar').style.display='none';
+  const t=document.getElementById('toast');
+  if(t){t.textContent='✅ تم تحديث رابط الخادم';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+  location.reload();
+}
+// أظهر الرابط الحالي في الحقل
+window.addEventListener('load', function(){
+  const saved = localStorage.getItem('sl_backend_url');
+  if(saved) document.getElementById('colabUrl').value = saved;
+});
+</script>
+
 <script src="script.js"></script>
 </body>
 </html>
