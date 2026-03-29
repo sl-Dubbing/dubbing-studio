@@ -309,6 +309,10 @@ document.addEventListener('DOMContentLoaded', function() {
     CONFIG.API_BASE = saved;
     console.log('🔗 Restored:', CONFIG.API_BASE);
   }
+  // ✅ Muhammad افتراضياً لكل اللغات
+  STATE.selectedVoice = VOICE_MAP['muhammad'];
+  STATE.voiceMode = 'muhammad';
+  console.log('🎤 Default voice: Muhammad (all languages)');
   addBackendUrlInput();
   initHeader();
   initLangs('langs');
