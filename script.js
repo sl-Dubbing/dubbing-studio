@@ -1,10 +1,9 @@
 // ============================================================
-// script.js — العقل البرمجي لواجهة sl-Dubbing
+// script.js — sl-Dubbing Frontend (Final)
 // ============================================================
 
 const CONFIG = {
-  // ✅ فارغ - سيتم ملؤه يدوياً من زر 🔗
-  API_BASE: '',
+  API_BASE: '',  // ✅ فارغ - يُملأ من localStorage أو زر 🔗
   GUEST_LIMIT: 6,
   LANGS: [
     {c:'ar', n:'العربية', f:'🇸🇦'},
@@ -30,30 +29,49 @@ const STATE = {
   selectedVoice: null,
 };
 
-// ✅ VOICE_MAP — يدعم كلا التسميتين (اسم الشخص + xtts_lang)
+// ✅ VOICE_MAP — mode = xtts لكل الأصوات المخصصة
 const _VOICES = {
-  muhammad: { mode: 'xtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
-  dmitry:   { mode: 'xtts', voice_id: 'dmitry_ru',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
-  baris:    { mode: 'xtts', voice_id: 'baris_tr',    voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
-  maximilian:{ mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
+  muhammad:   { mode: 'xtts', voice_id: 'muhammad_ar',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
+  dmitry:     { mode: 'xtts', voice_id: 'dmitry_ru',     voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
+  baris:      { mode: 'xtts', voice_id: 'baris_tr',      voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
+  maximilian: { mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
 };
 const VOICE_MAP = {
   'gtts': { mode: 'gtts', voice_id: null, voice_url: null },
-  // ✅ بالاسم
   'muhammad': _VOICES.muhammad,
   'dmitry': _VOICES.dmitry,
   'baris': _VOICES.baris,
   'maximilian': _VOICES.maximilian,
-  // ✅ بصيغة xtts_lang (التي تستخدمها أزرار HTML)
   'xtts_ar': _VOICES.muhammad,
   'xtts_ru': _VOICES.dmitry,
   'xtts_tr': _VOICES.baris,
   'xtts_de': _VOICES.maximilian,
 };
 
+// ═══════════════════════════════════════════
+// ✅ Helper: fetch بدون headers مخصصة (يمنع CORS preflight مع ngrok)
+// ═══════════════════════════════════════════
+function apiGet(path, timeout) {
+  var sep = path.includes('?') ? '&' : '?';
+  return fetch(CONFIG.API_BASE + path + sep + 'ngrok-skip-browser-warning=1', {
+    signal: AbortSignal.timeout(timeout || 10000)
+  });
+}
+
+function apiPost(path, data, timeout) {
+  return fetch(CONFIG.API_BASE + path + '?ngrok-skip-browser-warning=1', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    signal: AbortSignal.timeout(timeout || 60000)
+  });
+}
+
+// ═══════════════════════════════════════════
+// UI
+// ═══════════════════════════════════════════
 function showToast(msg, duration) {
   duration = duration || 3000;
-  let t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   if (!t) {
     t = document.createElement('div');
     t.id = 'toast';
@@ -67,10 +85,10 @@ function showToast(msg, duration) {
 }
 
 function initHeader() {
-  const hdr = document.getElementById('hdr');
+  var hdr = document.getElementById('hdr');
   if (!hdr) return;
   try {
-    const u = JSON.parse(localStorage.getItem('sl_user'));
+    var u = JSON.parse(localStorage.getItem('sl_user'));
     if (u) {
       hdr.innerHTML = '<div class="avatar">' + (u.avatar || '👤') + '</div><span class="username">' + (u.name || u.email) + '</span><button class="btn-logout" onclick="logout()">خروج</button>';
     } else {
@@ -87,8 +105,8 @@ function logout() {
 }
 
 async function checkServer() {
-  const badge = document.getElementById('srv');
-  const txt = document.getElementById('srvTxt');
+  var badge = document.getElementById('srv');
+  var txt = document.getElementById('srvTxt');
   if (!badge) return;
   if (!CONFIG.API_BASE) {
     badge.className = 'srv-badge';
@@ -96,15 +114,11 @@ async function checkServer() {
     return;
   }
   try {
-    // ✅ query param بدل header لتجنب preflight مع ngrok
-    const r = await fetch(CONFIG.API_BASE + '/api/health?ngrok-skip-browser-warning=1', {
-      signal: AbortSignal.timeout(6000)
-    });
-    const ok = r.ok;
-    badge.className = 'srv-badge' + (ok ? ' on' : '');
-    txt.textContent = ok ? 'الخادم متصل ✓' : 'الخادم غير متاح';
-    console.log('✅ Server:', await r.json());
-    return ok;
+    var r = await apiGet('/api/health', 6000);
+    badge.className = 'srv-badge' + (r.ok ? ' on' : '');
+    if (txt) txt.textContent = r.ok ? 'الخادم متصل ✓' : 'الخادم غير متاح';
+    if (r.ok) console.log('✅ Server:', await r.json());
+    return r.ok;
   } catch(e) {
     console.error('❌ Server check failed:', e);
     badge.className = 'srv-badge';
@@ -114,7 +128,7 @@ async function checkServer() {
 }
 
 function initLangs(containerId) {
-  const el = document.getElementById(containerId || 'langs');
+  var el = document.getElementById(containerId || 'langs');
   if (!el) return;
   el.innerHTML = CONFIG.LANGS.map(function(l) {
     return '<button class="lang-btn ' + (l.c === STATE.lang ? 'active' : '') + '" onclick="selectLang(\'' + l.c + '\', this)"><span class="lang-flag">' + l.f + '</span><span>' + l.n + '</span></button>';
@@ -131,47 +145,37 @@ function selectLang(code, btn) {
 function selectVoice(mode, el) {
   STATE.voiceMode = mode;
   STATE.selectedVoice = VOICE_MAP[mode] || null;
-  
-  console.log('🎤 selectVoice called');
-  console.log('   mode:', mode);
-  console.log('   selectedVoice:', STATE.selectedVoice);
-  console.log('   voice_id:', STATE.selectedVoice ? STATE.selectedVoice.voice_id : 'null');
-  console.log('   voice_url:', STATE.selectedVoice ? STATE.selectedVoice.voice_url : 'null');
-  
+  console.log('🎤 Voice:', mode, STATE.selectedVoice ? STATE.selectedVoice.voice_id : 'gtts');
+
   document.querySelectorAll('.voice-choice').forEach(function(e) {
     e.style.borderColor = 'rgba(255,255,255,.1)';
     e.style.background = 'rgba(255,255,255,.02)';
   });
-  
   if (el) {
     el.style.borderColor = '#a78bfa';
     el.style.background = 'rgba(124,58,237,.15)';
   }
-  
-  if (STATE.selectedVoice && STATE.selectedVoice.voice_url) {
-    console.log('📥 Preloading voice:', STATE.selectedVoice.voice_id);
+  if (STATE.selectedVoice && STATE.selectedVoice.voice_url && CONFIG.API_BASE) {
     preloadVoice(STATE.selectedVoice.voice_id, STATE.selectedVoice.voice_url);
   }
 }
 
 async function preloadVoice(voice_id, voice_url) {
   try {
-    // ✅ text/plain لتجنب preflight مع ngrok المجاني
-    await fetch(CONFIG.API_BASE + '/api/preload_voice?ngrok-skip-browser-warning=1', {
-      method: 'POST',
-      body: JSON.stringify({ voice_id: voice_id, voice_url: voice_url }),
-      signal: AbortSignal.timeout(120000)
-    });
+    await apiPost('/api/preload_voice', { voice_id: voice_id, voice_url: voice_url }, 120000);
     console.log('✅ Voice preloaded:', voice_id);
   } catch(e) {
-    console.log('⚠️ preload error:', e.message);
+    console.log('⚠️ preload:', e.message);
   }
 }
 
+// ═══════════════════════════════════════════
+// SRT
+// ═══════════════════════════════════════════
 function loadSRTFile(event) {
-  const file = event.target.files[0];
+  var file = event.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
+  var reader = new FileReader();
   reader.onload = function(e) {
     document.getElementById('srtTxt').value = e.target.result;
     parseSRT();
@@ -180,29 +184,20 @@ function loadSRTFile(event) {
 }
 
 function parseSRT() {
-  const content = document.getElementById('srtTxt') ? document.getElementById('srtTxt').value : '';
+  var content = document.getElementById('srtTxt') ? document.getElementById('srtTxt').value : '';
   if (!content) { showToast('الرجاء إدخال محتوى SRT'); return; }
   STATE.srtData = [];
-  let cur = null;
-  const lines = content.split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) {
-      if (cur) STATE.srtData.push(cur);
-      cur = null;
-      continue;
-    }
-    if (/^\d+$/.test(line)) {
-      if (cur) STATE.srtData.push(cur);
-      cur = {i: parseInt(line), t: '', x: ''};
-    } else if (line.includes('-->')) {
-      if (cur) cur.t = line;
-    } else if (cur) {
-      cur.x += line + ' ';
-    }
+  var cur = null;
+  var lines = content.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) { if (cur) STATE.srtData.push(cur); cur = null; continue; }
+    if (/^\d+$/.test(line)) { if (cur) STATE.srtData.push(cur); cur = {i: parseInt(line), t: '', x: ''}; }
+    else if (line.includes('-->')) { if (cur) cur.t = line; }
+    else if (cur) { cur.x += line + ' '; }
   }
   if (cur) STATE.srtData.push(cur);
-  const list = document.getElementById('srtList');
+  var list = document.getElementById('srtList');
   if (list) {
     list.innerHTML = STATE.srtData.map(function(item) {
       return '<div class="srt-item"><span class="srt-time">' + item.t + '</span><span>' + item.x + '</span></div>';
@@ -210,83 +205,64 @@ function parseSRT() {
     list.style.display = 'block';
   }
   showToast('✅ تم تحليل ' + STATE.srtData.length + ' جملة');
-  console.log('📝 SRT:', STATE.srtData.length, 'blocks');
 }
 
+// ═══════════════════════════════════════════
+// Dubbing
+// ═══════════════════════════════════════════
 async function genDub() {
   if (!STATE.srtData.length) { showToast('الرجاء تحميل ملف SRT أولاً'); return; }
   if (!CONFIG.API_BASE) { showToast('❌ الخادم غير متصل - اضغط 🔗'); return; }
-  const user = JSON.parse(localStorage.getItem('sl_user') || '{}');
-  const btn = document.getElementById('dubBtn');
-  const prog = document.getElementById('prog');
-  const pf = document.getElementById('pf');
-  const pt = document.getElementById('pt');
+  var user = JSON.parse(localStorage.getItem('sl_user') || '{}');
+  var btn = document.getElementById('dubBtn');
+  var prog = document.getElementById('prog');
+  var pf = document.getElementById('pf');
+  var pt = document.getElementById('pt');
   btn.disabled = true;
   prog.classList.add('on');
   pf.style.width = '0%';
-  const fullText = STATE.srtData.map(function(item) { return item.x.trim(); }).join('\n');
-  let p = 0;
-  const iv = setInterval(function() {
+
+  var fullText = STATE.srtData.map(function(item) { return item.x.trim(); }).join('\n');
+  var p = 0;
+  var iv = setInterval(function() {
     p = Math.min(p + 2, 85);
     pf.style.width = p + '%';
     if (pt) pt.textContent = 'جاري التوليد... ' + p + '%';
   }, 600);
+
   try {
-    const srtContent = document.getElementById('srtTxt') ? document.getElementById('srtTxt').value : '';
-    const voiceData = STATE.selectedVoice || VOICE_MAP[STATE.voiceMode] || {};
-    
-    console.log('════════════════════════════════════════');
-    console.log('🎬 genDub() - Voice Data Debug:');
-    console.log('   STATE.voiceMode:', STATE.voiceMode);
-    console.log('   STATE.selectedVoice:', STATE.selectedVoice);
-    console.log('   voiceData:', voiceData);
-    console.log('   voiceData.voice_id:', voiceData ? voiceData.voice_id : 'undefined');
-    console.log('   voiceData.voice_url:', voiceData ? voiceData.voice_url : 'undefined');
-    console.log('   voiceData.mode:', voiceData ? voiceData.mode : 'undefined');
-    console.log('════════════════════════════════════════');
-    
-    console.log('🎬 Sending dub to:', CONFIG.API_BASE + '/api/dub');
-    
-    // ✅ بدون Content-Type header لتجنب CORS preflight مع ngrok المجاني
-    const res = await fetch(CONFIG.API_BASE + '/api/dub?ngrok-skip-browser-warning=1', {
-      method: 'POST',
-      body: JSON.stringify({
-        text: fullText,
-        srt: srtContent,
-        lang: STATE.lang,
-        email: user.email || '',
-        feature: 'dub',
-        voice_mode: voiceData.mode || 'gtts',
-        voice_id: voiceData.voice_id || null,
-        voice_url: voiceData.voice_url || null
-      }),
-      signal: AbortSignal.timeout(600000)  // ✅ 10 دقائق
-    });
-    
+    var srtContent = document.getElementById('srtTxt') ? document.getElementById('srtTxt').value : '';
+    var voiceData = STATE.selectedVoice || VOICE_MAP[STATE.voiceMode] || {};
+    console.log('🎬 genDub: voice=' + (voiceData.voice_id || 'gtts') + ' mode=' + (voiceData.mode || 'gtts'));
+
+    var res = await apiPost('/api/dub', {
+      text: fullText,
+      srt: srtContent,
+      lang: STATE.lang,
+      email: user.email || '',
+      feature: 'dub',
+      voice_mode: voiceData.mode || 'gtts',
+      voice_id: voiceData.voice_id || null,
+      voice_url: voiceData.voice_url || null
+    }, 600000);
+
     clearInterval(iv);
     pf.style.width = '100%';
-    const d = await res.json();
-    
-    console.log('📦 Server Response:');
-    console.log('   success:', d.success);
-    console.log('   audio_url:', d.audio_url);
-    console.log('   method:', d.method);
-    console.log('   voice_id:', d.voice_id);
-    console.log('   synced:', d.synced);
-    console.log('   time_sec:', d.time_sec);
-    
+    var d = await res.json();
+    console.log('📦 Response:', d);
+
     if (d.success && d.audio_url) {
       prog.classList.remove('on');
       btn.disabled = false;
-      const aud = document.getElementById('dubAud');
-      const dl = document.getElementById('dubDl');
+      var aud = document.getElementById('dubAud');
+      var dl = document.getElementById('dubDl');
       aud.src = d.audio_url;
       aud.classList.add('show');
       dl.href = d.audio_url;
       dl.classList.add('show');
-      const method = (d.method && d.method.includes('xtts')) || voiceData.voice_id ? 'بصوت مخصص 🎤' : 'بصوت افتراضي';
-      const synced = d.synced ? ' — متزامن ⏱️' : '';
-      const timing = d.time_sec ? ' (' + d.time_sec + 's)' : '';
+      var method = (d.method && d.method.includes('xtts')) || voiceData.voice_id ? 'بصوت مخصص 🎤' : 'بصوت افتراضي';
+      var synced = d.synced ? ' — متزامن ⏱️' : '';
+      var timing = d.time_sec ? ' (' + d.time_sec + 's)' : '';
       showToast('✅ ' + method + synced + timing, 5000);
       return;
     }
@@ -301,6 +277,9 @@ async function genDub() {
   btn.disabled = false;
 }
 
+// ═══════════════════════════════════════════
+// Backend URL
+// ═══════════════════════════════════════════
 function setBackendUrl(url) {
   CONFIG.API_BASE = url.trim().replace(/\/$/, '');
   localStorage.setItem('sl_backend_url', CONFIG.API_BASE);
@@ -310,33 +289,28 @@ function setBackendUrl(url) {
 }
 
 function addBackendUrlInput() {
-  const btn = document.createElement('button');
+  var btn = document.createElement('button');
   btn.textContent = '🔗 تغيير الخادم';
   btn.style.cssText = 'position:fixed;top:10px;right:10px;padding:8px 14px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.5);border-radius:8px;color:#fff;cursor:pointer;font-size:12px;z-index:9998;';
   btn.onclick = function() {
-    const url = prompt('أدخل رابط الخادم الجديد (ngrok من Colab):', CONFIG.API_BASE);
-    if (url && url.trim()) {
-      setBackendUrl(url);
-    }
+    var url = prompt('أدخل رابط الخادم الجديد (ngrok من Colab):', CONFIG.API_BASE);
+    if (url && url.trim()) setBackendUrl(url);
   };
   document.body.appendChild(btn);
-  console.log('🔗 API_BASE:', CONFIG.API_BASE);
-  console.log('💡 Click "🔗 تغيير الخادم" to update URL from Colab');
 }
 
+// ═══════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 Page loaded');
-  // ✅ استعادة الرابط المحفوظ من localStorage
-  const saved = localStorage.getItem('sl_backend_url');
+  console.log('🚀 sl-Dubbing loaded');
+  var saved = localStorage.getItem('sl_backend_url');
   if (saved) {
     CONFIG.API_BASE = saved;
-    console.log('🔗 Restored API_BASE:', CONFIG.API_BASE);
-  } else {
-    console.log('🔗 API_BASE: (empty)');
+    console.log('🔗 Restored:', CONFIG.API_BASE);
   }
   addBackendUrlInput();
   initHeader();
   initLangs('langs');
   checkServer();
-  console.log('✅ Initialization complete');
 });
