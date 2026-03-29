@@ -268,6 +268,18 @@ async function fetchBackendUrl() {
     const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
     const d   = await res.json();
     if (d.url) {
+      CONFIG.API_BASE = d.url;
+      localStorage.setItem('sl_backend_url', d.url);
+      console.log('✅ Backend URL:', d.url);
+      return true;
+    }
+  } catch(e) {
+    console.log('fetchBackendUrl error:', e.message);
+  }
+  return false;
+});
+    const d   = await res.json();
+    if (d.url) {
       localStorage.removeItem('sl_backend_url');
       CONFIG.API_BASE = d.url;
       localStorage.setItem('sl_backend_url', d.url);
@@ -282,13 +294,7 @@ async function fetchBackendUrl() {
 
 // ── تهيئة الصفحة ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  // جلب الرابط من Cloudinary أولاً
   await fetchBackendUrl();
-
-  // استرجع رابط Colab إن كان محفوظاً
-  const saved = localStorage.getItem('sl_backend_url');
-  if (saved) CONFIG.API_BASE = saved;
-
   initHeader();
   initLangs('langs');
   checkServer();
