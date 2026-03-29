@@ -228,6 +228,8 @@ def synthesize_voice(text, lang, use_xtts=False, voice_url=None):
     """توجيه التوليد لـ XTTS أو gTTS"""
     output_path = str(AUDIO_DIR / f"audio_{uuid.uuid4().hex[:8]}.wav")
     
+    logger.info(f"🎤 synthesize_voice: use_xtts={use_xtts}, voice_url={voice_url}")
+    
     if use_xtts and voice_url:
         success, method = synthesize_xtts(text, lang, voice_url, output_path)
         if success:
@@ -463,6 +465,7 @@ def dub():
         email = (data.get('email') or '').strip().lower()
         voice_mode = data.get('voice_mode', 'gtts').lower()
         voice_url = data.get('voice_url', None)
+        voice_id = data.get('voice_id', None)
         srt = data.get('srt', '')
         
         if not text and not srt:
@@ -481,7 +484,17 @@ def dub():
             if user and user.voice_url:
                 voice_url = user.voice_url
         
-        use_xtts = (voice_mode == 'xtts') and voice_url
+        # ✅ الإصلاح: استخدام voice_url بدلاً من voice_mode
+        use_xtts = bool(voice_url)
+        
+        logger.info("=" * 60)
+        logger.info("🎬 [DUB] Received request:")
+        logger.info(f"   lang: {lang}")
+        logger.info(f"   voice_id: {voice_id}")
+        logger.info(f"   voice_url: {voice_url}")
+        logger.info(f"   use_xtts: {use_xtts}")
+        logger.info(f"   srt blocks: {len(parse_srt(srt)) if srt else 0}")
+        logger.info("=" * 60)
         
         t0 = time.time()
         
@@ -506,6 +519,8 @@ def dub():
             'audio_url': audio_url,
             'filename': filename,
             'method': method,
+            'voice_id': voice_id,
+            'voice_url': voice_url,
             'synced': synced,
             'time_sec': round(time.time() - t0, 1),
             'remaining': GUEST_LIMIT - GUEST_USAGE[ip]['dub']
@@ -532,6 +547,7 @@ def tts():
         email = (data.get('email') or '').strip().lower()
         voice_mode = data.get('voice_mode', 'gtts').lower()
         voice_url = data.get('voice_url', None)
+        voice_id = data.get('voice_id', None)
         
         if not text:
             return jsonify({'error': 'النص فارغ'}), 400
@@ -549,7 +565,16 @@ def tts():
             if user and user.voice_url:
                 voice_url = user.voice_url
         
-        use_xtts = (voice_mode == 'xtts') and voice_url
+        # ✅ الإصلاح: استخدام voice_url بدلاً من voice_mode
+        use_xtts = bool(voice_url)
+        
+        logger.info("=" * 60)
+        logger.info("🎤 [TTS] Received request:")
+        logger.info(f"   lang: {lang}")
+        logger.info(f"   voice_id: {voice_id}")
+        logger.info(f"   voice_url: {voice_url}")
+        logger.info(f"   use_xtts: {use_xtts}")
+        logger.info("=" * 60)
         
         out, method = synthesize_voice(text, lang, use_xtts, voice_url)
         
@@ -564,6 +589,7 @@ def tts():
             'audio_url': audio_url,
             'filename': filename,
             'method': method,
+            'voice_id': voice_id,
             'remaining': GUEST_LIMIT - GUEST_USAGE[ip]['tts']
         })
     except Exception as e:
@@ -608,7 +634,15 @@ def preload_voice():
         res.headers['Access-Control-Allow-Origin'] = '*'
         return res, 200
     
-    return jsonify({'success': True, 'message': 'Voice ready (local mode)'})
+    data = request.get_json(force=True)
+    voice_url = data.get('voice_url', '')
+    voice_id = data.get('voice_id', '')
+    logger.info(f"📥 preload_voice: {voice_id}")
+    
+    if voice_url:
+        fetch_voice_sample(voice_url, str(VOICE_DIR / f"{voice_id}.mp3"))
+    
+    return jsonify({'success': True, 'message': 'Voice ready'})
 
 
 # -----------------------------------------------------------------
