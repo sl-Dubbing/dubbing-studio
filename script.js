@@ -27,11 +27,6 @@ const STATE = {
   lang: 'ar',
   voiceMode: 'gtts',
   srtData: [],
-  isRecording: false,
-  recorder: null,
-  chunks: [],
-  voiceBlob: null,
-  voiceUploaded: false,
   selectedVoice: null,
 };
 
