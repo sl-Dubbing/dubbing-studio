@@ -1,26 +1,30 @@
 [
   {
     "id": "muhammad_ar",
-    "name": "Muhammad 🇸🇦",
+    "name": "Muhammad 🎙️",
     "lang": "ar",
-    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3"
+    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3",
+    "default_for": ["ar", "en", "es", "fr", "de", "it", "ru", "tr", "zh", "hi", "fa", "sv", "nl"]
   },
   {
     "id": "dmitry_ru",
     "name": "Dmitry 🇷🇺",
     "lang": "ru",
-    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3"
+    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3",
+    "default_for": ["ru"]
   },
   {
     "id": "baris_tr",
     "name": "Barış 🇹🇷",
     "lang": "tr",
-    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3"
+    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Bar%C4%B1%C5%9F_tr.mp3",
+    "default_for": ["tr"]
   },
   {
     "id": "maximilian_de",
     "name": "Maximilian 🇩🇪",
     "lang": "de",
-    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3"
+    "url": "https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3",
+    "default_for": ["de"]
   }
 ]
