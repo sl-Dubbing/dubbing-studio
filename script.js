@@ -4,7 +4,7 @@
 
 const CONFIG = {
   // ✅ فارغ - سيتم ملؤه من Cloudinary أو يدوياً
-  API_BASE: 'https://b010-34-16-249-239.ngrok-free.app',
+  API_BASE: '',
   GUEST_LIMIT: 6,
   LANGS: [
     {c:'ar', n:'العربية', f:'🇸🇦'},
@@ -35,16 +35,17 @@ const STATE = {
   selectedVoice: null,
 };
 
+// ✅ VOICE_MAP - mode: 'xtts' للأصوات المخصصة
 const VOICE_MAP = {
   'gtts': { mode: 'gtts', voice_id: null, voice_url: null },
-  'xtts_ar': { mode: 'gtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
-  'xtts_ru': { mode: 'gtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
-  'xtts_tr': { mode: 'gtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
-  'xtts_de': { mode: 'gtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
-  'muhammad': { mode: 'gtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
-  'dmitry': { mode: 'gtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
-  'baris': { mode: 'gtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
-  'maximilian': { mode: 'gtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
+  'xtts_ar': { mode: 'xtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
+  'xtts_ru': { mode: 'xtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
+  'xtts_tr': { mode: 'xtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
+  'xtts_de': { mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
+  'muhammad': { mode: 'xtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
+  'dmitry': { mode: 'xtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
+  'baris': { mode: 'xtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
+  'maximilian': { mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
 };
 
 function showToast(msg, duration) {
