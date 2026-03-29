@@ -3,7 +3,7 @@
 // ============================================================
 
 const CONFIG = {
-  // ✅ فارغ - سيتم ملؤه من Cloudinary أو يدوياً
+  // ✅ فارغ - سيتم ملؤه يدوياً من زر 🔗
   API_BASE: '',
   GUEST_LIMIT: 6,
   LANGS: [
@@ -25,18 +25,14 @@ const CONFIG = {
 
 const STATE = {
   lang: 'ar',
-  voiceMode: 'gtts',
+  voiceMode: 'muhammad',
   srtData: [],
   selectedVoice: null,
 };
 
-// ✅ VOICE_MAP - mode: 'xtts' للأصوات المخصصة
+// ✅ VOICE_MAP موحد - المفاتيح تطابق الأزرار في HTML
 const VOICE_MAP = {
   'gtts': { mode: 'gtts', voice_id: null, voice_url: null },
-  'xtts_ar': { mode: 'xtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
-  'xtts_ru': { mode: 'xtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
-  'xtts_tr': { mode: 'xtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
-  'xtts_de': { mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
   'muhammad': { mode: 'xtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
   'dmitry': { mode: 'xtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
   'baris': { mode: 'xtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
@@ -136,8 +132,8 @@ function selectVoice(mode, el) {
   });
   
   if (el) {
-    el.style.borderColor = mode === 'xtts' ? '#a78bfa' : '#60a5fa';
-    el.style.background = mode === 'xtts' ? 'rgba(124,58,237,.15)' : 'rgba(96,165,250,.12)';
+    el.style.borderColor = '#a78bfa';
+    el.style.background = 'rgba(124,58,237,.15)';
   }
   
   if (STATE.selectedVoice && STATE.selectedVoice.voice_url) {
@@ -239,6 +235,7 @@ async function genDub() {
     
     console.log('🎬 Sending dub to:', CONFIG.API_BASE + '/api/dub');
     
+    // ✅ زيادة timeout إلى 10 دقائق للأفلام الطويلة
     const res = await fetch(CONFIG.API_BASE + '/api/dub', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1'},
@@ -252,7 +249,7 @@ async function genDub() {
         voice_id: voiceData.voice_id || null,
         voice_url: voiceData.voice_url || null
       }),
-      signal: AbortSignal.timeout(300000)
+      signal: AbortSignal.timeout(600000)  // ✅ 10 دقائق بدلاً من 5
     });
     
     clearInterval(iv);
@@ -301,32 +298,6 @@ function setBackendUrl(url) {
   checkServer();
 }
 
-async function fetchBackendUrl() {
-  try {
-    const url = 'https://res.cloudinary.com/dxbmvzsiz/raw/upload/config/backend_url.json?t=' + Date.now();
-    const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
-    if (!res.ok) {
-      console.log('⚠️ Cloudinary fetch failed:', res.status);
-      console.log('💡 استخدم زر "🔗 تغيير الخادم" لتحديث الرابط يدوياً');
-      return false;
-    }
-    const d = await res.json();
-    if (d.url && d.url.trim()) {
-      const newUrl = d.url.trim().replace(/\/$/, '');
-      if (!CONFIG.API_BASE || CONFIG.API_BASE !== newUrl) {
-        CONFIG.API_BASE = newUrl;
-        localStorage.setItem('sl_backend_url', newUrl);
-        console.log('✅ Backend URL from Cloudinary:', newUrl);
-      }
-      return true;
-    }
-  } catch(e) {
-    console.log('⚠️ fetchBackendUrl error:', e.message);
-    console.log('💡 استخدم زر "🔗 تغيير الخادم" لتحديث الرابط يدوياً');
-  }
-  return false;
-}
-
 function addBackendUrlInput() {
   const btn = document.createElement('button');
   btn.textContent = '🔗 تغيير الخادم';
@@ -345,12 +316,9 @@ function addBackendUrlInput() {
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 Page loaded');
   console.log('🔗 API_BASE:', CONFIG.API_BASE || '(empty)');
-  fetchBackendUrl().then(function() {
-    console.log('🔗 Final API_BASE:', CONFIG.API_BASE || '(not set)');
-    addBackendUrlInput();
-    initHeader();
-    initLangs('langs');
-    checkServer();
-    console.log('✅ Initialization complete');
-  });
+  addBackendUrlInput();
+  initHeader();
+  initLangs('langs');
+  checkServer();
+  console.log('✅ Initialization complete');
 });
