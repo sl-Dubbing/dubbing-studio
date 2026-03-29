@@ -3,6 +3,7 @@
 // ============================================================
 
 const CONFIG = {
+  // ✅ فارغ - سيتم ملؤه من Cloudinary أو يدوياً
   API_BASE: '',
   GUEST_LIMIT: 6,
   LANGS: [
@@ -34,18 +35,12 @@ const STATE = {
   selectedVoice: null,
 };
 
-// ✅ VOICE_MAP محدّث - جميع المفاتيح بما فيها xtts_*
 const VOICE_MAP = {
-  // الوضع الافتراضي
   'gtts': { mode: 'gtts', voice_id: null, voice_url: null },
-  
-  // مفاتيح xtts_* (من الواجهة)
   'xtts_ar': { mode: 'gtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
   'xtts_ru': { mode: 'gtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
   'xtts_tr': { mode: 'gtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
   'xtts_de': { mode: 'gtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
-  
-  // مفاتيح الأسماء (للتوافق)
   'muhammad': { mode: 'gtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
   'dmitry': { mode: 'gtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
   'baris': { mode: 'gtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
@@ -93,7 +88,7 @@ async function checkServer() {
   if (!badge) return;
   if (!CONFIG.API_BASE) {
     badge.className = 'srv-badge';
-    if (txt) txt.textContent = 'جاري الاتصال...';
+    if (txt) txt.textContent = 'اضغط 🔗 تغيير الخادم';
     return;
   }
   try {
@@ -216,7 +211,7 @@ function parseSRT() {
 
 async function genDub() {
   if (!STATE.srtData.length) { showToast('الرجاء تحميل ملف SRT أولاً'); return; }
-  if (!CONFIG.API_BASE) { showToast('❌ الخادم غير متصل'); return; }
+  if (!CONFIG.API_BASE) { showToast('❌ الخادم غير متصل - اضغط 🔗'); return; }
   const user = JSON.parse(localStorage.getItem('sl_user') || '{}');
   const btn = document.getElementById('dubBtn');
   const prog = document.getElementById('prog');
@@ -305,7 +300,7 @@ async function genDub() {
 function setBackendUrl(url) {
   CONFIG.API_BASE = url.trim().replace(/\/$/, '');
   localStorage.setItem('sl_backend_url', CONFIG.API_BASE);
-  showToast('✅ تم تحديث الرابط: ' + CONFIG.API_BASE);
+  showToast('✅ تم تحديث الرابط');
   console.log('🔗 New API_BASE:', CONFIG.API_BASE);
   checkServer();
 }
@@ -316,6 +311,7 @@ async function fetchBackendUrl() {
     const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
     if (!res.ok) {
       console.log('⚠️ Cloudinary fetch failed:', res.status);
+      console.log('💡 استخدم زر "🔗 تغيير الخادم" لتحديث الرابط يدوياً');
       return false;
     }
     const d = await res.json();
@@ -324,12 +320,13 @@ async function fetchBackendUrl() {
       if (!CONFIG.API_BASE || CONFIG.API_BASE !== newUrl) {
         CONFIG.API_BASE = newUrl;
         localStorage.setItem('sl_backend_url', newUrl);
-        console.log('✅ Backend URL:', newUrl);
+        console.log('✅ Backend URL from Cloudinary:', newUrl);
       }
       return true;
     }
   } catch(e) {
     console.log('⚠️ fetchBackendUrl error:', e.message);
+    console.log('💡 استخدم زر "🔗 تغيير الخادم" لتحديث الرابط يدوياً');
   }
   return false;
 }
@@ -339,14 +336,14 @@ function addBackendUrlInput() {
   btn.textContent = '🔗 تغيير الخادم';
   btn.style.cssText = 'position:fixed;top:10px;right:10px;padding:8px 14px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.5);border-radius:8px;color:#fff;cursor:pointer;font-size:12px;z-index:9998;';
   btn.onclick = function() {
-    const url = prompt('أدخل رابط الخادم الجديد:', CONFIG.API_BASE);
+    const url = prompt('أدخل رابط الخادم الجديد (ngrok من Colab):', CONFIG.API_BASE);
     if (url && url.trim()) {
       setBackendUrl(url);
     }
   };
   document.body.appendChild(btn);
   console.log('🔗 API_BASE:', CONFIG.API_BASE);
-  console.log('💡 Click "🔗 تغيير الخادم" to update');
+  console.log('💡 Click "🔗 تغيير الخادم" to update URL from Colab');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
