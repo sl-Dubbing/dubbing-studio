@@ -4,36 +4,47 @@
 
 // ── الإعدادات المركزية ────────────────────────────────────────
 const CONFIG = {
-  // رابط الخادم — يتغير تلقائياً حسب البيئة
-  API_BASE: 'https://abdulselam1996-sl-dubbing-backend.hf.space',
+  // ✅ رابط فارغ — سيتم ملؤه تلقائياً من Cloudinary
+  API_BASE: '',
+  
   GUEST_LIMIT: 6,
   LANGS: [
-    {c:'ar', n:'العربية',   f:'🇸🇦'},
-    {c:'en', n:'English',   f:'🇺🇸'},
-    {c:'es', n:'Español',   f:'🇪🇸'},
-    {c:'fr', n:'Français',  f:'🇫🇷'},
-    {c:'de', n:'Deutsch',   f:'🇩🇪'},
-    {c:'it', n:'Italiano',  f:'🇮🇹'},
-    {c:'ru', n:'Русский',   f:'🇷🇺'},
-    {c:'tr', n:'Türkçe',    f:'🇹🇷'},
-    {c:'zh', n:'中文',       f:'🇨🇳'},
-    {c:'hi', n:'हिन्दी',    f:'🇮🇳'},
-    {c:'fa', n:'فارسی',     f:'🇮🇷'},
-    {c:'sv', n:'Svenska',   f:'🇸🇪'},
+    {c:'ar', n:'العربية',    f:'🇸🇦'},
+    {c:'en', n:'English',    f:'🇺🇸'},
+    {c:'es', n:'Español',    f:'🇪🇸'},
+    {c:'fr', n:'Français',   f:'🇫🇷'},
+    {c:'de', n:'Deutsch',    f:'🇩🇪'},
+    {c:'it', n:'Italiano',   f:'🇮🇹'},
+    {c:'ru', n:'Русский',    f:'🇷🇺'},
+    {c:'tr', n:'Türkçe',     f:'🇹🇷'},
+    {c:'zh', n:'中文',        f:'🇨🇳'},
+    {c:'hi', n:'हिन्दी',     f:'🇮🇳'},
+    {c:'fa', n:'فارسی',      f:'🇮🇷'},
+    {c:'sv', n:'Svenska',    f:'🇸🇪'},
     {c:'nl', n:'Nederlands', f:'🇳🇱'},
   ]
 };
 
 // ── الحالة ────────────────────────────────────────────────────
 const STATE = {
-  lang:        'ar',
-  voiceMode:   'gtts',     // gtts / xtts_ar / xtts_ru / xtts_tr / xtts_de
-  srtData:     [],
-  isRecording: false,
-  recorder:    null,
-  chunks:      [],
-  voiceBlob:   null,
+  lang:          'ar',
+  voiceMode:     'gtts',
+  srtData:       [],
+  isRecording:   false,
+  recorder:      null,
+  chunks:        [],
+  voiceBlob:     null,
   voiceUploaded: false,
+  selectedVoice: null,
+};
+
+// ── خريطة الأصوات من Cloudinary ───────────────────────────────
+const VOICE_MAP = {
+  'gtts':       { mode: 'gtts', voice_id: null, voice_url: null },
+  'muhammad':   { mode: 'gtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
+  'dmitry':     { mode: 'gtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
+  'baris':      { mode: 'gtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
+  'maximilian': { mode: 'gtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
 };
 
 // ── Toast ─────────────────────────────────────────────────────
@@ -75,22 +86,21 @@ function logout() {
   location.href = 'index.html';
 }
 
-function requireLogin() {
-  try {
-    const u = JSON.parse(localStorage.getItem('sl_user'));
-    if (u) return u;
-  } catch(e) {}
-  sessionStorage.setItem('returnUrl', location.href);
-  location.href = 'login.html';
-  return null;
-}
-
 // ── فحص الخادم ───────────────────────────────────────────────
 async function checkServer() {
   const badge = document.getElementById('srv');
   const txt   = document.getElementById('srvTxt');
   if (!badge) return;
+  
+  if (!CONFIG.API_BASE) {
+    console.warn('⚠️ API_BASE not set yet');
+    badge.className = 'srv-badge';
+    if (txt) txt.textContent = 'جاري الاتصال...';
+    return;
+  }
+  
   try {
+    console.log('🔍 Checking server:', CONFIG.API_BASE);
     const r = await fetch(CONFIG.API_BASE + '/api/health', {
       headers: {'ngrok-skip-browser-warning': '1'},
       signal: AbortSignal.timeout(6000)
@@ -98,9 +108,14 @@ async function checkServer() {
     const ok = r.ok;
     badge.className = 'srv-badge' + (ok ? ' on' : '');
     txt.textContent = ok ? 'الخادم متصل ✓' : 'الخادم غير متاح';
-  } catch {
+    const health = await r.json();
+    console.log('✅ Server health:', health);
+    return ok;
+  } catch(e) {
+    console.error('❌ Server check failed:', e);
     badge.className = 'srv-badge';
     if (txt) txt.textContent = 'الخادم غير متاح';
+    return false;
   }
 }
 
@@ -118,21 +133,50 @@ function initLangs(containerId = 'langs') {
 
 function selectLang(code, btn) {
   STATE.lang = code;
-  document.querySelectorAll('.lang-btn')
-          .forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  console.log('🌍 Language:', code);
 }
 
 // ── اختيار الصوت ─────────────────────────────────────────────
 function selectVoice(mode, el) {
   STATE.voiceMode = mode;
+  STATE.selectedVoice = VOICE_MAP[mode] || null;
+  
   document.querySelectorAll('.voice-choice').forEach(e => {
     e.style.borderColor = 'rgba(255,255,255,.1)';
     e.style.background  = 'rgba(255,255,255,.02)';
   });
-  el.style.borderColor = mode === 'xtts' ? '#a78bfa' : '#60a5fa';
-  el.style.background  = mode === 'xtts'
-    ? 'rgba(124,58,237,.15)' : 'rgba(96,165,250,.12)';
+  
+  if (el) {
+    el.style.borderColor = mode === 'xtts' ? '#a78bfa' : '#60a5fa';
+    el.style.background  = mode === 'xtts' ? 'rgba(124,58,237,.15)' : 'rgba(96,165,250,.12)';
+  }
+  
+  console.log('🎤 Voice selected:', mode, STATE.selectedVoice);
+  
+  // تحميل الصوت مسبقاً
+  if (STATE.selectedVoice?.voice_url) {
+    preloadVoice(STATE.selectedVoice.voice_id, STATE.selectedVoice.voice_url);
+  }
+}
+
+// ── تحميل الصوت مسبقاً ────────────────────────────────────────
+async function preloadVoice(voice_id, voice_url) {
+  try {
+    await fetch(CONFIG.API_BASE + '/api/preload_voice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': '1'
+      },
+      body: JSON.stringify({ voice_id, voice_url }),
+      signal: AbortSignal.timeout(120000)
+    });
+    console.log('✅ Voice preloaded:', voice_id);
+  } catch(e) {
+    console.log('⚠️ preload error:', e.message);
+  }
 }
 
 // ── SRT ───────────────────────────────────────────────────────
@@ -175,6 +219,7 @@ function parseSRT() {
     list.style.display = 'block';
   }
   showToast(`✅ تم تحليل ${STATE.srtData.length} جملة`);
+  console.log('📝 SRT parsed:', STATE.srtData.length, 'blocks');
 }
 
 // ── توليد الدبلجة ─────────────────────────────────────────────
@@ -182,6 +227,11 @@ async function genDub() {
   if (!STATE.srtData.length) {
     showToast('الرجاء تحميل ملف SRT أولاً'); return;
   }
+  
+  if (!CONFIG.API_BASE) {
+    showToast('❌ الخادم غير متصل — تأكد من تشغيل Colab'); return;
+  }
+  
   const user = JSON.parse(localStorage.getItem('sl_user') || '{}');
   const btn  = document.getElementById('dubBtn');
   const prog = document.getElementById('prog');
@@ -203,8 +253,13 @@ async function genDub() {
   }, 600);
 
   try {
-    // أرسل SRT كاملاً للتزامن الدقيق
     const srtContent = document.getElementById('srtTxt')?.value || '';
+    const voiceData  = STATE.selectedVoice || VOICE_MAP[STATE.voiceMode] || {};
+
+    console.log('🎬 Sending dub request...');
+    console.log('🔗 API:', CONFIG.API_BASE + '/api/dub');
+    console.log('🎤 Voice:', voiceData.voice_id);
+    console.log('🌍 Lang:', STATE.lang);
 
     const res = await fetch(CONFIG.API_BASE + '/api/dub', {
       method: 'POST',
@@ -218,15 +273,20 @@ async function genDub() {
         lang:       STATE.lang,
         email:      user.email || '',
         feature:    'dub',
-        voice_mode: VOICE_MAP[STATE.voiceMode]?.mode || 'gtts',
-        voice_id:   VOICE_MAP[STATE.voiceMode]?.voice_id || null
+        voice_mode: voiceData.mode || 'gtts',
+        voice_id:   voiceData.voice_id || null,
+        voice_url:  voiceData.voice_url || null
       }),
-      signal: AbortSignal.timeout(300000)  // 5 دقائق للـ SRT الطويل
+      signal: AbortSignal.timeout(300000)
     });
 
     clearInterval(iv);
     pf.style.width = '100%';
+    
+    console.log('📥 Response status:', res.status);
+    
     const d = await res.json();
+    console.log('📦 Response:', d);
 
     if (d.success && d.audio_url) {
       prog.classList.remove('on');
@@ -237,8 +297,9 @@ async function genDub() {
       aud.classList.add('show');
       dl.href = d.audio_url;
       dl.classList.add('show');
-      const method = d.method?.includes('xtts')
-        ? 'بصوت ABDU SELAM 🎤' : 'بصوت افتراضي';
+      
+      const method = d.method?.includes('xtts') || voiceData.voice_id
+        ? 'بصوت مخصص 🎤' : 'بصوت افتراضي';
       const synced = d.synced ? ' — متزامن مع SRT ⏱️' : '';
       const timing = d.time_sec ? ` (${d.time_sec}s)` : '';
       showToast('✅ ' + method + synced + timing, 5000);
@@ -247,55 +308,85 @@ async function genDub() {
     showToast('❌ ' + (d.error || 'فشل التوليد'));
   } catch(e) {
     clearInterval(iv);
-    showToast('❌ تعذر الاتصال بالخادم');
+    console.error('❌ genDub error:', e);
+    showToast('❌ تعذر الاتصال بالخادم — تأكد من تشغيل Colab');
   }
   pf.style.width = '0%';
   prog.classList.remove('on');
   btn.disabled = false;
 }
 
-// ── تحديث رابط الخادم (للـ Colab) ───────────────────────────
+// ── تحديث رابط الخادم (يدوي) ─────────────────────────────────
 function setBackendUrl(url) {
   CONFIG.API_BASE = url.trim().replace(/\/$/, '');
   localStorage.setItem('sl_backend_url', CONFIG.API_BASE);
-  showToast('✅ تم تحديث رابط الخادم');
+  showToast('✅ تم تحديث رابط الخادم: ' + CONFIG.API_BASE);
+  console.log('🔗 New API_BASE:', CONFIG.API_BASE);
+  checkServer();
 }
 
-// ── جلب الرابط التلقائي من Cloudinary ───────────────────────
+// ── جلب الرابط من Cloudinary (تلقائي) ────────────────────────
 async function fetchBackendUrl() {
   try {
     const url = 'https://res.cloudinary.com/dxbmvzsiz/raw/upload/config/backend_url.json?t=' + Date.now();
     const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
-    const d   = await res.json();
-    if (d.url) {
-      CONFIG.API_BASE = d.url;
-      localStorage.setItem('sl_backend_url', d.url);
-      console.log('✅ Backend URL:', d.url);
+    if (!res.ok) {
+      console.log('⚠️ Cloudinary fetch failed:', res.status);
+      return false;
+    }
+    const d = await res.json();
+    if (d.url && d.url.trim()) {
+      const newUrl = d.url.trim().replace(/\/$/, '');
+      
+      // ✅ دائماً حدّث إذا كان CONFIG.API_BASE فارغاً أو مختلفاً
+      if (!CONFIG.API_BASE || CONFIG.API_BASE !== newUrl) {
+        CONFIG.API_BASE = newUrl;
+        localStorage.setItem('sl_backend_url', newUrl);
+        console.log('✅ Backend URL updated from Cloudinary:', newUrl);
+      } else {
+        console.log('✅ Backend URL already current:', newUrl);
+      }
       return true;
     }
   } catch(e) {
-    console.log('fetchBackendUrl error:', e.message);
-  }
-  return false;
-});
-    const d   = await res.json();
-    if (d.url) {
-      localStorage.removeItem('sl_backend_url');
-      CONFIG.API_BASE = d.url;
-      localStorage.setItem('sl_backend_url', d.url);
-      console.log('✅ Backend URL updated:', d.url);
-      return true;
-    }
-  } catch(e) {
-    console.log('fetchBackendUrl error:', e.message);
+    console.log('⚠️ fetchBackendUrl error:', e.message);
   }
   return false;
 }
 
 // ── تهيئة الصفحة ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('🚀 Page loaded, initializing...');
+  console.log('🔗 Default API_BASE:', CONFIG.API_BASE || '(empty)');
+  
+  // ✅ 1. جلب الرابط من Cloudinary (مصدر واحد للحقيقة)
   await fetchBackendUrl();
+  console.log('🔗 Final API_BASE:', CONFIG.API_BASE || '(not set!)');
+  
+  // ✅ 2. إضافة زر تغيير الرابط يدوياً
+  addBackendUrlInput();
+
+  // ✅ 3. تهيئة الواجهة
   initHeader();
   initLangs('langs');
   checkServer();
+  
+  console.log('✅ Initialization complete');
 });
+
+// ── إضافة حقل لتغيير الرابط يدوياً ───────────────────────────
+function addBackendUrlInput() {
+  const btn = document.createElement('button');
+  btn.textContent = '🔗 تغيير الخادم';
+  btn.style.cssText = 'position:fixed;top:10px;right:10px;padding:8px 14px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.5);border-radius:8px;color:#fff;cursor:pointer;font-size:12px;z-index:9998;';
+  btn.onclick = () => {
+    const url = prompt('أدخل رابط الخادم الجديد (ngrok من Colab):', CONFIG.API_BASE);
+    if (url && url.trim()) {
+      setBackendUrl(url);
+    }
+  };
+  document.body.appendChild(btn);
+  
+  console.log('🔗 Current API_BASE:', CONFIG.API_BASE);
+  console.log('💡 Click "🔗 تغيير الخادم" to update URL from Colab');
+}
