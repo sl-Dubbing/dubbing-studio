@@ -27,7 +27,7 @@ const CONFIG = {
 // ── الحالة ────────────────────────────────────────────────────
 const STATE = {
   lang:        'ar',
-  voiceMode:   'gtts',     // 'gtts' أو 'xtts'
+  voiceMode:   'gtts',     // gtts / xtts_ar / xtts_ru / xtts_tr / xtts_de
   srtData:     [],
   isRecording: false,
   recorder:    null,
@@ -218,7 +218,8 @@ async function genDub() {
         lang:       STATE.lang,
         email:      user.email || '',
         feature:    'dub',
-        voice_mode: STATE.voiceMode
+        voice_mode: VOICE_MAP[STATE.voiceMode]?.mode || 'gtts',
+        voice_id:   VOICE_MAP[STATE.voiceMode]?.voice_id || null
       }),
       signal: AbortSignal.timeout(300000)  // 5 دقائق للـ SRT الطويل
     });
