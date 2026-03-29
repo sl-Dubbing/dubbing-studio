@@ -241,7 +241,7 @@ def dub():
         return jsonify({'ok': True})
     
     try:
-        data = request.get_json() or {}
+        data = request.get_json(force=True) or {}
         text = data.get('text', '').strip()
         lang = data.get('lang', 'ar')
         voice_url = data.get('voice_url', None)
@@ -303,7 +303,7 @@ def tts():
         return jsonify({'ok': True})
     
     try:
-        data = request.get_json() or {}
+        data = request.get_json(force=True) or {}
         text = data.get('text', '').strip()
         lang = data.get('lang', 'ar')
         voice_url = data.get('voice_url', None)
