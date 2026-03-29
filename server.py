@@ -1,252 +1,144 @@
 # server.py
 # ==============================================================
-# sl‑Dubbing & Translation – Backend (Render / HF Spaces / Colab)
+# sl‑Dubbing & Translation – Backend (Colab)
+# يدعم: SRT + XTTS + gTTS + Voice Cache
 # ==============================================================
 
-import os, uuid, time, logging, subprocess, json
+import os, uuid, time, logging, subprocess, json, re
 from pathlib import Path
-from datetime import datetime
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 
-# -----------------------------------------------------------------
-# Logging
-# -----------------------------------------------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# -----------------------------------------------------------------
-# Flask & CORS
-# -----------------------------------------------------------------
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
-ALLOWED_ORIGINS = os.getenv(
-    "CORS_ORIGINS",
-    "https://sl-dubbing.github.io,http://localhost:*,https://*.ngrok-free.app"
-).split(",")
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, ngrok-skip-browser-warning, Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return response
 
-CORS(app,
-     resources={r"/api/*": {"origins": ALLOWED_ORIGINS}},
-     supports_credentials=True)
-
-# -----------------------------------------------------------------
-# Rate Limiting
-# -----------------------------------------------------------------
-limiter = Limiter(
-    app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"],
-)
-
-# -----------------------------------------------------------------
-# قاعدة البيانات (SQLite)
-# -----------------------------------------------------------------
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-
-class User(db.Model):
-    __tablename__ = 'users'
-    id               = db.Column(db.Integer, primary_key=True)
-    email            = db.Column(db.String(120), unique=True, nullable=False)
-    password         = db.Column(db.String(200), nullable=False)
-    voice_public_id  = db.Column(db.String(255), nullable=True)
-    voice_url        = db.Column(db.String(500), nullable=True)
-    usage_tts        = db.Column(db.Integer, default=0)
-    usage_dub        = db.Column(db.Integer, default=0)
-    usage_srt        = db.Column(db.Integer, default=0)
-    unlocked_tts     = db.Column(db.Boolean, default=False)
-    unlocked_dub     = db.Column(db.Boolean, default=False)
-    unlocked_srt     = db.Column(db.Boolean, default=False)
-
-
-with app.app_context():
-    db.create_all()
-
-
-# -----------------------------------------------------------------
-# إعدادات ملفات الصوت المؤقتة
-# -----------------------------------------------------------------
 AUDIO_DIR = Path('/tmp/sl_audio')
 VOICE_DIR = Path('/tmp/sl_voices')
 AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 VOICE_DIR.mkdir(parents=True, exist_ok=True)
 
-# -----------------------------------------------------------------
-# حدّ الضيوف (6 طلبات/يوم)
-# -----------------------------------------------------------------
-GUEST_LIMIT = 6
-GUEST_USAGE = {}
+# ✅ Voice Cache لتجنب التحميل المتكرر
+VOICE_CACHE = {}  # voice_id -> local_path
 
-def reset_guest(ip: str):
-    now = time.time()
-    usage = GUEST_USAGE.get(ip)
-    if usage is None or now - usage.get('ts', 0) > 86400:
-        GUEST_USAGE[ip] = {'tts': 0, 'dub': 0, 'srt': 0, 'ts': now}
-
-
-# -----------------------------------------------------------------
-# Cloudinary Upload Helper
-# -----------------------------------------------------------------
-def upload_to_cloudinary(file_path, public_id):
-    try:
-        import cloudinary
-        import cloudinary.uploader
-        cloudinary.config(
-            cloud_name=os.getenv('CLOUDINARY_CLOUD', 'dxbmvzsiz'),
-            api_key=os.getenv('CLOUDINARY_API_KEY', '432687952743126'),
-            api_secret=os.getenv('CLOUDINARY_SECRET', 'BrFvzlPFXBJZ-B-cZyxCc-0wHRo')
-        )
-        result = cloudinary.uploader.upload(
-            file_path,
-            public_id=public_id,
-            resource_type='video',
-            overwrite=True
-        )
-        return result.get('secure_url')
-    except Exception as e:
-        logger.error(f"Cloudinary upload error: {e}")
-        return None
-
-
-def fetch_voice_sample(voice_url, save_path):
-    try:
-        import urllib.request
-        urllib.request.urlretrieve(voice_url, save_path)
-        return True
-    except Exception as e:
-        logger.error(f"Voice download error: {e}")
-        return False
-
-
-# -----------------------------------------------------------------
-# XTTS Voice Synthesis
-# -----------------------------------------------------------------
 XTTS_MODEL = None
 
 def init_xtts():
     global XTTS_MODEL
     try:
         from TTS.api import TTS
-        logger.info("⏳ Loading XTTS model...")
+        logger.info("⏳ Loading XTTS...")
         XTTS_MODEL = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=True)
-        logger.info("✅ XTTS model loaded successfully")
+        logger.info("✅ XTTS ready")
         return True
     except Exception as e:
-        logger.error(f"XTTS init error: {e}")
+        logger.error(f"XTTS error: {e}")
         return False
 
-
-def synthesize_xtts(text, lang, voice_url, output_path):
-    """توليد الصوت باستخدام XTTS مع عينة صوت مخصصة"""
-    global XTTS_MODEL
+def fetch_voice_sample(voice_url, voice_id):
+    """تحميل العينة مع التخزين المؤقت"""
+    if voice_id in VOICE_CACHE and Path(VOICE_CACHE[voice_id]).exists():
+        logger.info(f"✅ Voice cached: {voice_id}")
+        return VOICE_CACHE[voice_id]
     
+    try:
+        import urllib.request
+        local_path = VOICE_DIR / f"{voice_id}.wav"
+        if not local_path.exists():
+            logger.info(f"⏳ Downloading voice: {voice_id}")
+            urllib.request.urlretrieve(voice_url, str(local_path))
+            # تحويل إلى WAV إذا كان MP3
+            if voice_url.endswith('.mp3'):
+                wav_path = VOICE_DIR / f"{voice_id}.wav"
+                subprocess.run([
+                    'ffmpeg', '-y', '-i', str(local_path),
+                    '-ar', '22050', '-ac', '1', str(wav_path)
+                ], capture_output=True, timeout=30)
+                local_path.unlink(missing_ok=True)
+                local_path = wav_path
+        VOICE_CACHE[voice_id] = str(local_path)
+        logger.info(f"✅ Voice cached: {local_path}")
+        return str(local_path)
+    except Exception as e:
+        logger.error(f"Voice download error: {e}")
+        return None
+
+def synthesize_xtts(text, lang, voice_path, output_path):
+    """توليد الصوت باستخدام XTTS مع عينة محلية"""
+    global XTTS_MODEL
     try:
         if XTTS_MODEL is None:
             if not init_xtts():
                 return False, "xtts_init_failed"
-        
-        ref_audio = VOICE_DIR / f"ref_{uuid.uuid4().hex[:8]}.wav"
-        if not fetch_voice_sample(voice_url, str(ref_audio)):
-            return False, "voice_download_failed"
-        
-        if not ref_audio.suffix == '.wav':
-            wav_path = ref_audio.with_suffix('.wav')
-            try:
-                subprocess.run(
-                    ['ffmpeg', '-y', '-i', str(ref_audio), '-ar', '22050', '-ac', '1', str(wav_path)],
-                    capture_output=True, timeout=30
-                )
-                if wav_path.exists():
-                    ref_audio.unlink(missing_ok=True)
-                    ref_audio = wav_path
-            except:
-                pass
+        if not voice_path or not Path(voice_path).exists():
+            return False, "voice_not_found"
         
         XTTS_MODEL.tts_to_file(
             text=text,
-            speaker_wav=str(ref_audio),
+            speaker_wav=voice_path,
             language=lang[:2],
             file_path=output_path
         )
         
-        ref_audio.unlink(missing_ok=True)
-        
         if Path(output_path).exists() and Path(output_path).stat().st_size > 0:
-            logger.info(f"✅ XTTS synthesis complete: {output_path}")
             return True, "xtts"
-        else:
-            return False, "xtts_empty_output"
-            
+        return False, "xtts_empty_output"
     except Exception as e:
-        logger.error(f"XTTS synthesis error: {e}")
         return False, f"xtts_error: {str(e)}"
 
-
-# -----------------------------------------------------------------
-# gTTS Voice Synthesis (Fallback)
-# -----------------------------------------------------------------
 def synthesize_gtts(text, lang, output_path):
     """توليد الصوت باستخدام gTTS"""
     try:
         from gtts import gTTS
-        tts = gTTS(text=text, lang=lang[:2])
-        tts.save(output_path)
-        
+        gTTS(text=text, lang=lang[:2]).save(output_path)
         if Path(output_path).exists() and Path(output_path).stat().st_size > 0:
-            logger.info(f"✅ gTTS synthesis complete: {output_path}")
             return True, "gtts"
-        else:
-            return False, "gtts_empty_output"
+        return False, "gtts_empty_output"
     except Exception as e:
-        logger.error(f"gTTS error: {e}")
         return False, f"gtts_error: {str(e)}"
 
-
-# -----------------------------------------------------------------
-# Voice Synthesis Router
-# -----------------------------------------------------------------
-def synthesize_voice(text, lang, use_xtts=False, voice_url=None):
+def synthesize_voice(text, lang, use_xtts=False, voice_url=None, voice_id=None):
     """توجيه التوليد لـ XTTS أو gTTS"""
     output_path = str(AUDIO_DIR / f"audio_{uuid.uuid4().hex[:8]}.wav")
+    logger.info(f"🎤 synthesize_voice: use_xtts={use_xtts}, voice_id={voice_id}")
     
-    logger.info(f"🎤 synthesize_voice: use_xtts={use_xtts}, voice_url={voice_url}")
-    
-    if use_xtts and voice_url:
-        success, method = synthesize_xtts(text, lang, voice_url, output_path)
-        if success:
-            return output_path, method
-        logger.warning("XTTS failed, falling back to gTTS")
+    if use_xtts and voice_url and voice_id:
+        voice_path = fetch_voice_sample(voice_url, voice_id)
+        if voice_path:
+            success, method = synthesize_xtts(text, lang, voice_path, output_path)
+            if success:
+                return output_path, method
+            logger.warning("XTTS failed, falling back to gTTS")
     
     success, method = synthesize_gtts(text, lang, output_path)
     return (output_path, method) if success else (None, method)
 
-
-# -----------------------------------------------------------------
-# SRT Parsing
-# -----------------------------------------------------------------
+# ✅ دوال SRT
 def srt_time(s):
+    """تحويل وقت SRT إلى ثواني"""
     s = s.replace(",", ".")
     p = s.split(":")
     return int(p[0])*3600 + int(p[1])*60 + float(p[2])
 
-
 def parse_srt(content):
+    """تحليل ملف SRT"""
     blocks, cur = [], None
     for line in content.split("\n"):
         line = line.strip()
         if not line:
-            if cur: blocks.append(cur)
+            if cur:
+                blocks.append(cur)
             cur = None
-        elif line.isdigit():
+        elif re.match(r"^\d+$", line):
             cur = {"i": int(line), "start": 0, "end": 0, "text": ""}
         elif "-->" in line and cur:
             p = line.split("-->")
@@ -254,205 +146,84 @@ def parse_srt(content):
             cur["end"] = srt_time(p[1].strip())
         elif cur:
             cur["text"] += line + " "
-    if cur: blocks.append(cur)
+    if cur:
+        blocks.append(cur)
     return blocks
 
-
-def assemble_srt(blocks, lang, use_xtts=False, voice_url=None):
-    """دمج مقاطع SRT مع الصوت"""
+def assemble_srt(blocks, lang, use_xtts=False, voice_url=None, voice_id=None):
+    """دمج مقاطع SRT مع الصوت مع التزامن الصحيح"""
     from pydub import AudioSegment
     
+    logger.info(f"[ASSEMBLE] Starting with {len(blocks)} blocks...")
     timeline = AudioSegment.empty()
-    cursor = 0.0
-    results = []
+    current_time = 0.0
     
-    for b in blocks:
+    for i, b in enumerate(blocks):
         text = b["text"].strip()
         if not text:
             continue
         
+        start_time = b["start"]
+        end_time = b["end"]
+        duration = end_time - start_time
+        
+        logger.info(f"[ASSEMBLE] Block {i}: {start_time:.2f}s - {end_time:.2f}s ({duration:.2f}s)")
+        
+        # توليد الصوت
         tmp = str(AUDIO_DIR / f"seg_{uuid.uuid4().hex[:6]}.wav")
-        success, method = synthesize_voice(text, lang, use_xtts, voice_url)
+        success, method = synthesize_voice(text, lang, use_xtts, voice_url, voice_id)
         
         if not success or not Path(tmp).exists():
             logger.warning(f"Segment {b['i']} failed")
             continue
         
-        try:
-            seg = AudioSegment.from_file(tmp)
-            gap = b["start"] - cursor
-            if gap > 0:
-                timeline += AudioSegment.silent(int(gap * 1000))
-            elif gap < 0:
-                seg = seg[:int((b["end"] - b["start"]) * 1000)]
-            timeline += seg
-            cursor = b["start"] + len(seg) / 1000
-            results.append(tmp)
-        except Exception as e:
-            logger.error(f"Assembly error: {e}")
-            continue
-    
-    if not results:
-        return None, "no_segments"
+        seg = AudioSegment.from_file(tmp)
+        seg_duration = len(seg) / 1000.0
+        
+        # إضافة Silence قبل المقطع إذا لزم الأمر
+        if start_time > current_time:
+            silence_duration = start_time - current_time
+            silence = AudioSegment.silent(int(silence_duration * 1000))
+            timeline += silence
+            logger.info(f"[ASSEMBLE] Added {silence_duration:.2f}s silence")
+        
+        # قص أو تمديد الصوت ليناسب الفترة
+        if seg_duration > duration:
+            seg = seg[:int(duration * 1000)]
+            logger.info(f"[ASSEMBLE] Trimmed to {duration:.2f}s")
+        elif seg_duration < duration:
+            extra_silence = duration - seg_duration
+            silence = AudioSegment.silent(int(extra_silence * 1000))
+            seg = seg + silence
+            logger.info(f"[ASSEMBLE] Added {extra_silence:.2f}s silence at end")
+        
+        timeline += seg
+        current_time = end_time
     
     out = str(AUDIO_DIR / f"dub_{uuid.uuid4().hex[:8]}.mp3")
-    try:
-        timeline.export(out, format="mp3", bitrate="128k")
-        return out, "xtts" if use_xtts else "gtts"
-    except Exception as e:
-        logger.error(f"Export error: {e}")
-        return None, "export_failed"
+    timeline.export(out, format="mp3", bitrate="128k")
+    logger.info(f"[ASSEMBLE] ✅ Complete: {out}")
+    return out, "xtts" if use_xtts else "gtts"
 
-
-# -----------------------------------------------------------------
-# Routes
-# -----------------------------------------------------------------
-@app.route('/')
-def root():
-    return jsonify({
-        'status': 'ok',
-        'service': 'sl‑Dubbing Backend',
-        'xtts_ready': XTTS_MODEL is not None,
-        'cloudinary': os.getenv('CLOUDINARY_CLOUD', 'dxbmvzsiz')
-    })
-
-
+# ✅ Routes
 @app.route('/api/health')
 def health():
     return jsonify({
         'status': 'ok',
         'xtts_ready': XTTS_MODEL is not None,
         'engine': 'xtts' if XTTS_MODEL else 'gtts',
-        'cloudinary': os.getenv('CLOUDINARY_CLOUD', 'dxbmvzsiz')
+        'voice_cache': len(VOICE_CACHE)
     })
 
-
-@app.route('/api/register', methods=['POST'])
-@limiter.limit("10 per hour")
-def register():
-    try:
-        data = request.get_json() or {}
-        email = data.get('email', '').strip().lower()
-        pw = data.get('password', '')
-        
-        if not email or '@' not in email:
-            return jsonify({'error': 'بريد غير صالح'}), 400
-        if not pw:
-            return jsonify({'error': 'كلمة المرور فارغة'}), 400
-        
-        if User.query.filter_by(email=email).first():
-            return jsonify({'error': 'البريد مسجَّل مسبقاً'}), 400
-        
-        user = User(email=email, password=generate_password_hash(pw))
-        db.session.add(user)
-        db.session.commit()
-        logger.info(f"✅ New user registered: {email}")
-        
-        return jsonify({'success': True, 'email': email}), 201
-    except Exception as e:
-        logger.error(f"Register error: {e}")
-        return jsonify({'error': 'خطأ داخلي'}), 500
-
-
-@app.route('/api/login', methods=['POST'])
-@limiter.limit("15 per hour")
-def login():
-    try:
-        data = request.get_json() or {}
-        email = data.get('email', '').strip().lower()
-        pw = data.get('password', '')
-        
-        user = User.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.password, pw):
-            return jsonify({'error': 'بيانات غير صحيحة'}), 401
-        
-        return jsonify({
-            'success': True,
-            'email': user.email,
-            'has_voice': bool(user.voice_url),
-            'voice_url': user.voice_url,
-            'usage': {'tts': user.usage_tts, 'dub': user.usage_dub, 'srt': user.usage_srt},
-            'unlocked': {'tts': user.unlocked_tts, 'dub': user.unlocked_dub, 'srt': user.unlocked_srt}
-        })
-    except Exception as e:
-        logger.error(f"Login error: {e}")
-        return jsonify({'error': 'خطأ داخلي'}), 500
-
-
-@app.route('/api/upload-voice', methods=['POST'])
-@limiter.limit("20 per hour")
-def upload_voice():
-    try:
-        email = request.form.get('email', '').strip().lower()
-        if 'voice' not in request.files:
-            return jsonify({'error': 'لم يتم رفع ملف'}), 400
-        
-        file = request.files['voice']
-        if not file.filename:
-            return jsonify({'error': 'اسم الملف فارغ'}), 400
-        
-        ext = Path(file.filename).suffix.lower()
-        if ext not in {'.wav', '.mp3', '.ogg', '.m4a'}:
-            return jsonify({'error': 'امتداد غير مدعوم'}), 400
-        
-        tmp_path = Path('/tmp') / f"voice_{uuid.uuid4()}{ext}"
-        file.save(str(tmp_path))
-        
-        wav_path = tmp_path
-        if ext != '.wav':
-            wav_path = tmp_path.with_suffix('.wav')
-            try:
-                subprocess.run(
-                    ['ffmpeg', '-y', '-i', str(tmp_path), '-ar', '22050', '-ac', '1', str(wav_path)],
-                    capture_output=True, timeout=30
-                )
-                if wav_path.exists():
-                    tmp_path.unlink(missing_ok=True)
-                else:
-                    wav_path = tmp_path
-            except:
-                pass
-        
-        public_id = f"{email or 'guest'}_{uuid.uuid4().hex[:8]}"
-        url = upload_to_cloudinary(str(wav_path), public_id)
-        wav_path.unlink(missing_ok=True)
-        
-        if not url:
-            return jsonify({'error': 'فشل الرفع إلى Cloudinary'}), 500
-        
-        if email:
-            user = User.query.filter_by(email=email).first()
-            if user:
-                user.voice_public_id = public_id
-                user.voice_url = url
-                db.session.commit()
-                logger.info(f"✅ Voice linked to {email}")
-        
-        return jsonify({
-            'success': True,
-            'message': 'تم حفظ عينة الصوت ✅',
-            'url': url,
-            'public_id': public_id,
-        })
-    except Exception as e:
-        logger.error(f"Upload voice error: {e}")
-        return jsonify({'error': str(e)}), 500
-
-
 @app.route('/api/dub', methods=['POST', 'OPTIONS'])
-@limiter.limit("30 per hour")
 def dub():
     if request.method == 'OPTIONS':
-        res = jsonify({'ok': True})
-        res.headers['Access-Control-Allow-Origin'] = '*'
-        return res, 200
+        return jsonify({'ok': True})
     
     try:
         data = request.get_json() or {}
         text = data.get('text', '').strip()
         lang = data.get('lang', 'ar')
-        email = (data.get('email') or '').strip().lower()
-        voice_mode = data.get('voice_mode', 'gtts').lower()
         voice_url = data.get('voice_url', None)
         voice_id = data.get('voice_id', None)
         srt = data.get('srt', '')
@@ -460,19 +231,8 @@ def dub():
         if not text and not srt:
             return jsonify({'error': 'النص فارغ'}), 400
         
-        ip = request.remote_addr
-        reset_guest(ip)
-        if GUEST_USAGE[ip].get('dub', 0) >= GUEST_LIMIT:
-            return jsonify({'error': 'انتهى الحد المجاني', 'limit_reached': True}), 403
-        GUEST_USAGE[ip]['dub'] += 1
-        
-        if not voice_url and email:
-            user = User.query.filter_by(email=email).first()
-            if user and user.voice_url:
-                voice_url = user.voice_url
-        
-        # ✅ الإصلاح: استخدام voice_url بدلاً من voice_mode
-        use_xtts = bool(voice_url)
+        # ✅ الإصلاح: استخدام voice_url لتحديد XTTS
+        use_xtts = bool(voice_url and voice_id)
         
         logger.info("=" * 60)
         logger.info("🎬 [DUB] Received request:")
@@ -485,32 +245,28 @@ def dub():
         
         t0 = time.time()
         
+        # ✅ معالجة SRT
         if srt.strip():
             blocks = parse_srt(srt)
-            out, method = assemble_srt(blocks, lang, use_xtts, voice_url)
+            out, method = assemble_srt(blocks, lang, use_xtts, voice_url, voice_id)
             synced = True
         else:
-            out, method = synthesize_voice(text, lang, use_xtts, voice_url)
+            out, method = synthesize_voice(text, lang, use_xtts, voice_url, voice_id)
             synced = False
         
         if not out or not Path(out).exists():
             return jsonify({'success': False, 'error': 'فشل التوليد'}), 500
         
         filename = Path(out).name
-        audio_url = f"{request.host_url.rstrip('/')}/api/download/{filename}"
-        
-        logger.info(f"✅ Dub OK – method={method} – time={time.time()-t0:.1f}s")
+        audio_url = f"https://{request.host}/api/file/{filename}"
         
         return jsonify({
             'success': True,
             'audio_url': audio_url,
-            'filename': filename,
             'method': method,
             'voice_id': voice_id,
-            'voice_url': voice_url,
             'synced': synced,
-            'time_sec': round(time.time() - t0, 1),
-            'remaining': GUEST_LIMIT - GUEST_USAGE[ip]['dub']
+            'time_sec': round(time.time() - t0, 1)
         })
     except Exception as e:
         logger.error(f"Dub error: {e}")
@@ -518,129 +274,70 @@ def dub():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
-
 @app.route('/api/tts', methods=['POST', 'OPTIONS'])
-@limiter.limit("30 per hour")
 def tts():
     if request.method == 'OPTIONS':
-        res = jsonify({'ok': True})
-        res.headers['Access-Control-Allow-Origin'] = '*'
-        return res, 200
+        return jsonify({'ok': True})
     
     try:
         data = request.get_json() or {}
         text = data.get('text', '').strip()
         lang = data.get('lang', 'ar')
-        email = (data.get('email') or '').strip().lower()
-        voice_mode = data.get('voice_mode', 'gtts').lower()
         voice_url = data.get('voice_url', None)
         voice_id = data.get('voice_id', None)
         
         if not text:
             return jsonify({'error': 'النص فارغ'}), 400
         
-        ip = request.remote_addr
-        reset_guest(ip)
-        if GUEST_USAGE[ip].get('tts', 0) >= GUEST_LIMIT:
-            return jsonify({'error': 'انتهى الحد المجاني', 'limit_reached': True}), 403
-        GUEST_USAGE[ip]['tts'] += 1
-        
-        if not voice_url and email:
-            user = User.query.filter_by(email=email).first()
-            if user and user.voice_url:
-                voice_url = user.voice_url
-        
-        # ✅ الإصلاح: استخدام voice_url بدلاً من voice_mode
-        use_xtts = bool(voice_url)
-        
-        logger.info("=" * 60)
-        logger.info("🎤 [TTS] Received request:")
-        logger.info(f"   lang: {lang}")
-        logger.info(f"   voice_id: {voice_id}")
-        logger.info(f"   voice_url: {voice_url}")
-        logger.info(f"   use_xtts: {use_xtts}")
-        logger.info("=" * 60)
-        
-        out, method = synthesize_voice(text, lang, use_xtts, voice_url)
+        use_xtts = bool(voice_url and voice_id)
+        out, method = synthesize_voice(text, lang, use_xtts, voice_url, voice_id)
         
         if not out or not Path(out).exists():
             return jsonify({'success': False, 'error': 'فشل التوليد'}), 500
         
         filename = Path(out).name
-        audio_url = f"{request.host_url.rstrip('/')}/api/download/{filename}"
+        audio_url = f"https://{request.host}/api/file/{filename}"
         
         return jsonify({
             'success': True,
             'audio_url': audio_url,
-            'filename': filename,
             'method': method,
-            'voice_id': voice_id,
-            'remaining': GUEST_LIMIT - GUEST_USAGE[ip]['tts']
+            'voice_id': voice_id
         })
     except Exception as e:
-        logger.error(f"TTS error: {e}")
         return jsonify({'error': str(e)}), 500
 
-
-@app.route('/api/download/<filename>')
-def download(filename):
-    try:
-        safe_name = Path(filename).name
-        fpath = AUDIO_DIR / safe_name
-        if not fpath.exists():
-            return jsonify({'error': 'الملف غير موجود'}), 404
-        
-        mime = 'audio/wav' if safe_name.endswith('.wav') else 'audio/mpeg'
-        return send_file(str(fpath), as_attachment=True, download_name=safe_name, mimetype=mime)
-    except Exception as e:
-        logger.error(f"Download error: {e}")
-        return jsonify({'error': 'فشل التحميل'}), 500
-
-
-@app.route('/api/entitlements')
-def entitlements():
-    email = request.args.get('email', '').strip().lower()
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({'error': 'المستخدم غير موجود'}), 404
+@app.route('/api/file/<filename>')
+def get_file(filename):
+    p = AUDIO_DIR / filename
+    if not p.exists():
+        return jsonify({'error': 'غير موجود'}), 404
     
-    return jsonify({
-        'success': True,
-        'has_voice': bool(user.voice_url),
-        'voice_id': user.voice_public_id,
-        'voice_url': user.voice_url,
-    })
-
+    mime = 'audio/wav' if str(p).endswith('.wav') else 'audio/mpeg'
+    return send_file(str(p), mimetype=mime, as_attachment=True, download_name=filename)
 
 @app.route('/api/preload_voice', methods=['POST', 'OPTIONS'])
 def preload_voice():
     if request.method == 'OPTIONS':
-        res = jsonify({'ok': True})
-        res.headers['Access-Control-Allow-Origin'] = '*'
-        return res, 200
+        return jsonify({'ok': True})
     
     data = request.get_json(force=True)
     voice_url = data.get('voice_url', '')
     voice_id = data.get('voice_id', '')
-    logger.info(f"📥 preload_voice: {voice_id}")
     
-    if voice_url:
-        fetch_voice_sample(voice_url, str(VOICE_DIR / f"{voice_id}.mp3"))
+    if voice_url and voice_id:
+        path = fetch_voice_sample(voice_url, voice_id)
+        if path:
+            return jsonify({'success': True, 'message': 'Voice ready', 'path': path})
     
-    return jsonify({'success': True, 'message': 'Voice ready'})
+    return jsonify({'success': False, 'message': 'Voice not found'}), 404
 
-
-# -----------------------------------------------------------------
-# تشغيل التطبيق
-# -----------------------------------------------------------------
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
-    
-    logger.info("⏳ Initializing XTTS model...")
+    logger.info("⏳ Initializing XTTS...")
     try:
         init_xtts()
     except Exception as e:
-        logger.warning(f"XTTS not available, will use gTTS: {e}")
+        logger.warning(f"XTTS not available: {e}")
     
-    logger.info(f"🚀 Starting server on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
+    logger.info("🚀 Starting server on port 5000")
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
