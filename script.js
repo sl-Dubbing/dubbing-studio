@@ -310,9 +310,9 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🔗 Restored:', CONFIG.API_BASE);
   }
   // ✅ Muhammad افتراضياً لكل اللغات
-  STATE.selectedVoice = VOICE_MAP['muhammad'];
   STATE.voiceMode = 'muhammad';
-  console.log('🎤 Default voice: Muhammad (all languages)');
+  STATE.selectedVoice = VOICE_MAP['muhammad'];
+  console.log('🎤 Default voice:', STATE.selectedVoice);
   addBackendUrlInput();
   initHeader();
   initLangs('langs');
