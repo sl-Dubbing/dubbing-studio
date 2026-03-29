@@ -1,11 +1,6 @@
 # server.py
 # ==============================================================
 # sl‑Dubbing & Translation – Backend (Render / HF Spaces / Colab)
-# يدعم:
-#   • تسجيل/دخول (SQLite)
-#   • رفع عينة صوت (Cloudinary) وربطها بالحساب
-#   • دبلجة النصوص باستخدام XTTS (مع عينة مخصَّصة) أو gTTS
-#   • حدّ الضيوف (6 طلبات/يوم) و Rate‑Limiting
 # ==============================================================
 
 import os, uuid, time, logging, subprocess, json
@@ -155,17 +150,14 @@ def synthesize_xtts(text, lang, voice_url, output_path):
     global XTTS_MODEL
     
     try:
-        # تحميل النموذج إذا لم يكن محملاً
         if XTTS_MODEL is None:
             if not init_xtts():
                 return False, "xtts_init_failed"
         
-        # تحميل العينة الصوتية
         ref_audio = VOICE_DIR / f"ref_{uuid.uuid4().hex[:8]}.wav"
         if not fetch_voice_sample(voice_url, str(ref_audio)):
             return False, "voice_download_failed"
         
-        # تحويل إلى WAV إذا لزم الأمر
         if not ref_audio.suffix == '.wav':
             wav_path = ref_audio.with_suffix('.wav')
             try:
@@ -179,7 +171,6 @@ def synthesize_xtts(text, lang, voice_url, output_path):
             except:
                 pass
         
-        # توليد الصوت
         XTTS_MODEL.tts_to_file(
             text=text,
             speaker_wav=str(ref_audio),
@@ -187,7 +178,6 @@ def synthesize_xtts(text, lang, voice_url, output_path):
             file_path=output_path
         )
         
-        # تنظيف
         ref_audio.unlink(missing_ok=True)
         
         if Path(output_path).exists() and Path(output_path).stat().st_size > 0:
@@ -236,7 +226,6 @@ def synthesize_voice(text, lang, use_xtts=False, voice_url=None):
             return output_path, method
         logger.warning("XTTS failed, falling back to gTTS")
     
-    # Fallback إلى gTTS
     success, method = synthesize_gtts(text, lang, output_path)
     return (output_path, method) if success else (None, method)
 
@@ -471,14 +460,12 @@ def dub():
         if not text and not srt:
             return jsonify({'error': 'النص فارغ'}), 400
         
-        # حد الضيوف
         ip = request.remote_addr
         reset_guest(ip)
         if GUEST_USAGE[ip].get('dub', 0) >= GUEST_LIMIT:
             return jsonify({'error': 'انتهى الحد المجاني', 'limit_reached': True}), 403
         GUEST_USAGE[ip]['dub'] += 1
         
-        # الحصول على عينة الصوت من المستخدم
         if not voice_url and email:
             user = User.query.filter_by(email=email).first()
             if user and user.voice_url:
@@ -486,6 +473,7 @@ def dub():
         
         # ✅ الإصلاح: استخدام voice_url بدلاً من voice_mode
         use_xtts = bool(voice_url)
+        
         logger.info("=" * 60)
         logger.info("🎬 [DUB] Received request:")
         logger.info(f"   lang: {lang}")
@@ -551,14 +539,12 @@ def tts():
         if not text:
             return jsonify({'error': 'النص فارغ'}), 400
         
-        # حد الضيوف
         ip = request.remote_addr
         reset_guest(ip)
         if GUEST_USAGE[ip].get('tts', 0) >= GUEST_LIMIT:
             return jsonify({'error': 'انتهى الحد المجاني', 'limit_reached': True}), 403
         GUEST_USAGE[ip]['tts'] += 1
         
-        # الحصول على عينة الصوت
         if not voice_url and email:
             user = User.query.filter_by(email=email).first()
             if user and user.voice_url:
@@ -650,7 +636,6 @@ def preload_voice():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     
-    # محاولة تحميل XTTS عند البدء
     logger.info("⏳ Initializing XTTS model...")
     try:
         init_xtts()
