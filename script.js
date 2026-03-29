@@ -2,7 +2,6 @@
 // script.js — العقل البرمجي لواجهة sl-Dubbing
 // ============================================================
 
-// ── الإعدادات المركزية ────────────────────────────────────────
 const CONFIG = {
   API_BASE: '',
   GUEST_LIMIT: 6,
@@ -35,8 +34,18 @@ const STATE = {
   selectedVoice: null,
 };
 
+// ✅ VOICE_MAP محدّث - جميع المفاتيح بما فيها xtts_*
 const VOICE_MAP = {
+  // الوضع الافتراضي
   'gtts': { mode: 'gtts', voice_id: null, voice_url: null },
+  
+  // مفاتيح xtts_* (من الواجهة)
+  'xtts_ar': { mode: 'gtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
+  'xtts_ru': { mode: 'gtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
+  'xtts_tr': { mode: 'gtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
+  'xtts_de': { mode: 'gtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
+  
+  // مفاتيح الأسماء (للتوافق)
   'muhammad': { mode: 'gtts', voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773450710/5_gtygjb.mp3' },
   'dmitry': { mode: 'gtts', voice_id: 'dmitry_ru', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
   'baris': { mode: 'gtts', voice_id: 'baris_tr', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
