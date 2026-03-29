@@ -485,7 +485,7 @@ def dub():
                 voice_url = user.voice_url
         
         # ✅ الإصلاح: استخدام voice_url بدلاً من voice_mode
-        use_xtts = (voice_mode == 'xtts') and voice_url
+        use_xtts = bool(voice_url)
         logger.info("=" * 60)
         logger.info("🎬 [DUB] Received request:")
         logger.info(f"   lang: {lang}")
