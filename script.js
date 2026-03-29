@@ -4,7 +4,7 @@
 
 const CONFIG = {
   // ✅ فارغ - سيتم ملؤه من Cloudinary أو يدوياً
-  API_BASE: '',
+  API_BASE: 'https://b010-34-16-249-239.ngrok-free.app',
   GUEST_LIMIT: 6,
   LANGS: [
     {c:'ar', n:'العربية', f:'🇸🇦'},
