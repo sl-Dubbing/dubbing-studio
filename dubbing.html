@@ -85,6 +85,27 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .back-btn:hover{background:rgba(167,139,250,.1);color:white}
 .tool-box{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(167,139,250,.18);border-radius:20px;padding:30px}
 
+/* ── Lang checkbox grid ── */
+.lang-check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:20px}
+.lang-check-item{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s;font-size:.85rem;color:#c4b5fd;user-select:none}
+.lang-check-item:hover{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3)}
+.lang-check-item.checked{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(96,165,250,.15));border-color:#a78bfa;color:#fff}
+.lang-check-item.is-source{opacity:.4;pointer-events:none;position:relative}
+.lang-check-item.is-source::after{content:'(المصدر)';font-size:.7rem;color:#fcd34d;margin-right:auto}
+.lang-check-item input[type=checkbox]{accent-color:#a78bfa;width:16px;height:16px;cursor:pointer}
+.lang-check-item .lang-flag{font-size:1.1rem}
+
+/* ── Multi results ── */
+.result-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.result-card .r-flag{font-size:1.4rem}
+.result-card .r-name{font-weight:700;color:#e0e0ff;min-width:90px}
+.result-card .r-status{font-size:.82rem;color:#9ca3af;flex:1}
+.result-card .r-status.ok{color:#34d399}
+.result-card .r-status.err{color:#f87171}
+.result-card .r-status.loading{color:#fcd34d}
+.result-card audio{height:36px;flex:1;min-width:180px}
+.result-card .r-dl{padding:8px 14px;background:linear-gradient(135deg,#059669,#10b981);border:none;border-radius:8px;color:#fff;font-weight:600;font-size:.8rem;cursor:pointer;text-decoration:none;white-space:nowrap}
+
 /* ── Lang grid ── */
 .lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:10px;margin-bottom:20px}
 .lang-btn{padding:11px 6px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#c4b5fd;cursor:pointer;transition:all .2s;text-align:center;font-size:.82rem}
@@ -244,24 +265,38 @@ footer a:hover{color:#a78bfa}
       </div>
     </div>
 
-    <!-- ── اللغة ── -->
-    <label class="lbl">اختر لغة الدبلجة:</label>
-    
-<div class="lang-grid" id="langs">
-  <button class="lang-btn active" onclick="selectLang('ar',this)"><span class="lang-flag">🇸🇦</span><span>العربية</span></button>
-  <button class="lang-btn" onclick="selectLang('en',this)"><span class="lang-flag">🇺🇸</span><span>English</span></button>
-  <button class="lang-btn" onclick="selectLang('es',this)"><span class="lang-flag">🇪🇸</span><span>Español</span></button>
-  <button class="lang-btn" onclick="selectLang('fr',this)"><span class="lang-flag">🇫🇷</span><span>Français</span></button>
-  <button class="lang-btn" onclick="selectLang('de',this)"><span class="lang-flag">🇩🇪</span><span>Deutsch</span></button>
-  <button class="lang-btn" onclick="selectLang('it',this)"><span class="lang-flag">🇮🇹</span><span>Italiano</span></button>
-  <button class="lang-btn" onclick="selectLang('ru',this)"><span class="lang-flag">🇷🇺</span><span>Русский</span></button>
-  <button class="lang-btn" onclick="selectLang('tr',this)"><span class="lang-flag">🇹🇷</span><span>Türkçe</span></button>
-  <button class="lang-btn" onclick="selectLang('zh',this)"><span class="lang-flag">🇨🇳</span><span>中文</span></button>
-  <button class="lang-btn" onclick="selectLang('hi',this)"><span class="lang-flag">🇮🇳</span><span>हिन्दी</span></button>
-  <button class="lang-btn" onclick="selectLang('fa',this)"><span class="lang-flag">🇮🇷</span><span>فارسی</span></button>
-  <button class="lang-btn" onclick="selectLang('sv',this)"><span class="lang-flag">🇸🇪</span><span>Svenska</span></button>
-  <button class="lang-btn" onclick="selectLang('nl',this)"><span class="lang-flag">🇳🇱</span><span>Nederlands</span></button>
-</div>
+    <!-- ── كشف اللغة ── -->
+    <div id="detectedLangBox" style="display:none;margin-bottom:16px;padding:12px 18px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);border-radius:12px;font-size:.9rem;color:#34d399;font-weight:600">
+      🔍 لغة SRT المكتشفة: <span id="detectedLangName">—</span>
+    </div>
+
+    <!-- ── اللغات المستهدفة ── -->
+    <label class="lbl">اختر لغات الدبلجة:</label>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="sec-btn" style="width:auto;padding:8px 18px;margin:0;font-size:.82rem" onclick="toggleAllLangs(true)">✅ تحديد الكل</button>
+      <button class="sec-btn" style="width:auto;padding:8px 18px;margin:0;font-size:.82rem" onclick="toggleAllLangs(false)">❌ إلغاء الكل</button>
+    </div>
+    <div class="lang-check-grid" id="langChecks">
+      <label class="lang-check-item" data-lang="ar"><input type="checkbox" value="ar" onchange="toggleLang('ar')"><span class="lang-flag">🇸🇦</span><span>العربية</span></label>
+      <label class="lang-check-item" data-lang="en"><input type="checkbox" value="en" onchange="toggleLang('en')"><span class="lang-flag">🇺🇸</span><span>English</span></label>
+      <label class="lang-check-item" data-lang="es"><input type="checkbox" value="es" onchange="toggleLang('es')"><span class="lang-flag">🇪🇸</span><span>Español</span></label>
+      <label class="lang-check-item" data-lang="fr"><input type="checkbox" value="fr" onchange="toggleLang('fr')"><span class="lang-flag">🇫🇷</span><span>Français</span></label>
+      <label class="lang-check-item" data-lang="de"><input type="checkbox" value="de" onchange="toggleLang('de')"><span class="lang-flag">🇩🇪</span><span>Deutsch</span></label>
+      <label class="lang-check-item" data-lang="it"><input type="checkbox" value="it" onchange="toggleLang('it')"><span class="lang-flag">🇮🇹</span><span>Italiano</span></label>
+      <label class="lang-check-item" data-lang="ru"><input type="checkbox" value="ru" onchange="toggleLang('ru')"><span class="lang-flag">🇷🇺</span><span>Русский</span></label>
+      <label class="lang-check-item" data-lang="tr"><input type="checkbox" value="tr" onchange="toggleLang('tr')"><span class="lang-flag">🇹🇷</span><span>Türkçe</span></label>
+      <label class="lang-check-item" data-lang="zh"><input type="checkbox" value="zh" onchange="toggleLang('zh')"><span class="lang-flag">🇨🇳</span><span>中文</span></label>
+      <label class="lang-check-item" data-lang="hi"><input type="checkbox" value="hi" onchange="toggleLang('hi')"><span class="lang-flag">🇮🇳</span><span>हिन्दी</span></label>
+      <label class="lang-check-item" data-lang="fa"><input type="checkbox" value="fa" onchange="toggleLang('fa')"><span class="lang-flag">🇮🇷</span><span>فارسی</span></label>
+      <label class="lang-check-item" data-lang="sv"><input type="checkbox" value="sv" onchange="toggleLang('sv')"><span class="lang-flag">🇸🇪</span><span>Svenska</span></label>
+      <label class="lang-check-item" data-lang="nl"><input type="checkbox" value="nl" onchange="toggleLang('nl')"><span class="lang-flag">🇳🇱</span><span>Nederlands</span></label>
+    </div>
+
+    <!-- ── نتائج متعددة ── -->
+    <div id="multiResults" style="display:none;margin-top:20px">
+      <label class="lbl">📦 نتائج الدبلجة:</label>
+      <div id="multiResultsList"></div>
+    </div>
 
     
 
@@ -283,11 +318,11 @@ footer a:hover{color:#a78bfa}
       <div class="cg"><label>الصوت: <span class="cv" id="vv">1.0x</span></label><input type="range" id="vc" min=".2" max="2" step=".1" value="1" oninput="document.getElementById('vv').textContent=this.value+'x'"></div>
     </div>
 
-    <button class="action-btn" id="dubBtn" onclick="genDub()">🎬 توليد الدبلجة</button>
+    <button class="action-btn" id="dubBtn" onclick="genDub()">🎬 توليد الدبلجة (متعدد اللغات)</button>
 
     <div class="prog-wrap" id="prog">
       <div class="prog-bar"><div class="prog-fill" id="pf"></div></div>
-      <div class="prog-txt" id="pt">جاري توليد الدبلجة...</div>
+      <div class="prog-txt" id="pt">جاري توليد الدبلجة المتعددة...</div>
     </div>
 
     <audio id="dubAud" controls></audio>
