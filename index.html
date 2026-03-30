@@ -305,6 +305,23 @@ footer a:hover{color:#a78bfa}
 <div class="toast" id="toast"></div>
 <script>
 // =============================================================
+// 🗄️ SUPABASE CONFIGURATION
+// =============================================================
+const SUPABASE_URL = 'https://jgcrhrotcfmkvkttsara.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_mrMUK-Ash8a2nXzNNjan-A_ktpIAZJj';
+
+// تحميل مكتبة Supabase
+const supabaseScript = document.createElement('script');
+supabaseScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+document.head.appendChild(supabaseScript);
+
+let supabase;
+supabaseScript.onload = () => {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('✅ Connected to Supabase');
+};
+
+// =============================================================
 // 🌐 إعدادات التطبيق
 // =============================================================
 const BACKEND_URL = 'https://dubbing-api-v2.onrender.com';
@@ -489,7 +506,7 @@ function updateUserHeader() {
     `;
   } else {
     hdr.innerHTML = `<a href="login.html" class="btn-login" data-i18n="login">${t.login}</a>`;
-    setLang(getLang()); // إعادة تطبيق الترجمة
+    setLang(getLang());
   }
 }
 
@@ -558,12 +575,10 @@ async function checkServer() {
 // =============================================================
 async function loadPrices() {
   try {
-    // محاولة التحميل من prices.json المحلي أولاً
     const res = await fetch('prices.json?v=' + Date.now(), { signal: AbortSignal.timeout(3000) });
     const prices = await res.json();
     applyPrices(prices);
   } catch {
-    // fallback إلى الخادم
     try {
       const res = await fetch(`${BACKEND_URL}/api/prices`, { signal: AbortSignal.timeout(5000) });
       const data = await res.json();
@@ -604,6 +619,11 @@ function showToast(msg) {
 // 🚀 بدء التطبيق
 // =============================================================
 window.addEventListener('DOMContentLoaded', async () => {
+  // انتظار تحميل Supabase
+  while (!supabase) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  
   // تحميل اللغة المحفوظة
   setLang(getLang());
   
