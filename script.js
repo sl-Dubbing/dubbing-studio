@@ -28,12 +28,17 @@ const STATE = {
   selectedVoice: null,
 };
 
-// الأصوات المخصصة (XTTS)
+// ── الأصوات المخصصة (XTTS و CosyVoice) ──
 const _VOICES = {
+  // المحرك القياسي (XTTS v2)
   muhamed:    { mode: 'xtts', voice_id: 'muhammad_ar',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3' },
   dmitry:     { mode: 'xtts', voice_id: 'dmitry_ru',     voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
   baris:      { mode: 'xtts', voice_id: 'baris_tr',      voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
   maximilian: { mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
+  
+  // المحرك السينمائي فائق الجودة (CosyVoice 3.0) 👑
+  cosy_ar:    { mode: 'cosy', voice_id: 'cosy_muhammad', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3' },
+  cosy_ru:    { mode: 'cosy', voice_id: 'cosy_dmitry',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' }
 };
 
 // خريطة جميع الأصوات (بما فيها صوت المصدر)
@@ -44,6 +49,8 @@ const VOICE_MAP = {
   'dmitry': _VOICES.dmitry,
   'baris': _VOICES.baris,
   'maximilian': _VOICES.maximilian,
+  'cosy_ar': _VOICES.cosy_ar,  // تمت الإضافة
+  'cosy_ru': _VOICES.cosy_ru   // تمت الإضافة
 };
 
 // ═══════════════════════════════════════════
@@ -130,7 +137,7 @@ async function checkServer() {
 }
 
 function initLangs() {
-  const el = document.getElementById('langGrid'); // تم تحديث الـ ID
+  const el = document.getElementById('langGrid'); 
   if (!el) return;
   el.innerHTML = CONFIG.LANGS.map(l => 
     `<div class="lang-box ${l.c === STATE.lang ? 'active' : ''}" onclick="selectLang('${l.c}', this)">
@@ -154,6 +161,7 @@ function updateVoiceSelection(mode) {
   console.log('🎤 Voice selected:', mode, STATE.selectedVoice.voice_id);
 
   if (STATE.selectedVoice && STATE.selectedVoice.voice_url && CONFIG.API_BASE) {
+    // إيقاظ السيرفر لتحميل الصوت مسبقاً (هنا تعمل خدعة التفريغ الذكي في الباك اند)
     preloadVoice(STATE.selectedVoice.voice_id, STATE.selectedVoice.voice_url);
   }
 }
@@ -190,11 +198,9 @@ function loadSRTFile(event) {
   
   const reader = new FileReader();
   reader.onload = function(e) {
-    // تخزين النص في الذاكرة ومحاكاته
     STATE.rawSRT = e.target.result;
     parseSRT(STATE.rawSRT);
     
-    // تغيير شكل صندوق الرفع ليدل على النجاح
     const zone = document.getElementById('srtZone');
     if(zone) {
         zone.classList.add('ok');
@@ -252,7 +258,7 @@ async function startDubbing() {
   
   // تفعيل واجهة التحميل
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...';
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة السحابية...';
   progArea.style.display = 'block';
   progBar.style.width = '0%';
   statusTxt.innerText = 'تهيئة المحرك الصوتي...';
@@ -260,10 +266,10 @@ async function startDubbing() {
   // تجميع النص الكامل للترجمة إذا احتاجه الباك اند
   const fullText = STATE.srtData.map(item => item.x.trim()).join('\n');
   
-  // محاكاة شريط التقدم الوهمي حتى يرد السيرفر
+  // محاكاة شريط التقدم الوهمي
   let p = 0;
   const iv = setInterval(() => {
-    p = Math.min(p + 1.5, 85); // يتوقف عند 85% حتى يكتمل فعلياً
+    p = Math.min(p + 1.5, 85); 
     progBar.style.width = p + '%';
     pctTxt.innerText = Math.floor(p) + '%';
     if(p > 30) statusTxt.innerText = 'الذكاء الاصطناعي يولد الصوت الآن...';
@@ -285,7 +291,7 @@ async function startDubbing() {
       voice_mode: voiceData.mode,
       voice_id: voiceData.voice_id,
       voice_url: voiceData.voice_url,
-      media_url: mediaUrl // نرسل الرابط في حال اختار "صوت المصدر"
+      media_url: mediaUrl 
     };
 
     console.log('🚀 Sending to Server:', payload);
@@ -311,7 +317,8 @@ async function startDubbing() {
           aud.src = d.audio_url;
           dl.href = d.audio_url;
           
-          showToast('🎉 الدبلجة جاهزة للتحميل!', 5000);
+          // رسالة توضح أي محرك تم استخدامه للتأكيد!
+          showToast(`🎉 الدبلجة جاهزة! (بواسطة: ${d.method || 'الذكاء الاصطناعي'})`, 5000);
       }, 1000);
     } else {
       throw new Error(d.error || 'فشل التوليد من السيرفر');
@@ -319,7 +326,7 @@ async function startDubbing() {
   } catch(e) {
     clearInterval(iv);
     console.error('❌ Dubbing Error:', e);
-    progBar.style.backgroundColor = '#ef4444'; // لون أحمر عند الخطأ
+    progBar.style.backgroundColor = '#ef4444'; 
     statusTxt.innerText = 'حدث خطأ!';
     showToast('❌ عذراً، ' + e.message, 5000);
   } finally {
@@ -333,12 +340,8 @@ async function startDubbing() {
 // ═══════════════════════════════════════════
 window.onload = function() {
   console.log('🚀 sl-Dubbing Application Loaded');
-  
-  // تهيئة الواجهة
   initHeader();
   initLangs();
   checkServer();
-  
-  // تحديد الصوت الافتراضي (محمد) في البداية
   updateVoiceSelection('muhamed');
 };
