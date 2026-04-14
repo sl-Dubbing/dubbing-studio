@@ -18,6 +18,8 @@
   --green-dk: #065f2c;
   --radius: 14px;
   --shadow: 0 1px 3px rgba(0,0,0,.07);
+  --bg-page: #f5f5f7;
+  --border-color: #e5e7eb;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -69,9 +71,6 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 .spk-card.active .chk { display: block; }
 .def-badge { position: absolute; top: 0; left: 0; font-size: .55rem; font-weight: 800; padding: 3px 8px; background: var(--primary); color: #fff; border-bottom-right-radius: 8px; }
 
-.add-card { border-style: dashed; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 100px; color: var(--muted); }
-.add-card i { font-size: 1.4rem; }
-
 /* ── Lang Grid ── */
 .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 12px 0 20px; }
 .lang-box { padding: 12px 8px; background: #fff; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid var(--border); font-size: .85rem; transition: all .18s; }
@@ -88,6 +87,10 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 .res-card { display: none; margin-top: 20px; }
 audio { width: 100%; margin-top: 10px; }
 
+/* Toast */
+.toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; color: white; border-radius: 10px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.9rem; transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; background: #0f0f10;}
+.toast.show { transform: translateY(0); opacity: 1; }
+
 @media(max-width: 600px) { .spk-grid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
@@ -95,7 +98,7 @@ audio { width: 100%; margin-top: 10px; }
 
 <div class="topbar">
   <a href="index.html" class="logo">sl<span>-Dubbing</span></a>
-  <div class="pill"><div class="dot" id="dot"></div><span id="dotLbl">جاري فحص النظام...</span></div>
+  <div class="pill" id="hdr"><div class="dot" id="dot"></div><span id="dotLbl">جاري فحص النظام...</span></div>
 </div>
 
 <div class="wrap">
@@ -104,12 +107,7 @@ audio { width: 100%; margin-top: 10px; }
     <div class="ttl"><i class="fas fa-link"></i> مصدر الفيديو أو الصوت</div>
     <div class="grp">
       <label class="lbl">رابط يوتيوب</label>
-      <input type="text" id="ytUrl" placeholder="الصق رابط اليوتيوب هنا..." oninput="onUrl(this.value)">
-    </div>
-    <div class="sep">أو</div>
-    <div class="grp">
-      <label class="lbl">رفع ملف محلي</label>
-      <input type="file" id="mediaFile" accept="audio/*,video/*">
+      <input type="text" id="ytUrl" placeholder="الصق رابط اليوتيوب هنا لتجربة استنساخ المصدر...">
     </div>
   </div>
 
@@ -120,14 +118,6 @@ audio { width: 100%; margin-top: 10px; }
       <i class="fas fa-upload"></i>
       <div class="srt-lbl">انقر لرفع ملف الترجمة (SRT)</div>
     </div>
-    <div class="src-row" style="margin-top: 15px;">
-      <label class="lbl">لغة الفيديو الأصلية</label>
-      <select id="srcLang">
-        <option value="auto">تحديد تلقائي</option>
-        <option value="ar">العربية</option>
-        <option value="en">الإنجليزية</option>
-      </select>
-    </div>
   </div>
 
   <div class="card">
@@ -136,14 +126,14 @@ audio { width: 100%; margin-top: 10px; }
     
     <div class="spk-grid" id="spkGrid">
       
-      <div class="spk-card" id="vc-source" onclick="selectVoice('source', this)">
+      <div class="spk-card" onclick="selectVoice('source', this)">
         <i class="fas fa-check-circle chk"></i>
         <div class="spk-av" style="background: #3b82f6;">🎙️</div>
         <div class="spk-nm">صوت المصدر</div>
         <div class="spk-sub">استنساخ من الفيديو</div>
       </div>
 
-      <div class="spk-card active" id="vc-muhamed" onclick="selectVoice('muhamed', this)">
+      <div class="spk-card active" onclick="selectVoice('muhamed', this)">
         <div class="def-badge">افتراضي</div>
         <i class="fas fa-check-circle chk"></i>
         <div class="spk-av">M</div>
@@ -151,27 +141,31 @@ audio { width: 100%; margin-top: 10px; }
         <div class="spk-sub">نبرة بشرية هادئة</div>
       </div>
 
-      <div class="spk-card add-card" onclick="document.getElementById('spkFile').click()">
-        <i class="fas fa-plus"></i>
-        <span>رفع عينة صوت</span>
+      <div class="spk-card" onclick="selectVoice('dmitry', this)">
+        <i class="fas fa-check-circle chk"></i>
+        <div class="spk-av" style="background: #f59e0b;">D</div>
+        <div class="spk-nm">ديمتري (Dmitry)</div>
+        <div class="spk-sub">صوت قوي</div>
+      </div>
+
+      <div class="spk-card" onclick="selectVoice('baris', this)">
+        <i class="fas fa-check-circle chk"></i>
+        <div class="spk-av" style="background: #ef4444;">B</div>
+        <div class="spk-nm">باريش (Baris)</div>
+        <div class="spk-sub">صوت وثائقي</div>
       </div>
 
     </div>
-    
-    <input type="file" id="spkFile" accept="audio/*" style="display:none">
   </div>
 
   <div class="card">
-    <div class="ttl"><i class="fas fa-language"></i> لغة الدبلجة المطلوبة</div>
-    <div class="lang-grid" id="langGrid">
-        </div>
-
-    <button class="btn-go" id="startBtn" onclick="startDubbing()">
+    <div class="ttl"><i class="fas fa-language"></i> لغة الدبلجة المطلوبة والجودة</div>
+    <div class="lang-grid" id="langGrid"></div> <button class="btn-go" id="startBtn" onclick="startDubbing()">
       <i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة
     </button>
 
     <div id="progressArea">
-      <div class="prog-meta">
+      <div class="prog-meta" style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; color:var(--muted);">
         <span id="statusTxt">جاري المعالجة...</span>
         <span id="pctTxt">0%</span>
       </div>
@@ -191,19 +185,6 @@ audio { width: 100%; margin-top: 10px; }
 
 </div>
 
-<script>
-// تحديد الصوت الافتراضي
-let activeSpeakerId = 'muhamed';
-
-function selectVoice(id, el) {
-    activeSpeakerId = id;
-    document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    console.log("Speaker Selected:", activeSpeakerId);
-}
-
-// سيتم ربط باقي الدوال مع ملف script.js الخاص بك
-</script>
 <script src="script.js"></script>
 </body>
 </html>
