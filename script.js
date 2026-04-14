@@ -98,12 +98,16 @@ function injectQualitySelector() {
 // Network Helpers
 // ═══════════════════════════════════════════
 function apiGet(path, timeout) {
-  return fetch(CONFIG.API_BASE + path, { signal: AbortSignal.timeout(timeout || 10000) });
+  return fetch(CONFIG.API_BASE + path, { 
+    credentials: 'include', 
+    signal: AbortSignal.timeout(timeout || 10000) 
+  });
 }
 
 function apiPost(path, data, timeout) {
   return fetch(CONFIG.API_BASE + path, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
     signal: AbortSignal.timeout(timeout || 600000)
