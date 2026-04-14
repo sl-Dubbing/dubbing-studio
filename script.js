@@ -1,11 +1,9 @@
 // ============================================================
-// script.js — sl-Dubbing Frontend (Final)
+// script.js — sl-Dubbing Frontend (Production Version)
 // ============================================================
 
 const CONFIG = {
   API_BASE: 'https://sl-dubbing-backend-production.up.railway.app', 
-  
-  GUEST_LIMIT: 6,
   LANGS: [
     {c:'ar', n:'العربية', f:'🇸🇦'},
     {c:'en', n:'English', f:'🇺🇸'},
@@ -25,75 +23,80 @@ const CONFIG = {
 
 const STATE = {
   lang: 'ar',
-  voiceMode: 'muhammad',
+  voiceMode: 'muhamed',
   srtData: [],
   selectedVoice: null,
 };
 
-// ✅ VOICE_MAP — mode = xtts لكل الأصوات المخصصة
+// الأصوات المخصصة (XTTS)
 const _VOICES = {
-  muhammad:   { mode: 'xtts', voice_id: 'muhammad_ar',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3' },
+  muhamed:    { mode: 'xtts', voice_id: 'muhammad_ar',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3' },
   dmitry:     { mode: 'xtts', voice_id: 'dmitry_ru',     voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
   baris:      { mode: 'xtts', voice_id: 'baris_tr',      voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
   maximilian: { mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
 };
+
+// خريطة جميع الأصوات (بما فيها صوت المصدر)
 const VOICE_MAP = {
+  'source': { mode: 'source', voice_id: 'source', voice_url: null }, // صوت المصدر (يتم استخلاصه في الباك اند)
   'gtts': { mode: 'gtts', voice_id: null, voice_url: null },
-  'muhammad': _VOICES.muhammad,
+  'muhamed': _VOICES.muhamed,
   'dmitry': _VOICES.dmitry,
   'baris': _VOICES.baris,
   'maximilian': _VOICES.maximilian,
-  'xtts_ar': _VOICES.muhammad,
-  'xtts_ru': _VOICES.dmitry,
-  'xtts_tr': _VOICES.baris,
-  'xtts_de': _VOICES.maximilian,
 };
 
 // ═══════════════════════════════════════════
-// ✅ Helper: fetch بدون headers مخصصة (يمنع CORS preflight مع ngrok)
+// Network Helpers
 // ═══════════════════════════════════════════
 function apiGet(path, timeout) {
-  var sep = path.includes('?') ? '&' : '?';
-  return fetch(CONFIG.API_BASE + path + sep + 'ngrok-skip-browser-warning=1', {
+  return fetch(CONFIG.API_BASE + path, {
     signal: AbortSignal.timeout(timeout || 10000)
   });
 }
 
 function apiPost(path, data, timeout) {
-  return fetch(CONFIG.API_BASE + path + '?ngrok-skip-browser-warning=1', {
+  return fetch(CONFIG.API_BASE + path, {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
-    signal: AbortSignal.timeout(timeout || 60000)
+    signal: AbortSignal.timeout(timeout || 600000) // 10 دقائق كحد أقصى للدبلجة
   });
 }
 
 // ═══════════════════════════════════════════
-// UI
+// UI & Toasts
 // ═══════════════════════════════════════════
-function showToast(msg, duration) {
-  duration = duration || 3000;
-  var t = document.getElementById('toast');
+function showToast(msg, duration = 3000) {
+  let t = document.getElementById('toast');
   if (!t) {
     t = document.createElement('div');
     t.id = 'toast';
-    t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:14px 28px;border-radius:12px;font-weight:600;box-shadow:0 10px 35px rgba(0,0,0,.4);transition:transform .3s;z-index:9999';
+    t.className = 'toast';
     document.body.appendChild(t);
   }
   t.textContent = msg;
-  t.style.transform = 'translateX(-50%) translateY(0)';
+  t.classList.add('show');
+  
   clearTimeout(t._t);
-  t._t = setTimeout(function() { t.style.transform = 'translateX(-50%) translateY(120px)'; }, duration);
+  t._t = setTimeout(() => {
+    t.classList.remove('show');
+  }, duration);
 }
 
 function initHeader() {
-  var hdr = document.getElementById('hdr');
+  const hdr = document.getElementById('hdr');
   if (!hdr) return;
   try {
-    var u = JSON.parse(localStorage.getItem('sl_user'));
+    const u = JSON.parse(localStorage.getItem('sl_user'));
     if (u) {
-      hdr.innerHTML = '<div class="avatar">' + (u.avatar || '👤') + '</div><span class="username">' + (u.name || u.email) + '</span><button class="btn-logout" onclick="logout()">خروج</button>';
+      hdr.innerHTML = `<div class="pill" style="background:var(--card); color:var(--text); border-color:var(--border);">
+                          <div class="avatar" style="width:24px;height:24px;font-size:10px;">${u.avatar || '👤'}</div>
+                          <span class="username" style="font-weight:600;margin:0 5px;">${u.name || u.email}</span>
+                          <button class="btn-logout" onclick="logout()" style="padding:2px 8px;font-size:10px;">خروج</button>
+                       </div>`;
     } else {
-      hdr.innerHTML = '<a href="login.html" class="btn-login">تسجيل الدخول</a>';
+      hdr.innerHTML = '<a href="login.html" class="btn-login" style="padding:6px 14px;font-size:.8rem;">تسجيل الدخول</a>';
     }
   } catch(e) {
     hdr.innerHTML = '<a href="login.html" class="btn-login">تسجيل الدخول</a>';
@@ -106,216 +109,236 @@ function logout() {
 }
 
 async function checkServer() {
-  var badge = document.getElementById('srv');
-  var txt = document.getElementById('srvTxt');
-  if (!badge) return;
-  if (!CONFIG.API_BASE) {
-    badge.className = 'srv-badge';
-    if (txt) txt.textContent = 'اضغط 🔗 تغيير الخادم';
-    return;
-  }
+  const dot = document.getElementById('dot');
+  const lbl = document.getElementById('dotLbl');
+  if (!dot) return;
+  
   try {
-    var r = await apiGet('/api/health', 6000);
-    badge.className = 'srv-badge' + (r.ok ? ' on' : '');
-    if (txt) txt.textContent = r.ok ? 'الخادم متصل ✓' : 'الخادم غير متاح';
-    if (r.ok) console.log('✅ Server:', await r.json());
-    return r.ok;
+    const r = await apiGet('/api/health', 6000);
+    if (r.ok) {
+        dot.classList.add('on');
+        if (lbl) lbl.textContent = 'النظام متصل ✓';
+    } else {
+        throw new Error("Server not OK");
+    }
   } catch(e) {
     console.error('❌ Server check failed:', e);
-    badge.className = 'srv-badge';
-    if (txt) txt.textContent = 'الخادم غير متاح';
-    return false;
+    dot.classList.remove('on');
+    dot.style.background = '#ef4444'; // Red dot for offline
+    if (lbl) lbl.textContent = 'النظام غير متاح';
   }
 }
 
-function initLangs(containerId) {
-  var el = document.getElementById(containerId || 'langs');
+function initLangs() {
+  const el = document.getElementById('langGrid'); // تم تحديث الـ ID
   if (!el) return;
-  el.innerHTML = CONFIG.LANGS.map(function(l) {
-    return '<button class="lang-btn ' + (l.c === STATE.lang ? 'active' : '') + '" onclick="selectLang(\'' + l.c + '\', this)"><span class="lang-flag">' + l.f + '</span><span>' + l.n + '</span></button>';
-  }).join('');
+  el.innerHTML = CONFIG.LANGS.map(l => 
+    `<div class="lang-box ${l.c === STATE.lang ? 'active' : ''}" onclick="selectLang('${l.c}', this)">
+        <span class="lang-flag" style="font-size:1.2rem;display:block;margin-bottom:4px;">${l.f}</span>
+        <span>${l.n}</span>
+     </div>`
+  ).join('');
 }
 
 function selectLang(code, btn) {
   STATE.lang = code;
-  document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.lang-box').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  console.log('🌍 Language:', code);
+  console.log('🌍 Language selected:', code);
 }
 
-function selectVoice(mode, el) {
+// الدالة موجودة مسبقاً في ملف HTML، ولكن نضمن منطق الخلفية هنا
+function updateVoiceSelection(mode) {
   STATE.voiceMode = mode;
-  STATE.selectedVoice = VOICE_MAP[mode] || null;
-  console.log('🎤 Voice:', mode, STATE.selectedVoice ? STATE.selectedVoice.voice_id : 'gtts');
+  STATE.selectedVoice = VOICE_MAP[mode] || VOICE_MAP['muhamed'];
+  console.log('🎤 Voice selected:', mode, STATE.selectedVoice.voice_id);
 
-  document.querySelectorAll('.voice-choice').forEach(function(e) {
-    e.style.borderColor = 'rgba(255,255,255,.1)';
-    e.style.background = 'rgba(255,255,255,.02)';
-  });
-  if (el) {
-    el.style.borderColor = '#a78bfa';
-    el.style.background = 'rgba(124,58,237,.15)';
-  }
   if (STATE.selectedVoice && STATE.selectedVoice.voice_url && CONFIG.API_BASE) {
     preloadVoice(STATE.selectedVoice.voice_id, STATE.selectedVoice.voice_url);
   }
 }
+
+// للاستماع إلى الدالة المكتوبة في HTML
+const originalSelectVoice = window.selectVoice;
+window.selectVoice = function(id, el) {
+    if(originalSelectVoice) originalSelectVoice(id, el);
+    updateVoiceSelection(id);
+};
 
 async function preloadVoice(voice_id, voice_url) {
   try {
     await apiPost('/api/preload_voice', { voice_id: voice_id, voice_url: voice_url }, 120000);
     console.log('✅ Voice preloaded:', voice_id);
   } catch(e) {
-    console.log('⚠️ preload:', e.message);
+    console.log('⚠️ preload failed or skipped:', e.message);
   }
 }
 
 // ═══════════════════════════════════════════
-// SRT
+// SRT Parsing
 // ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    const srtFileInput = document.getElementById('srtFile');
+    if(srtFileInput) {
+        srtFileInput.addEventListener('change', loadSRTFile);
+    }
+});
+
 function loadSRTFile(event) {
-  var file = event.target.files[0];
+  const file = event.target.files[0];
   if (!file) return;
-  var reader = new FileReader();
+  
+  const reader = new FileReader();
   reader.onload = function(e) {
-    document.getElementById('srtTxt').value = e.target.result;
-    parseSRT();
+    // تخزين النص في الذاكرة ومحاكاته
+    STATE.rawSRT = e.target.result;
+    parseSRT(STATE.rawSRT);
+    
+    // تغيير شكل صندوق الرفع ليدل على النجاح
+    const zone = document.getElementById('srtZone');
+    if(zone) {
+        zone.classList.add('ok');
+        zone.innerHTML = `<i class="fas fa-check-circle" style="color:#059669; font-size:1.8rem; margin-bottom:8px;"></i>
+                          <div class="srt-lbl" style="color:#059669; font-weight:700;">تم استلام: ${file.name}</div>`;
+    }
   };
   reader.readAsText(file);
 }
 
-function parseSRT() {
-  var content = document.getElementById('srtTxt') ? document.getElementById('srtTxt').value : '';
-  if (!content) { showToast('الرجاء إدخال محتوى SRT'); return; }
+function parseSRT(content) {
+  if (!content) { showToast('لا يوجد محتوى في الملف', 3000); return; }
   STATE.srtData = [];
-  var cur = null;
-  var lines = content.split('\n');
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i].trim();
-    if (!line) { if (cur) STATE.srtData.push(cur); cur = null; continue; }
-    if (/^\d+$/.test(line)) { if (cur) STATE.srtData.push(cur); cur = {i: parseInt(line), t: '', x: ''}; }
-    else if (line.includes('-->')) { if (cur) cur.t = line; }
-    else if (cur) { cur.x += line + ' '; }
+  let cur = null;
+  const lines = content.split('\n');
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) { 
+        if (cur) STATE.srtData.push(cur); 
+        cur = null; 
+        continue; 
+    }
+    if (/^\d+$/.test(line)) { 
+        if (cur) STATE.srtData.push(cur); 
+        cur = {i: parseInt(line), t: '', x: ''}; 
+    }
+    else if (line.includes('-->')) { 
+        if (cur) cur.t = line; 
+    }
+    else if (cur) { 
+        cur.x += line + ' '; 
+    }
   }
   if (cur) STATE.srtData.push(cur);
-  var list = document.getElementById('srtList');
-  if (list) {
-    list.innerHTML = STATE.srtData.map(function(item) {
-      return '<div class="srt-item"><span class="srt-time">' + item.t + '</span><span>' + item.x + '</span></div>';
-    }).join('');
-    list.style.display = 'block';
-  }
-  showToast('✅ تم تحليل ' + STATE.srtData.length + ' جملة');
+  
+  console.log(`✅ تم تحليل ${STATE.srtData.length} جملة من الـ SRT`);
 }
 
 // ═══════════════════════════════════════════
-// Dubbing
+// Dubbing Execution
 // ═══════════════════════════════════════════
-async function genDub() {
-  if (!STATE.srtData.length) { showToast('الرجاء تحميل ملف SRT أولاً'); return; }
-  if (!CONFIG.API_BASE) { showToast('❌ الخادم غير متصل - اضغط 🔗'); return; }
-  var user = JSON.parse(localStorage.getItem('sl_user') || '{}');
-  var btn = document.getElementById('dubBtn');
-  var prog = document.getElementById('prog');
-  var pf = document.getElementById('pf');
-  var pt = document.getElementById('pt');
+async function startDubbing() {
+  if (!STATE.srtData.length) { 
+      showToast('الرجاء رفع ملف الترجمة (SRT) أولاً', 4000); 
+      return; 
+  }
+  
+  const user = JSON.parse(localStorage.getItem('sl_user') || '{}');
+  const btn = document.getElementById('startBtn');
+  const progArea = document.getElementById('progressArea');
+  const progBar = document.getElementById('progBar');
+  const pctTxt = document.getElementById('pctTxt');
+  const statusTxt = document.getElementById('statusTxt');
+  
+  // تفعيل واجهة التحميل
   btn.disabled = true;
-  prog.classList.add('on');
-  pf.style.width = '0%';
-
-  var fullText = STATE.srtData.map(function(item) { return item.x.trim(); }).join('\n');
-  var p = 0;
-  var iv = setInterval(function() {
-    p = Math.min(p + 2, 85);
-    pf.style.width = p + '%';
-    if (pt) pt.textContent = 'جاري التوليد... ' + p + '%';
-  }, 600);
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...';
+  progArea.style.display = 'block';
+  progBar.style.width = '0%';
+  statusTxt.innerText = 'تهيئة المحرك الصوتي...';
+  
+  // تجميع النص الكامل للترجمة إذا احتاجه الباك اند
+  const fullText = STATE.srtData.map(item => item.x.trim()).join('\n');
+  
+  // محاكاة شريط التقدم الوهمي حتى يرد السيرفر
+  let p = 0;
+  const iv = setInterval(() => {
+    p = Math.min(p + 1.5, 85); // يتوقف عند 85% حتى يكتمل فعلياً
+    progBar.style.width = p + '%';
+    pctTxt.innerText = Math.floor(p) + '%';
+    if(p > 30) statusTxt.innerText = 'الذكاء الاصطناعي يولد الصوت الآن...';
+    if(p > 60) statusTxt.innerText = 'جاري دمج الصوت مع التوقيت الزمني...';
+  }, 800);
 
   try {
-    var srtContent = document.getElementById('srtTxt') ? document.getElementById('srtTxt').value : '';
-    var voiceData = STATE.selectedVoice || VOICE_MAP[STATE.voiceMode] || {};
-    console.log('🎬 genDub: voice=' + (voiceData.voice_id || 'gtts') + ' mode=' + (voiceData.mode || 'gtts'));
+    const voiceData = STATE.selectedVoice || VOICE_MAP['muhamed'];
+    
+    // جلب رابط اليوتيوب إذا وجد
+    const ytInput = document.getElementById('ytUrl');
+    const mediaUrl = ytInput ? ytInput.value.trim() : null;
 
-    var res = await apiPost('/api/dub', {
+    const payload = {
       text: fullText,
-      srt: srtContent,
+      srt: STATE.rawSRT,
       lang: STATE.lang,
       email: user.email || '',
-      feature: 'dub',
-      voice_mode: voiceData.mode || 'gtts',
-      voice_id: voiceData.voice_id || null,
-      voice_url: voiceData.voice_url || null
-    }, 600000);
+      voice_mode: voiceData.mode,
+      voice_id: voiceData.voice_id,
+      voice_url: voiceData.voice_url,
+      media_url: mediaUrl // نرسل الرابط في حال اختار "صوت المصدر"
+    };
 
+    console.log('🚀 Sending to Server:', payload);
+
+    const res = await apiPost('/api/dub', payload);
     clearInterval(iv);
-    pf.style.width = '100%';
-    var d = await res.json();
-    console.log('📦 Response:', d);
+    
+    progBar.style.width = '100%';
+    pctTxt.innerText = '100%';
+    statusTxt.innerText = 'اكتملت المعالجة بنجاح!';
+    
+    const d = await res.json();
+    console.log('📦 Server Response:', d);
 
     if (d.success && d.audio_url) {
-      prog.classList.remove('on');
-      btn.disabled = false;
-      var aud = document.getElementById('dubAud');
-      var dl = document.getElementById('dubDl');
-      aud.src = d.audio_url;
-      aud.classList.add('show');
-      dl.href = d.audio_url;
-      dl.classList.add('show');
-      var method = (d.method && d.method.includes('xtts')) || voiceData.voice_id ? 'بصوت مخصص 🎤' : 'بصوت افتراضي';
-      var synced = d.synced ? ' — متزامن ⏱️' : '';
-      var timing = d.time_sec ? ' (' + d.time_sec + 's)' : '';
-      showToast('✅ ' + method + synced + timing, 5000);
-      return;
+      setTimeout(() => {
+          progArea.style.display = 'none';
+          document.getElementById('resCard').style.display = 'block';
+          
+          const aud = document.getElementById('dubAud');
+          const dl = document.getElementById('dlBtn');
+          
+          aud.src = d.audio_url;
+          dl.href = d.audio_url;
+          
+          showToast('🎉 الدبلجة جاهزة للتحميل!', 5000);
+      }, 1000);
+    } else {
+      throw new Error(d.error || 'فشل التوليد من السيرفر');
     }
-    showToast('❌ ' + (d.error || 'فشل التوليد'));
   } catch(e) {
     clearInterval(iv);
-    console.error('❌ genDub error:', e);
-    showToast('❌ تعذر الاتصال بالخادم');
+    console.error('❌ Dubbing Error:', e);
+    progBar.style.backgroundColor = '#ef4444'; // لون أحمر عند الخطأ
+    statusTxt.innerText = 'حدث خطأ!';
+    showToast('❌ عذراً، ' + e.message, 5000);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة';
   }
-  pf.style.width = '0%';
-  prog.classList.remove('on');
-  btn.disabled = false;
 }
 
 // ═══════════════════════════════════════════
-// Backend URL
+// Initialization on Load
 // ═══════════════════════════════════════════
-function setBackendUrl(url) {
-  CONFIG.API_BASE = url.trim().replace(/\/$/, '');
-  localStorage.setItem('sl_backend_url', CONFIG.API_BASE);
-  showToast('✅ تم تحديث الرابط');
-  console.log('🔗 New API_BASE:', CONFIG.API_BASE);
-  checkServer();
-}
-
-function addBackendUrlInput() {
-  var btn = document.createElement('button');
-  btn.textContent = '🔗 تغيير الخادم';
-  btn.style.cssText = 'position:fixed;top:10px;right:10px;padding:8px 14px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.5);border-radius:8px;color:#fff;cursor:pointer;font-size:12px;z-index:9998;';
-  btn.onclick = function() {
-    var url = prompt('أدخل رابط الخادم الجديد (ngrok من Colab):', CONFIG.API_BASE);
-    if (url && url.trim()) setBackendUrl(url);
-  };
-  document.body.appendChild(btn);
-}
-
-// ═══════════════════════════════════════════
-// Init
-// ═══════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 sl-Dubbing loaded');
-  var saved = localStorage.getItem('sl_backend_url');
-  if (saved) {
-    CONFIG.API_BASE = saved;
-    console.log('🔗 Restored:', CONFIG.API_BASE);
-  }
-  // ✅ Muhammad افتراضياً لكل اللغات
-  STATE.voiceMode = 'muhammad';
-  STATE.selectedVoice = VOICE_MAP['muhammad'];
-  console.log('🎤 Default voice:', STATE.selectedVoice);
-  addBackendUrlInput();
+window.onload = function() {
+  console.log('🚀 sl-Dubbing Application Loaded');
+  
+  // تهيئة الواجهة
   initHeader();
-  initLangs('langs');
+  initLangs();
   checkServer();
-});
+  
+  // تحديد الصوت الافتراضي (محمد) في البداية
+  updateVoiceSelection('muhamed');
+};
