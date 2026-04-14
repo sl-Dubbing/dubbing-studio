@@ -58,22 +58,11 @@ body { background: var(--bg-page); color: var(--text-main); min-height: 100vh; o
 .spk-nm { font-size: .85rem; font-weight: 600; }
 .chk { position: absolute; top: 5px; right: 7px; color: var(--green-dk); font-size: .8rem; display: none; }
 .spk-card.active .chk { display: block; }
-.add-card { border-style: dashed; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 88px; color: var(--text-muted); }
-.add-card:hover { color: var(--text-main); }
-.add-card i { font-size: 1.3rem; }
-.add-card span { font-size: .78rem; }
 
 /* Form */
 .textarea { width: 100%; min-height: 160px; background: var(--bg-page); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-size: 1rem; padding: 16px; resize: vertical; outline: none; margin-bottom: 8px; transition: border .2s; }
 .textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
 .char-count { color: var(--text-muted); font-size: .85rem; margin-bottom: 24px; text-align: right; }
-
-.controls-row { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px; }
-.cg { display: flex; flex-direction: column; gap: 8px; }
-.cg label { font-size: .9rem; color: var(--text-muted); font-weight: 600; display: flex; justify-content: space-between; }
-.cv { color: var(--text-main); font-weight: 700; }
-.cg input[type=range] { width: 100%; height: 6px; border-radius: 3px; background: var(--border-color); outline: none; -webkit-appearance: none; }
-.cg input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; }
 
 /* Buttons & Audio */
 .action-btn { padding: 16px; background: var(--primary); border: none; border-radius: var(--radius-md); color: white; cursor: pointer; font-weight: 600; font-size: 1.05rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s; }
@@ -94,10 +83,8 @@ audio { width: 100%; margin-top: 4px; outline: none; }
 #statusTxt { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
 /* Toast */
-.toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; color: white; border-radius: 10px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.9rem; transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; }
-.toast.success { background: #059669; }
-.toast.error { background: #ef4444; }
-.toast.info { background: #0f0f10; }
+.toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; color: white; border-radius: 10px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.9rem; transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; background: #0f0f10;}
+.toast.show { transform: translateY(0); opacity: 1; }
 </style>
 </head>
 <body>
@@ -114,9 +101,29 @@ audio { width: 100%; margin-top: 4px; outline: none; }
 
   <div class="tool-box">
     
-    <label class="lbl">1. Select Voice <span id="upProg" style="display:none; color:#059669; font-size:0.8rem; margin-left:10px;"><i class="fas fa-spinner fa-spin"></i> Uploading...</span></label>
-    <div class="spk-grid" id="spkGrid"></div>
-    <input type="file" id="spkFile" accept="audio/*,video/*" style="display:none">
+    <label class="lbl">1. Select Voice</label>
+    <div class="spk-grid" id="spkGrid">
+        <div class="spk-card active" onclick="selSpk('muhamed', this)">
+            <i class="fas fa-check-circle chk"></i><div class="spk-av">M</div><div class="spk-nm">Muhamed</div>
+        </div>
+        <div class="spk-card" onclick="selSpk('dmitry', this)">
+            <i class="fas fa-check-circle chk"></i><div class="spk-av" style="background:#f59e0b">D</div><div class="spk-nm">Dmitry</div>
+        </div>
+        <div class="spk-card" onclick="selSpk('baris', this)">
+            <i class="fas fa-check-circle chk"></i><div class="spk-av" style="background:#ef4444">B</div><div class="spk-nm">Baris</div>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 24px; display: flex; gap: 15px; background: var(--bg-page); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color);">
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600; font-size: 0.9rem;">
+            <input type="radio" name="dub_quality" value="medium" onchange="activeQuality='medium'" checked>
+            <span>Standard (XTTS)</span>
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:700; font-size: 0.9rem; color: #8b5cf6;">
+            <input type="radio" name="dub_quality" value="high" onchange="activeQuality='high'">
+            <span>Ultra Cinematic (CosyVoice) <i class="fas fa-crown"></i></span>
+        </label>
+    </div>
 
     <label class="lbl">2. Select Language</label>
     <div class="lang-grid" id="langs"></div>
@@ -125,14 +132,12 @@ audio { width: 100%; margin-top: 4px; outline: none; }
     <textarea class="textarea" id="txt" placeholder="Type or paste your text here..." oninput="document.getElementById('cc').textContent=this.value.length+' characters'"></textarea>
     <div class="char-count" id="cc">0 characters</div>
 
-    <div class="controls-row">
-      <div class="cg"><label>Reading Speed <span class="cv" id="rv">1.0x</span></label><input type="range" id="rc" min="0.7" max="1.5" step="0.05" value="1" oninput="document.getElementById('rv').textContent=this.value+'x'"></div>
-    </div>
-
     <button class="action-btn" id="speakBtn" onclick="generateTTS()"><i class="fas fa-bolt"></i> Generate Audio</button>
 
     <div class="loader-wrapper" id="loaderAnim">
-      <div id="statusTxt">Connecting to AI Engine...</div>
+      <div id="statusTxt" style="display:flex; justify-content:space-between; width:100%;">
+          <span>Synthesizing...</span> <span id="pctTxt">0%</span>
+      </div>
       <div class="prog-bar-wrap"><div class="prog-bar" id="progBar"></div></div>
     </div>
 
@@ -148,181 +153,152 @@ audio { width: 100%; margin-top: 4px; outline: none; }
 </div>
 
 <script>
+// --- Configuration (نفس عقل script.js) ---
 const API_BASE = 'https://sl-dubbing-backend-production.up.railway.app';
-let activeSpeakerId = 'muhammad';
+let activeSpeakerId = 'muhamed';
 let activeLang = 'en';
+let activeQuality = 'medium';
 
 const LANGS = [
-  {c:'en',n:'English',f:'🇺🇸'},{c:'ar',n:'Arabic',f:'🇸🇦'},{c:'es',n:'Spanish',f:'🇪🇸'},
-  {c:'fr',n:'French',f:'🇫🇷'},{c:'de',n:'German',f:'🇩🇪'},{c:'it',n:'Italian',f:'🇮🇹'},
-  {c:'ru',n:'Russian',f:'🇷🇺'},{c:'tr',n:'Turkish',f:'🇹🇷'},{c:'zh-cn',n:'Chinese',f:'🇨🇳'}
+  {c:'en', n:'English', f:'🇺🇸', engines: ['cosy', 'xtts', 'gtts']},
+  {c:'ar', n:'Arabic', f:'🇸🇦', engines: ['xtts', 'gtts']},
+  {c:'es', n:'Spanish', f:'🇪🇸', engines: ['xtts', 'gtts']},
+  {c:'fr', n:'French', f:'🇫🇷', engines: ['xtts', 'gtts']},
+  {c:'de', n:'German', f:'🇩🇪', engines: ['xtts', 'gtts']},
+  {c:'zh', n:'Chinese', f:'🇨🇳', engines: ['cosy', 'xtts', 'gtts']}
 ];
 
-// --- Toast System ---
+const VOICE_MAP = {
+  'muhamed': { voice_id: 'muhammad_ar', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3' },
+  'dmitry':  { voice_id: 'dmitry_ru',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
+  'baris':   { voice_id: 'baris_tr',    voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' }
+};
+
+// --- Utils ---
 function showToast(msg, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerText = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => { toast.style.transform = 'translateY(0)'; toast.style.opacity = '1'; }, 100);
-    setTimeout(() => {
-        toast.style.transform = 'translateY(100px)'; toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
+    let t = document.getElementById('toast');
+    if (!t) {
+        t = document.createElement('div'); t.id = 'toast'; t.className = 'toast';
+        document.body.appendChild(t);
+    }
+    if (type==='error') t.style.background = '#ef4444'; else if (type==='success') t.style.background = '#059669'; else t.style.background = '#0f0f10';
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// --- Initialize User ---
+// --- Initialization ---
 (function(){
   try{const u=JSON.parse(localStorage.getItem('sl_user'));
     if(u)document.getElementById('hdr').innerHTML=`<div class="avatar">${u.avatar||'U'}</div><span class="username">${u.name||u.email}</span><button class="btn-logout" onclick="localStorage.removeItem('sl_user');location.href='index.html'">Log Out</button>`;
   }catch(e){}
 })();
 
-// --- Build UI Grids ---
-document.getElementById('langs').innerHTML=LANGS.map(l=>`<div class="lang-btn ${l.c==='en'?'active':''}" onclick="selLang('${l.c}',this)"><span class="lang-flag">${l.f}</span><span>${l.n}</span></div>`).join('');
-function selLang(c,b){ activeLang=c; document.querySelectorAll('.lang-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
+document.getElementById('langs').innerHTML = LANGS.map(l => 
+    `<div class="lang-btn ${l.c==='en'?'active':''}" onclick="selLang('${l.c}',this)"><span class="lang-flag">${l.f}</span><span>${l.n}</span></div>`
+).join('');
 
-function createSpeakerCard(s) {
-    const card = document.createElement('div');
-    card.className = `spk-card ${activeSpeakerId === s.speaker_id ? 'active' : ''}`;
-    card.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av">${s.label ? s.label[0] : 'S'}</div><div class="spk-nm">${s.label}</div>`;
-    card.onclick = () => {
-        activeSpeakerId = s.speaker_id;
-        document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-    };
-    return card;
+function selLang(c, b) {
+    activeLang = c;
+    document.querySelectorAll('.lang-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
 }
 
-async function loadSpeakers() {
-    try {
-        const res = await fetch(`${API_BASE}/api/speakers`);
-        const list = await res.json();
-        const grid = document.getElementById('spkGrid');
-        grid.innerHTML = '';
-        list.forEach(s => grid.appendChild(createSpeakerCard(s)));
-        
-        const addCard = document.createElement('div');
-        addCard.className = 'add-card spk-card';
-        addCard.style.cursor = 'pointer';
-        addCard.innerHTML = '<i class="fas fa-plus"></i><span>Upload Voice</span>';
-        addCard.onclick = () => document.getElementById('spkFile').click();
-        grid.appendChild(addCard);
-    } catch (e) {
-        showToast("Could not load speakers from server", "error");
-    }
+function selSpk(id, el) {
+    activeSpeakerId = id;
+    document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
 }
 
-// --- Upload Custom Speaker ---
-document.getElementById('spkFile').addEventListener('change', async (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    document.getElementById('upProg').style.display = 'inline-block';
-    const fd = new FormData();
-    fd.append('file', f);
-    fd.append('label', f.name.replace(/\.[^.]+$/, ''));
-    try {
-        const r = await fetch(API_BASE + '/api/upload_speaker', { method: 'POST', body: fd });
-        const d = await r.json();
-        if (!r.ok) throw new Error(d.error);
-        activeSpeakerId = d.speaker_id;
-        await loadSpeakers();
-        showToast("Voice uploaded successfully", "success");
-    } catch (err) {
-        showToast("Upload failed: " + err.message, "error");
-    }
-    document.getElementById('upProg').style.display = 'none';
-    e.target.value = '';
-});
+function resolveEngine(lang, quality) {
+  const langObj = LANGS.find(l => l.c === lang) || LANGS[0];
+  const avail = langObj.engines;
+  if (quality === 'high') {
+    if (avail.includes('cosy')) return 'cosy';
+    if (avail.includes('xtts')) return 'xtts';
+    return 'gtts';
+  } else {
+    if (avail.includes('xtts')) return 'xtts';
+    if (avail.includes('cosy')) return 'cosy';
+    return 'gtts';
+  }
+}
 
-// --- Main TTS Generation ---
+// --- Main TTS Logic ---
 async function generateTTS() {
     const text = document.getElementById('txt').value.trim();
     if (!text) return showToast('Please enter some text first.', 'error');
     
+    const user = JSON.parse(localStorage.getItem('sl_user') || '{}');
     const btn = document.getElementById('speakBtn');
     const loader = document.getElementById('loaderAnim');
     const resCard = document.getElementById('resCard');
-    const speed = parseFloat(document.getElementById('rc').value);
+    const progBar = document.getElementById('progBar');
+    const pctTxt = document.getElementById('pctTxt');
     
     btn.disabled = true;
     loader.style.display = 'flex';
     resCard.style.display = 'none';
-    document.getElementById('progBar').style.width = '0%';
-    document.getElementById('statusTxt').innerText = 'Initializing...';
+    progBar.style.width = '0%';
+    
+    // Fake Progress for UX
+    let p = 0;
+    const iv = setInterval(() => {
+        p = Math.min(p + 2, 85);
+        progBar.style.width = p + '%';
+        pctTxt.innerText = Math.floor(p) + '%';
+    }, 600);
 
     try {
-        // Start Job
-        const res = await fetch(`${API_BASE}/api/tts`, {
+        const vData = VOICE_MAP[activeSpeakerId];
+        const engineToUse = resolveEngine(activeLang, activeQuality);
+
+        const payload = {
+            text: text,
+            srt: '',
+            lang: activeLang,
+            email: user.email || '',
+            voice_mode: engineToUse,
+            voice_id: vData.voice_id,
+            voice_url: vData.voice_url
+        };
+
+        const res = await fetch(`${API_BASE}/api/dub`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                text: text,
-                lang: activeLang,
-                speaker_id: activeSpeakerId,
-                speed: speed
-            })
+            body: JSON.stringify(payload)
         });
         
-        if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.error || "Failed to connect to engine");
-        }
+        clearInterval(iv);
         
-        const { job_id } = await res.json();
+        const data = await res.json();
         
-        // Monitor Progress via SSE
-        const source = new EventSource(`${API_BASE}/api/progress/${job_id}`);
-        
-        source.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            document.getElementById('progBar').style.width = `${data.progress}%`;
-            document.getElementById('statusTxt').innerText = data.message;
+        if (data.success && data.audio_url) {
+            progBar.style.width = '100%';
+            pctTxt.innerText = '100%';
             
-            if (data.status === 'done') {
-                source.close();
-                showResult(data.audio_url);
-            } else if (data.status === 'error') {
-                source.close();
-                throw new Error(data.error);
-            }
-        };
-
-        source.onerror = () => {
-            source.close();
-            throw new Error("Connection lost during generation");
-        };
-
+            setTimeout(() => {
+                loader.style.display = 'none';
+                resCard.style.display = 'block';
+                document.getElementById('aud').src = data.audio_url;
+                document.getElementById('dl').href = data.audio_url;
+                
+                const langObj = LANGS.find(l => l.c === activeLang);
+                document.getElementById('resLangTxt').innerText = `${langObj.f} Output (${data.method.toUpperCase()})`;
+                
+                showToast("Audio generated successfully!", "success");
+            }, 800);
+        } else {
+            throw new Error(data.error || "Generation failed");
+        }
     } catch (error) {
+        clearInterval(iv);
         showToast(error.message, 'error');
         loader.style.display = 'none';
+    } finally {
         btn.disabled = false;
     }
 }
-
-function showResult(url) {
-    const btn = document.getElementById('speakBtn');
-    const loader = document.getElementById('loaderAnim');
-    const resCard = document.getElementById('resCard');
-    
-    loader.style.display = 'none';
-    btn.disabled = false;
-    resCard.style.display = 'block';
-    
-    // Check if Cloudflare R2 link or local link
-    const finalUrl = url.startsWith('http') ? url : `${API_BASE}${url}?t=${Date.now()}`;
-    
-    const langObj = LANGS.find(l => l.c === activeLang);
-    document.getElementById('resLangTxt').innerText = `${langObj.f} ${langObj.n} Output`;
-    
-    document.getElementById('aud').src = finalUrl;
-    document.getElementById('dl').href = finalUrl;
-    
-    showToast("Audio generated successfully!", "success");
-}
-
-// Init
-document.addEventListener('DOMContentLoaded', loadSpeakers);
 </script>
 </body>
 </html>
