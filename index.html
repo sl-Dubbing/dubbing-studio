@@ -111,7 +111,7 @@ footer a:hover { text-decoration: underline; }
     <div class="tool-card" onclick="goTool('tts.html')">
       <span class="ico"><i class="fas fa-microphone-lines"></i></span>
       <h3>Text to Speech</h3>
-      <p>Convert any text into lifelike speech in 13 languages. Control pacing, pitch, and tone perfectly.</p>
+      <p>Convert any text into lifelike speech in 15 languages. Control pacing, pitch, and tone perfectly.</p>
       <span class="go">Try TTS <i class="fas fa-arrow-right"></i></span>
     </div>
     <div class="tool-card" onclick="goTool('dubbing.html')">
@@ -123,7 +123,7 @@ footer a:hover { text-decoration: underline; }
     <div class="tool-card" onclick="goTool('tts.html')">
       <span class="ico"><i class="fas fa-language"></i></span>
       <h3>SRT Translator</h3>
-      <p>Translate subtitle files seamlessly. We keep your exact timestamps intact across 13 different languages.</p>
+      <p>Translate subtitle files seamlessly. We keep your exact timestamps intact across multiple languages.</p>
       <span class="go">Try Translator <i class="fas fa-arrow-right"></i></span>
     </div>
   </div>
@@ -140,7 +140,7 @@ footer a:hover { text-decoration: underline; }
       <div class="desc">Lifelike AI voice generation for creators and publishers.</div>
       <ul>
         <li>Unlimited TTS generation</li>
-        <li>13 premium languages</li>
+        <li>15 premium languages</li>
         <li>Advanced speed & pitch controls</li>
         <li>Instant MP3 export</li>
       </ul>
@@ -157,7 +157,7 @@ footer a:hover { text-decoration: underline; }
       <div class="desc">The complete suite for video localization and voice cloning.</div>
       <ul>
         <li>Unlimited video dubbing</li>
-        <li>XTTS v2 Voice Cloning</li>
+        <li>XTTS v2 & CosyVoice 3.0</li>
         <li>Precise SRT timeline sync</li>
         <li>High-fidelity WAV export</li>
       </ul>
@@ -197,18 +197,44 @@ footer a:hover { text-decoration: underline; }
 
 </div>
 <script>
-const BE = 'https://sl-dubbing-backend-production.up.railway.app';
+const BE='https://sl-dubbing-backend-production.up.railway.app';
+
 (function(){
-  try{const u=JSON.parse(localStorage.getItem('sl_user'));
-  if(u)document.getElementById('hdr').innerHTML=`<div class="avatar">${u.avatar||'U'}</div><span class="username">${u.name||u.email}</span><button class="btn-logout" onclick="localStorage.removeItem('sl_user');location.reload()">Log Out</button>`;}catch(e){}
+  try{
+    const u=JSON.parse(localStorage.getItem('sl_user'));
+    if(u) {
+        document.getElementById('hdr').innerHTML=`<div class="avatar">${u.avatar||'U'}</div><span class="username">${u.name||u.email}</span><button class="btn-logout" onclick="localStorage.removeItem('sl_user');location.reload()">Log Out</button>`;
+    }
+  }catch(e){}
 })();
-function goTool(p){ try{if(JSON.parse(localStorage.getItem('sl_user'))){location.href=p;return;}}catch(e){} sessionStorage.setItem('returnUrl',p); location.href='login.html'; }
-async function checkServer(){
-  try{const r=await fetch(BE+'/api/health',{signal:AbortSignal.timeout(6000)});
-  document.getElementById('srv').className='srv-badge'+(r.ok?' on':'');
-  document.getElementById('srvTxt').textContent=r.ok?'System Online':'System Offline';}
-  catch{document.getElementById('srvTxt').textContent='System Offline';}
+
+function goTool(p){ 
+  try{
+    if(JSON.parse(localStorage.getItem('sl_user'))){location.href=p;return;}
+  }catch(e){} 
+  sessionStorage.setItem('returnUrl',p); 
+  location.href='login.html'; 
 }
+
+async function checkServer(){
+  const srvBadge = document.getElementById('srv');
+  const srvTxt = document.getElementById('srvTxt');
+  
+  try {
+    const r = await fetch(BE + '/api/health');
+    if (r.ok) {
+        srvBadge.className = 'srv-badge on';
+        srvTxt.textContent = 'System Online';
+    } else {
+        throw new Error('Server not OK');
+    }
+  } catch(e) {
+    console.error("Connection error:", e);
+    srvBadge.className = 'srv-badge';
+    srvTxt.textContent = 'System Offline';
+  }
+}
+
 checkServer();
 </script>
 </body>
