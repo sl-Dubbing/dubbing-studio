@@ -1,65 +1,104 @@
 // ============================================================
-// script.js — sl-Dubbing Frontend (Production Version)
+// script.js — sl-Dubbing Frontend (Enterprise Routing)
 // ============================================================
 
 const CONFIG = {
   API_BASE: 'https://sl-dubbing-backend-production.up.railway.app', 
+  
+  // قائمة اللغات مع تحديد المحركات التي تدعمها (نظام التوجيه الذكي)
   LANGS: [
-    {c:'ar', n:'العربية', f:'🇸🇦'},
-    {c:'en', n:'English', f:'🇺🇸'},
-    {c:'es', n:'Español', f:'🇪🇸'},
-    {c:'fr', n:'Français', f:'🇫🇷'},
-    {c:'de', n:'Deutsch', f:'🇩🇪'},
-    {c:'it', n:'Italiano', f:'🇮🇹'},
-    {c:'ru', n:'Русский', f:'🇷🇺'},
-    {c:'tr', n:'Türkçe', f:'🇹🇷'},
-    {c:'zh', n:'中文', f:'🇨🇳'},
-    {c:'hi', n:'हिन्दी', f:'🇮🇳'},
-    {c:'fa', n:'فارسی', f:'🇮🇷'},
-    {c:'sv', n:'Svenska', f:'🇸🇪'},
-    {c:'nl', n:'Nederlands', f:'🇳🇱'},
+    {c:'ar', n:'العربية', f:'🇸🇦', engines: ['xtts', 'gtts']},
+    {c:'en', n:'English', f:'🇺🇸', engines: ['cosy', 'xtts', 'gtts']},
+    {c:'es', n:'Español', f:'🇪🇸', engines: ['xtts', 'gtts']},
+    {c:'fr', n:'Français', f:'🇫🇷', engines: ['xtts', 'gtts']},
+    {c:'de', n:'Deutsch', f:'🇩🇪', engines: ['xtts', 'gtts']},
+    {c:'it', n:'Italiano', f:'🇮🇹', engines: ['xtts', 'gtts']},
+    {c:'pt', n:'Português', f:'🇵🇹', engines: ['xtts', 'gtts']},
+    {c:'tr', n:'Türkçe', f:'🇹🇷', engines: ['xtts', 'gtts']},
+    {c:'ru', n:'Русский', f:'🇷🇺', engines: ['xtts', 'gtts']},
+    {c:'zh', n:'中文 (Chinese)', f:'🇨🇳', engines: ['cosy', 'xtts', 'gtts']},
+    {c:'ja', n:'日本語 (Japanese)', f:'🇯🇵', engines: ['cosy', 'xtts', 'gtts']},
+    {c:'ko', n:'한국어 (Korean)', f:'🇰🇷', engines: ['cosy', 'xtts', 'gtts']},
+    {c:'yue', n:'粵語 (Cantonese)', f:'🇭🇰', engines: ['cosy', 'gtts']},
+    {c:'hi', n:'हिन्दी (Hindi)', f:'🇮🇳', engines: ['xtts', 'gtts']},
+    {c:'ur', n:'اردو (Pakistani)', f:'🇵🇰', engines: ['gtts']}, // مثال: لغة تدعمها منصات الأساس فقط
   ]
 };
 
 const STATE = {
   lang: 'ar',
-  voiceMode: 'muhamed',
+  quality: 'high', // 'medium' (XTTS) or 'high' (CosyVoice)
   srtData: [],
   selectedVoice: null,
 };
 
-// ── الأصوات المخصصة (XTTS و CosyVoice) ──
+// ── الأصوات المخصصة (أرقام العينات) ──
 const _VOICES = {
-  // المحرك القياسي (XTTS v2)
-  muhamed:    { mode: 'xtts', voice_id: 'muhammad_ar',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3' },
-  dmitry:     { mode: 'xtts', voice_id: 'dmitry_ru',     voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
-  baris:      { mode: 'xtts', voice_id: 'baris_tr',      voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
-  maximilian: { mode: 'xtts', voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
-  
-  // المحرك السينمائي فائق الجودة (CosyVoice 3.0) 👑
-  cosy_ar:    { mode: 'cosy', voice_id: 'cosy_muhammad', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3' },
-  cosy_ru:    { mode: 'cosy', voice_id: 'cosy_dmitry',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' }
+  muhamed:    { voice_id: 'muhammad_ar',   voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776198/Muhammad_ar.mp3' },
+  dmitry:     { voice_id: 'dmitry_ru',     voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Dmitry_ru.mp3' },
+  baris:      { voice_id: 'baris_tr',      voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776793/Barış_tr.mp3' },
+  maximilian: { voice_id: 'maximilian_de', voice_url: 'https://res.cloudinary.com/dxbmvzsiz/video/upload/v1773776975/Maximilian_ge.mp3' },
 };
 
-// خريطة جميع الأصوات (بما فيها صوت المصدر)
 const VOICE_MAP = {
-  'source': { mode: 'source', voice_id: 'source', voice_url: null }, // صوت المصدر (يتم استخلاصه في الباك اند)
-  'gtts': { mode: 'gtts', voice_id: null, voice_url: null },
+  'source': { voice_id: 'source', voice_url: null },
   'muhamed': _VOICES.muhamed,
   'dmitry': _VOICES.dmitry,
   'baris': _VOICES.baris,
   'maximilian': _VOICES.maximilian,
-  'cosy_ar': _VOICES.cosy_ar,  // تمت الإضافة
-  'cosy_ru': _VOICES.cosy_ru   // تمت الإضافة
 };
+
+// ═══════════════════════════════════════════
+// Smart Engine Router (العقل المدبر للتوجيه)
+// ═══════════════════════════════════════════
+function resolveEngine(selectedLang, selectedQuality) {
+  const langObj = CONFIG.LANGS.find(l => l.c === selectedLang);
+  if (!langObj) return 'gtts'; // حماية إضافية
+
+  const available = langObj.engines;
+
+  if (selectedQuality === 'high') {
+    // إذا طلب عالي الدقة، نجرب Cosy أولاً، إن لم يكن مدعوماً ننتقل لـ XTTS، ثم gTTS
+    if (available.includes('cosy')) return 'cosy';
+    if (available.includes('xtts')) return 'xtts';
+    return 'gtts';
+  } else {
+    // إذا طلب متوسط الدقة، نجرب XTTS أولاً، إن لم يكن مدعوماً ننتقل لـ Cosy، ثم gTTS
+    if (available.includes('xtts')) return 'xtts';
+    if (available.includes('cosy')) return 'cosy';
+    return 'gtts';
+  }
+}
+
+// ═══════════════════════════════════════════
+// Dynamic UI Injection (إضافة أزرار الجودة للواجهة)
+// ═══════════════════════════════════════════
+function injectQualitySelector() {
+  const langGrid = document.getElementById('langGrid');
+  if (!langGrid) return;
+
+  const qualityDiv = document.createElement('div');
+  qualityDiv.innerHTML = `
+    <div style="margin-bottom: 20px; display: flex; gap: 15px; justify-content: center; background: var(--bg-page); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color);">
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600; font-size: 0.9rem;">
+            <input type="radio" name="dub_quality" value="medium" onchange="STATE.quality='medium'" ${STATE.quality === 'medium' ? 'checked' : ''}>
+            <span>متوسط الدقة (XTTS)</span>
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:700; font-size: 0.9rem; color: #8b5cf6;">
+            <input type="radio" name="dub_quality" value="high" onchange="STATE.quality='high'" ${STATE.quality === 'high' ? 'checked' : ''}>
+            <span>عالي الدقة السينمائية (CosyVoice) <i class="fas fa-crown"></i></span>
+        </label>
+    </div>
+  `;
+  // إدخال الأزرار فوق شبكة اللغات مباشرة
+  langGrid.parentNode.insertBefore(qualityDiv, langGrid);
+}
 
 // ═══════════════════════════════════════════
 // Network Helpers
 // ═══════════════════════════════════════════
 function apiGet(path, timeout) {
-  return fetch(CONFIG.API_BASE + path, {
-    signal: AbortSignal.timeout(timeout || 10000)
-  });
+  return fetch(CONFIG.API_BASE + path, { signal: AbortSignal.timeout(timeout || 10000) });
 }
 
 function apiPost(path, data, timeout) {
@@ -67,7 +106,7 @@ function apiPost(path, data, timeout) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
-    signal: AbortSignal.timeout(timeout || 600000) // 10 دقائق كحد أقصى للدبلجة
+    signal: AbortSignal.timeout(timeout || 600000)
   });
 }
 
@@ -77,18 +116,12 @@ function apiPost(path, data, timeout) {
 function showToast(msg, duration = 3000) {
   let t = document.getElementById('toast');
   if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast';
-    t.className = 'toast';
+    t = document.createElement('div'); t.id = 'toast'; t.className = 'toast';
     document.body.appendChild(t);
   }
-  t.textContent = msg;
-  t.classList.add('show');
-  
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(t._t);
-  t._t = setTimeout(() => {
-    t.classList.remove('show');
-  }, duration);
+  t._t = setTimeout(() => t.classList.remove('show'), duration);
 }
 
 function initHeader() {
@@ -105,33 +138,21 @@ function initHeader() {
     } else {
       hdr.innerHTML = '<a href="login.html" class="btn-login" style="padding:6px 14px;font-size:.8rem;">تسجيل الدخول</a>';
     }
-  } catch(e) {
-    hdr.innerHTML = '<a href="login.html" class="btn-login">تسجيل الدخول</a>';
-  }
+  } catch(e) { hdr.innerHTML = '<a href="login.html" class="btn-login">تسجيل الدخول</a>'; }
 }
 
-function logout() {
-  localStorage.removeItem('sl_user');
-  location.href = 'index.html';
-}
+function logout() { localStorage.removeItem('sl_user'); location.href = 'index.html'; }
 
 async function checkServer() {
   const dot = document.getElementById('dot');
   const lbl = document.getElementById('dotLbl');
   if (!dot) return;
-  
   try {
     const r = await apiGet('/api/health', 6000);
-    if (r.ok) {
-        dot.classList.add('on');
-        if (lbl) lbl.textContent = 'النظام متصل ✓';
-    } else {
-        throw new Error("Server not OK");
-    }
+    if (r.ok) { dot.classList.add('on'); if (lbl) lbl.textContent = 'النظام متصل ✓'; } 
+    else throw new Error("Server not OK");
   } catch(e) {
-    console.error('❌ Server check failed:', e);
-    dot.classList.remove('on');
-    dot.style.background = '#ef4444'; // Red dot for offline
+    dot.classList.remove('on'); dot.style.background = '#ef4444';
     if (lbl) lbl.textContent = 'النظام غير متاح';
   }
 }
@@ -139,6 +160,7 @@ async function checkServer() {
 function initLangs() {
   const el = document.getElementById('langGrid'); 
   if (!el) return;
+  // عرض جميع اللغات للمستخدم (نظام التوجيه سيتكفل بالباقي)
   el.innerHTML = CONFIG.LANGS.map(l => 
     `<div class="lang-box ${l.c === STATE.lang ? 'active' : ''}" onclick="selectLang('${l.c}', this)">
         <span class="lang-flag" style="font-size:1.2rem;display:block;margin-bottom:4px;">${l.f}</span>
@@ -154,53 +176,32 @@ function selectLang(code, btn) {
   console.log('🌍 Language selected:', code);
 }
 
-// الدالة موجودة مسبقاً في ملف HTML، ولكن نضمن منطق الخلفية هنا
 function updateVoiceSelection(mode) {
-  STATE.voiceMode = mode;
   STATE.selectedVoice = VOICE_MAP[mode] || VOICE_MAP['muhamed'];
-  console.log('🎤 Voice selected:', mode, STATE.selectedVoice.voice_id);
-
-  if (STATE.selectedVoice && STATE.selectedVoice.voice_url && CONFIG.API_BASE) {
-    // إيقاظ السيرفر لتحميل الصوت مسبقاً (هنا تعمل خدعة التفريغ الذكي في الباك اند)
-    preloadVoice(STATE.selectedVoice.voice_id, STATE.selectedVoice.voice_url);
-  }
+  console.log('🎤 Voice selected:', mode);
 }
 
-// للاستماع إلى الدالة المكتوبة في HTML
 const originalSelectVoice = window.selectVoice;
 window.selectVoice = function(id, el) {
     if(originalSelectVoice) originalSelectVoice(id, el);
     updateVoiceSelection(id);
 };
 
-async function preloadVoice(voice_id, voice_url) {
-  try {
-    await apiPost('/api/preload_voice', { voice_id: voice_id, voice_url: voice_url }, 120000);
-    console.log('✅ Voice preloaded:', voice_id);
-  } catch(e) {
-    console.log('⚠️ preload failed or skipped:', e.message);
-  }
-}
-
 // ═══════════════════════════════════════════
 // SRT Parsing
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
     const srtFileInput = document.getElementById('srtFile');
-    if(srtFileInput) {
-        srtFileInput.addEventListener('change', loadSRTFile);
-    }
+    if(srtFileInput) srtFileInput.addEventListener('change', loadSRTFile);
 });
 
 function loadSRTFile(event) {
   const file = event.target.files[0];
   if (!file) return;
-  
   const reader = new FileReader();
   reader.onload = function(e) {
     STATE.rawSRT = e.target.result;
     parseSRT(STATE.rawSRT);
-    
     const zone = document.getElementById('srtZone');
     if(zone) {
         zone.classList.add('ok');
@@ -216,28 +217,14 @@ function parseSRT(content) {
   STATE.srtData = [];
   let cur = null;
   const lines = content.split('\n');
-  
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (!line) { 
-        if (cur) STATE.srtData.push(cur); 
-        cur = null; 
-        continue; 
-    }
-    if (/^\d+$/.test(line)) { 
-        if (cur) STATE.srtData.push(cur); 
-        cur = {i: parseInt(line), t: '', x: ''}; 
-    }
-    else if (line.includes('-->')) { 
-        if (cur) cur.t = line; 
-    }
-    else if (cur) { 
-        cur.x += line + ' '; 
-    }
+    if (!line) { if (cur) STATE.srtData.push(cur); cur = null; continue; }
+    if (/^\d+$/.test(line)) { if (cur) STATE.srtData.push(cur); cur = {i: parseInt(line), t: '', x: ''}; }
+    else if (line.includes('-->')) { if (cur) cur.t = line; }
+    else if (cur) { cur.x += line + ' '; }
   }
   if (cur) STATE.srtData.push(cur);
-  
-  console.log(`✅ تم تحليل ${STATE.srtData.length} جملة من الـ SRT`);
 }
 
 // ═══════════════════════════════════════════
@@ -256,82 +243,67 @@ async function startDubbing() {
   const pctTxt = document.getElementById('pctTxt');
   const statusTxt = document.getElementById('statusTxt');
   
-  // تفعيل واجهة التحميل
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة السحابية...';
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...';
   progArea.style.display = 'block';
   progBar.style.width = '0%';
   statusTxt.innerText = 'تهيئة المحرك الصوتي...';
   
-  // تجميع النص الكامل للترجمة إذا احتاجه الباك اند
   const fullText = STATE.srtData.map(item => item.x.trim()).join('\n');
   
-  // محاكاة شريط التقدم الوهمي
   let p = 0;
   const iv = setInterval(() => {
     p = Math.min(p + 1.5, 85); 
-    progBar.style.width = p + '%';
-    pctTxt.innerText = Math.floor(p) + '%';
+    progBar.style.width = p + '%'; pctTxt.innerText = Math.floor(p) + '%';
     if(p > 30) statusTxt.innerText = 'الذكاء الاصطناعي يولد الصوت الآن...';
     if(p > 60) statusTxt.innerText = 'جاري دمج الصوت مع التوقيت الزمني...';
   }, 800);
 
   try {
     const voiceData = STATE.selectedVoice || VOICE_MAP['muhamed'];
-    
-    // جلب رابط اليوتيوب إذا وجد
     const ytInput = document.getElementById('ytUrl');
     const mediaUrl = ytInput ? ytInput.value.trim() : null;
+
+    // ✨ هنا يحدث السحر: السكريبت يحدد المحرك الأنسب بناءً على لغة المستخدم والجودة المطلوبة
+    let selectedMode = 'source';
+    if (voiceData.voice_id !== 'source') {
+        selectedMode = resolveEngine(STATE.lang, STATE.quality);
+        console.log(`🧠 Smart Router: Selected [${STATE.lang}] + [${STATE.quality} Quality] -> Assigned to [${selectedMode.toUpperCase()}] Engine`);
+    }
 
     const payload = {
       text: fullText,
       srt: STATE.rawSRT,
       lang: STATE.lang,
       email: user.email || '',
-      voice_mode: voiceData.mode,
+      voice_mode: selectedMode, // المحرك الذي تم اختياره بذكاء
       voice_id: voiceData.voice_id,
       voice_url: voiceData.voice_url,
       media_url: mediaUrl 
     };
 
-    console.log('🚀 Sending to Server:', payload);
-
     const res = await apiPost('/api/dub', payload);
     clearInterval(iv);
     
-    progBar.style.width = '100%';
-    pctTxt.innerText = '100%';
-    statusTxt.innerText = 'اكتملت المعالجة بنجاح!';
-    
+    progBar.style.width = '100%'; pctTxt.innerText = '100%'; statusTxt.innerText = 'اكتملت المعالجة بنجاح!';
     const d = await res.json();
-    console.log('📦 Server Response:', d);
 
     if (d.success && d.audio_url) {
       setTimeout(() => {
           progArea.style.display = 'none';
           document.getElementById('resCard').style.display = 'block';
+          document.getElementById('dubAud').src = d.audio_url;
+          document.getElementById('dlBtn').href = d.audio_url;
           
-          const aud = document.getElementById('dubAud');
-          const dl = document.getElementById('dlBtn');
-          
-          aud.src = d.audio_url;
-          dl.href = d.audio_url;
-          
-          // رسالة توضح أي محرك تم استخدامه للتأكيد!
-          showToast(`🎉 الدبلجة جاهزة! (بواسطة: ${d.method || 'الذكاء الاصطناعي'})`, 5000);
+          showToast(`🎉 الدبلجة جاهزة! (بواسطة: ${d.method.toUpperCase()})`, 5000);
       }, 1000);
-    } else {
-      throw new Error(d.error || 'فشل التوليد من السيرفر');
-    }
+    } else { throw new Error(d.error || 'فشل التوليد من السيرفر'); }
   } catch(e) {
     clearInterval(iv);
-    console.error('❌ Dubbing Error:', e);
-    progBar.style.backgroundColor = '#ef4444'; 
-    statusTxt.innerText = 'حدث خطأ!';
+    progBar.style.backgroundColor = '#ef4444'; statusTxt.innerText = 'حدث خطأ!';
     showToast('❌ عذراً، ' + e.message, 5000);
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة';
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة';
   }
 }
 
@@ -339,8 +311,8 @@ async function startDubbing() {
 // Initialization on Load
 // ═══════════════════════════════════════════
 window.onload = function() {
-  console.log('🚀 sl-Dubbing Application Loaded');
   initHeader();
+  injectQualitySelector(); // سيقوم بإضافة أزرار الجودة (XTTS / Cosy) تلقائياً
   initLangs();
   checkServer();
   updateVoiceSelection('muhamed');
