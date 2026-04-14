@@ -1,178 +1,209 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Dubbing - sl-Dubbing</title>
+<title>sl-Dubbing | استوديو الدبلجة الاحترافي</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* ── ElevenLabs Light Theme ── */
+/* ── الهوية البصرية الجديدة (ElevenLabs Style) ── */
 :root {
-  --bg-page: #fafafa;
-  --bg-card: #ffffff;
-  --border-color: #e5e7eb;
-  --text-main: #0f0f10;
-  --text-muted: #6b7280;
+  --bg: #f5f5f7;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --text: #111827;
+  --muted: #6b7280;
   --primary: #0f0f10;
-  --primary-hover: #27272a;
   --mint: #a4fec4;
   --green-dk: #065f2c;
-  --radius-md: 12px;
-  --radius-lg: 24px;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --radius: 14px;
+  --shadow: 0 1px 3px rgba(0,0,0,.07);
 }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-body { background: var(--bg-page); color: var(--text-main); min-height: 100vh; overflow-x: hidden; line-height: 1.5; }
-.page { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
 
-/* Header */
-.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 18px 0 40px; flex-wrap: wrap; gap: 12px; }
-.logo { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; font-weight: 800; text-decoration: none; color: var(--text-main); }
-.user-zone { display: flex; align-items: center; gap: 12px; }
-.btn-logout { padding: 8px 16px; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; color: #ef4444; cursor: pointer; font-weight: 600; transition: all .2s; }
-.avatar { width: 40px; height: 40px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-main); }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
 
-/* Tool Box */
-.tool-header { display: flex; align-items: center; gap: 15px; margin-bottom: 24px; }
-.tool-header h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); }
-.back-btn { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; font-size: .9rem; transition: all .2s; }
-.back-btn:hover { background: var(--bg-page); }
+body { background: var(--bg); color: var(--text); min-height: 100vh; text-align: right; line-height: 1.6; }
 
-.tool-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm); }
-.lbl { display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-main); font-size: .95rem; }
+/* ── Header ── */
+.topbar { background: var(--primary); padding: 13px 28px; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-size: 1.15rem; font-weight: 800; color: #fff; letter-spacing: -.02em; text-decoration: none; }
+.logo span { color: var(--mint); }
+.pill { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: #fff; border: 1px solid rgba(255,255,255,.2); padding: 4px 12px; border-radius: 20px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; transition: background .4s; }
+.dot.on { background: var(--mint); box-shadow: 0 0 6px var(--mint); }
 
-/* Voice Selection */
-.voice-grid { display: flex; gap: 16px; margin-bottom: 24px; }
-.voice-choice { flex: 1; padding: 20px; border: 1.5px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; text-align: center; background: var(--bg-card); transition: all .2s; position: relative; }
-.voice-choice:hover { border-color: #9ca3af; }
-.voice-choice.active { border-color: var(--primary); background: var(--mint); box-shadow: 0 0 0 2px var(--primary); }
-.voice-icon { font-size: 2rem; margin-bottom: 10px; }
-.voice-title { font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
-.voice-desc { font-size: 0.8rem; color: var(--text-muted); }
-.chk-voice { position: absolute; top: 10px; right: 10px; color: var(--green-dk); font-size: 1rem; display: none; }
-.voice-choice.active .chk-voice { display: block; }
+.wrap { max-width: 900px; margin: 0 auto; padding: 32px 18px 60px; }
 
-/* Lang Grid */
-.lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 24px; }
-.lang-btn { padding: 12px 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); cursor: pointer; transition: all .2s; text-align: center; font-size: .9rem; font-weight: 500; box-shadow: var(--shadow-sm); }
-.lang-btn:hover { background: var(--bg-page); }
-.lang-btn.active { border-color: var(--primary); background: #f3f4f6; font-weight: 700; box-shadow: 0 0 0 1px var(--primary); }
-.lang-flag { font-size: 1.2rem; display: block; margin-bottom: 4px; }
+/* ── Cards ── */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 28px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.ttl { font-size: .95rem; font-weight: 700; display: flex; align-items: center; gap: 9px; margin-bottom: 20px; }
+.ttl i { color: var(--muted); font-size: .9rem; }
+.badge { font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: var(--mint); color: var(--green-dk); text-transform: uppercase; margin-right: 8px; }
 
-/* SRT Upload */
-.upload-area { border: 2px dashed #d1d5db; border-radius: var(--radius-md); padding: 40px 20px; text-align: center; cursor: pointer; background: var(--bg-page); transition: all .2s; margin-bottom: 16px; }
-.upload-area:hover { border-color: var(--primary); background: #f3f4f6; }
-.upload-area input { display: none; }
-.upload-area i { font-size: 2.5rem; color: var(--text-muted); margin-bottom: 12px; display: block; }
-.upload-title { font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
-.upload-desc { font-size: 0.85rem; color: var(--text-muted); }
+/* ── Inputs & Grids ── */
+.grp { margin-bottom: 18px; }
+.lbl { display: block; font-size: .85rem; font-weight: 500; margin-bottom: 6px; }
+input[type=text], select, textarea { width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 10px; font-size: .9rem; outline: none; background: #fff; color: var(--text); transition: border-color .18s; text-align: right; }
+input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 
-.textarea { width: 100%; min-height: 120px; background: var(--bg-page); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-size: 0.9rem; padding: 16px; resize: vertical; outline: none; margin-bottom: 12px; transition: border .2s; font-family: monospace; }
-.textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.sep { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .78rem; margin: 14px 0; }
+.sep::before, .sep::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-.sec-btn { padding: 10px 16px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 24px; }
-.sec-btn:hover { background: var(--bg-page); }
+/* ── SRT Zone ── */
+.srt-zone { border: 1.5px dashed var(--border); border-radius: 10px; padding: 20px; background: #fafafa; text-align: center; cursor: pointer; transition: all .18s; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+.srt-zone:hover { border-color: #9ca3af; background: #f3f4f6; }
+.srt-zone.ok { border-color: #059669; background: #f0fdf4; cursor: default; }
+.srt-zone i { font-size: 1.4rem; color: var(--muted); }
+.srt-lbl { font-size: .875rem; color: var(--muted); }
 
-.srt-list { max-height: 250px; overflow-y: auto; margin-bottom: 24px; padding: 16px; background: var(--bg-page); border-radius: var(--radius-md); border: 1px solid var(--border-color); display: none; }
-.srt-item { padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; gap: 16px; font-size: 0.85rem; }
-.srt-time { color: var(--text-muted); font-family: monospace; min-width: 120px; font-weight: 600; }
+/* ── Speaker Selection ── */
+.spk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 6px; }
+.spk-card { border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 10px; cursor: pointer; background: #fff; text-align: center; transition: all .18s; position: relative; overflow: hidden; }
+.spk-card:hover { border-color: #9ca3af; }
+.spk-card.active { border-color: var(--primary); background: var(--mint); box-shadow: 0 0 0 2px var(--primary); }
+.spk-av { width: 44px; height: 44px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; margin: 0 auto 8px; }
+.spk-card.active .spk-av { background: var(--green-dk); }
+.spk-nm { font-size: .85rem; font-weight: 700; color: var(--text); }
+.spk-sub { font-size: .7rem; color: var(--muted); margin-top: 3px; }
+.chk { position: absolute; top: 8px; right: 8px; color: var(--green-dk); font-size: .9rem; display: none; }
+.spk-card.active .chk { display: block; }
+.def-badge { position: absolute; top: 0; left: 0; font-size: .55rem; font-weight: 800; padding: 3px 8px; background: var(--primary); color: #fff; border-bottom-right-radius: 8px; }
 
-/* Controls */
-.controls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
-.cg { display: flex; flex-direction: column; gap: 8px; }
-.cg label { font-size: .9rem; color: var(--text-muted); font-weight: 600; display: flex; justify-content: space-between; }
-.cv { color: var(--text-main); font-weight: 700; }
-.cg input[type=range] { width: 100%; height: 6px; border-radius: 3px; background: var(--border-color); outline: none; -webkit-appearance: none; }
-.cg input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+.add-card { border-style: dashed; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 100px; color: var(--muted); }
+.add-card i { font-size: 1.4rem; }
 
-/* Actions */
-.action-btn { padding: 16px; background: var(--primary); border: none; border-radius: var(--radius-md); color: white; cursor: pointer; font-weight: 600; font-size: 1.05rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s; }
-.action-btn:hover { background: var(--primary-hover); }
-.action-btn:disabled { opacity: .6; cursor: not-allowed; }
+/* ── Lang Grid ── */
+.lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 12px 0 20px; }
+.lang-box { padding: 12px 8px; background: #fff; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid var(--border); font-size: .85rem; transition: all .18s; }
+.lang-box.active { border-color: var(--primary); background: var(--mint); font-weight: 700; box-shadow: 0 0 0 1.5px var(--primary); }
 
-/* Progress */
-.prog-wrap { display: none; margin: 24px 0; }
-.prog-wrap.on { display: block; }
-.prog-bar-container { background: var(--border-color); border-radius: 8px; height: 8px; width: 100%; overflow: hidden; margin-bottom: 8px; }
-.prog-fill { background: var(--primary); width: 0%; height: 100%; border-radius: 8px; transition: width .4s ease; }
-.prog-txt { text-align: center; font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+/* ── Action Buttons ── */
+.btn-go { background: var(--primary); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; font-size: 1.05rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s; margin-top: 10px; }
+.btn-go:hover { background: #27272a; transform: translateY(-1px); }
 
-/* Audio Result */
-audio { width: 100%; margin: 20px 0; display: none; outline: none; }
-audio.show { display: block; }
-.dl-btn { padding: 14px; background: #fff; border: 1px solid #d1d5db; border-radius: var(--radius-md); color: var(--text-main); font-weight: 600; width: 100%; display: none; align-items: center; justify-content: center; gap: 8px; text-decoration: none; transition: all .2s; }
-.dl-btn.show { display: flex; }
-.dl-btn:hover { background: #f3f4f6; }
+/* ── Progress & Results ── */
+#progressArea { display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+.prog-bar-wrap { background: #e5e7eb; border-radius: 8px; height: 8px; overflow: hidden; margin-top: 10px; }
+.prog-bar { background: var(--primary); width: 0%; height: 100%; transition: width .4s; }
+.res-card { display: none; margin-top: 20px; }
+audio { width: 100%; margin-top: 10px; }
 
-/* Toast */
-.toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; color: white; border-radius: 10px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.9rem; transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; background: var(--primary); }
-.toast.show { transform: translateY(0); opacity: 1; }
+@media(max-width: 600px) { .spk-grid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="top-bar">
-    <a class="logo" href="index.html"><i class="fas fa-cube"></i> sl-Dubbing</a>
-    <div class="user-zone" id="hdr"></div>
-  </div>
 
-  <div class="tool-header">
-    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-    <h1>AI Video Dubbing</h1>
-  </div>
-
-  <div class="tool-box">
-
-    <label class="lbl">1. Select Voice Model:</label>
-    <div class="voice-grid">
-      <div class="voice-choice" id="vc-default" onclick="selectVoice('gtts', this)">
-        <i class="fas fa-check-circle chk-voice"></i>
-        <div class="voice-icon">🤖</div>
-        <div class="voice-title">Standard TTS</div>
-        <div class="voice-desc">Fast & Basic Voice</div>
-      </div>
-      <div class="voice-choice active" id="vc-abdu" onclick="selectVoice('xtts', this)">
-        <i class="fas fa-check-circle chk-voice"></i>
-        <div class="voice-icon">🎙️</div>
-        <div class="voice-title">ABDU SELAM Voice</div>
-        <div class="voice-desc">Premium Voice Cloning</div>
-      </div>
-    </div>
-
-    <label class="lbl">2. Target Language:</label>
-    <div class="lang-grid" id="langs"></div>
-
-    <label class="lbl">3. SRT Subtitles:</label>
-    <div class="upload-area" onclick="document.getElementById('srtFile').click()">
-      <input type="file" id="srtFile" accept=".srt,.txt" onchange="loadSRTFile(event)">
-      <i class="fas fa-cloud-upload-alt"></i>
-      <div class="upload-title">Click or Drag SRT file here</div>
-      <div class="upload-desc">Supports .srt and .txt formats</div>
-    </div>
-    
-    <textarea class="textarea" id="srtTxt" placeholder="Or paste your SRT content here..."></textarea>
-    <button class="sec-btn" onclick="parseSRT()"><i class="fas fa-file-code"></i> Parse Subtitles</button>
-    <div class="srt-list" id="srtList"></div>
-
-    <div class="controls-row">
-      <div class="cg"><label>Speed <span class="cv" id="rv">1.0x</span></label><input type="range" id="rc" min=".5" max="1.5" step=".05" value="1" oninput="document.getElementById('rv').textContent=this.value+'x'"></div>
-      <div class="cg"><label>Volume <span class="cv" id="vv">1.0x</span></label><input type="range" id="vc" min=".2" max="2" step=".1" value="1" oninput="document.getElementById('vv').textContent=this.value+'x'"></div>
-    </div>
-
-    <button class="action-btn" id="dubBtn" onclick="genDub()"><i class="fas fa-video"></i> Generate Dubbing</button>
-
-    <div class="prog-wrap" id="prog">
-      <div class="prog-bar-container"><div class="prog-fill" id="pf"></div></div>
-      <div class="prog-txt" id="pt">Processing audio alignment...</div>
-    </div>
-
-    <audio id="dubAud" controls></audio>
-    <a class="dl-btn" id="dubDl" download="dubbed.wav"><i class="fas fa-download"></i> Download Dubbed Audio</a>
-  </div>
+<div class="topbar">
+  <a href="index.html" class="logo">sl<span>-Dubbing</span></a>
+  <div class="pill"><div class="dot" id="dot"></div><span id="dotLbl">جاري فحص النظام...</span></div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="wrap">
+  
+  <div class="card">
+    <div class="ttl"><i class="fas fa-link"></i> مصدر الفيديو أو الصوت</div>
+    <div class="grp">
+      <label class="lbl">رابط يوتيوب</label>
+      <input type="text" id="ytUrl" placeholder="الصق رابط اليوتيوب هنا..." oninput="onUrl(this.value)">
+    </div>
+    <div class="sep">أو</div>
+    <div class="grp">
+      <label class="lbl">رفع ملف محلي</label>
+      <input type="file" id="mediaFile" accept="audio/*,video/*">
+    </div>
+  </div>
 
+  <div class="card">
+    <div class="ttl"><i class="fas fa-file-waveform"></i> ملف الترجمة SRT <span class="badge">مطلوب</span></div>
+    <input type="file" id="srtFile" accept=".srt" style="display:none">
+    <div class="srt-zone" id="srtZone" onclick="document.getElementById('srtFile').click()">
+      <i class="fas fa-upload"></i>
+      <div class="srt-lbl">انقر لرفع ملف الترجمة (SRT)</div>
+    </div>
+    <div class="src-row" style="margin-top: 15px;">
+      <label class="lbl">لغة الفيديو الأصلية</label>
+      <select id="srcLang">
+        <option value="auto">تحديد تلقائي</option>
+        <option value="ar">العربية</option>
+        <option value="en">الإنجليزية</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار صوت الدبلجة</div>
+    <p style="font-size:.8rem; color:var(--muted); margin-bottom:15px;">اختر الصوت الذي سيقوم بقراءة الترجمة.</p>
+    
+    <div class="spk-grid" id="spkGrid">
+      
+      <div class="spk-card" id="vc-source" onclick="selectVoice('source', this)">
+        <i class="fas fa-check-circle chk"></i>
+        <div class="spk-av" style="background: #3b82f6;">🎙️</div>
+        <div class="spk-nm">صوت المصدر</div>
+        <div class="spk-sub">استنساخ من الفيديو</div>
+      </div>
+
+      <div class="spk-card active" id="vc-muhamed" onclick="selectVoice('muhamed', this)">
+        <div class="def-badge">افتراضي</div>
+        <i class="fas fa-check-circle chk"></i>
+        <div class="spk-av">M</div>
+        <div class="spk-nm">محمد (Muhamed)</div>
+        <div class="spk-sub">نبرة بشرية هادئة</div>
+      </div>
+
+      <div class="spk-card add-card" onclick="document.getElementById('spkFile').click()">
+        <i class="fas fa-plus"></i>
+        <span>رفع عينة صوت</span>
+      </div>
+
+    </div>
+    
+    <input type="file" id="spkFile" accept="audio/*" style="display:none">
+  </div>
+
+  <div class="card">
+    <div class="ttl"><i class="fas fa-language"></i> لغة الدبلجة المطلوبة</div>
+    <div class="lang-grid" id="langGrid">
+        </div>
+
+    <button class="btn-go" id="startBtn" onclick="startDubbing()">
+      <i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة
+    </button>
+
+    <div id="progressArea">
+      <div class="prog-meta">
+        <span id="statusTxt">جاري المعالجة...</span>
+        <span id="pctTxt">0%</span>
+      </div>
+      <div class="prog-bar-wrap">
+        <div class="prog-bar" id="progBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card res-card" id="resCard">
+    <div class="ttl"><i class="fas fa-check-circle"></i> ملف الدبلجة جاهز</div>
+    <audio id="dubAud" controls></audio>
+    <a id="dlBtn" class="btn-go" style="background:var(--green-dk); margin-top:15px;" download>
+        <i class="fas fa-download"></i> تحميل ملف الصوت (WAV)
+    </a>
+  </div>
+
+</div>
+
+<script>
+// تحديد الصوت الافتراضي
+let activeSpeakerId = 'muhamed';
+
+function selectVoice(id, el) {
+    activeSpeakerId = id;
+    document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    console.log("Speaker Selected:", activeSpeakerId);
+}
+
+// سيتم ربط باقي الدوال مع ملف script.js الخاص بك
+</script>
 <script src="script.js"></script>
 </body>
 </html>
