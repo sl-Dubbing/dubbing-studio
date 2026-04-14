@@ -127,38 +127,12 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .srt-item{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:12px;font-size:.82rem}
 .srt-time{color:#a78bfa;font-family:monospace;min-width:110px}
 
-50%{opacity:.6}}
-
 /* ── Audio / Download ── */
 audio{width:100%;margin:18px 0;display:none;border-radius:8px}
 audio.show{display:block}
 .dl-btn{padding:13px;background:linear-gradient(135deg,#059669,#10b981);border:none;border-radius:10px;color:white;font-weight:700;width:100%;display:none;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all .3s}
 .dl-btn.show{display:flex}
 .dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(5,150,105,.4)}
-
-/* ── Login ── */
-.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.login-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(167,139,250,.22);border-radius:24px;padding:46px;width:100%;max-width:460px;box-shadow:0 25px 80px rgba(0,0,0,.6)}
-.login-card h2{font-size:1.7rem;font-weight:900;color:white;text-align:center;margin-bottom:6px}
-.login-card .sub{color:#9ca3af;text-align:center;font-size:.9rem;margin-bottom:26px}
-.login-card .sub a{color:#60a5fa;text-decoration:none}
-.gaccounts{margin-bottom:22px;max-height:210px;overflow-y:auto;border:1px solid rgba(167,139,250,.12);border-radius:12px;background:rgba(0,0,0,.3)}
-.gacc-item{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;border-bottom:1px solid rgba(167,139,250,.1);transition:all .3s}
-.gacc-item:last-child{border-bottom:none}
-.gacc-item:hover{background:rgba(167,139,250,.1)}
-.gacc-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;flex-shrink:0}
-.gacc-name{font-weight:600;color:white;font-size:.95rem}
-.gacc-email{font-size:.8rem;color:#9ca3af}
-.divider{display:flex;align-items:center;margin:20px 0;color:#6b7280}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(167,139,250,.2)}
-.divider span{padding:0 14px;font-size:.82rem}
-.fg{margin-bottom:16px}
-.fg label{display:block;font-weight:600;color:white;font-size:.9rem;margin-bottom:7px}
-.fg input{width:100%;padding:13px 15px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;color:white;font-size:.9rem;outline:none;transition:all .3s}
-.fg input:focus{border-color:#a78bfa;box-shadow:0 0 0 3px rgba(167,139,250,.15)}
-.fg input::placeholder{color:#6b7280}
-.submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:10px;color:white;font-weight:700;font-size:1rem;cursor:pointer;margin-top:6px;transition:all .3s}
-.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,.6)}
 
 /* ── Footer ── */
 footer{text-align:center;padding:30px 0 20px;border-top:1px solid rgba(255,255,255,.07);color:#6b7280;font-size:.82rem;margin-top:50px}
@@ -173,7 +147,6 @@ footer a:hover{color:#a78bfa}
 @media(max-width:720px){
   .tools-row,.plans-row{grid-template-columns:1fr}
   .top-bar{flex-direction:column;align-items:flex-start}
-  .login-card{padding:30px 20px}
 }
 /* extra */
 .voice-upload-area{border:2px dashed rgba(167,139,250,.35);border-radius:12px;padding:28px;text-align:center;cursor:pointer;background:rgba(124,58,237,.04);transition:all .3s;margin-bottom:16px}
@@ -209,7 +182,6 @@ footer a:hover{color:#a78bfa}
 
   <div class="tool-box">
 
-    <!-- ── اختيار الصوت ── -->
     <label class="lbl">اختر الصوت:</label>
     <div style="display:flex;gap:12px;margin-bottom:24px">
       <div class="voice-choice active" id="vc-default" onclick="selectVoice('gtts',this)"
@@ -226,7 +198,6 @@ footer a:hover{color:#a78bfa}
       </div>
     </div>
 
-    <!-- ── اللغة ── -->
     <label class="lbl">اختر لغة الدبلجة:</label>
     
 <div class="lang-grid" id="langs">
@@ -245,9 +216,6 @@ footer a:hover{color:#a78bfa}
   <button class="lang-btn" onclick="selectLang('nl',this)"><span class="lang-flag">🇳🇱</span><span>Nederlands</span></button>
 </div>
 
-    
-
-    <!-- ── SRT ── -->
     <label class="lbl">ملف SRT:</label>
     <div class="upload-area" onclick="document.getElementById('srtFile').click()">
       <input type="file" id="srtFile" accept=".srt,.txt" onchange="loadSRTFile(event)">
@@ -259,7 +227,6 @@ footer a:hover{color:#a78bfa}
     <button class="sec-btn" onclick="parseSRT()">📥 تحليل الملف</button>
     <div class="srt-list" id="srtList"></div>
 
-    <!-- ── توليد ── -->
     <div class="controls-row">
       <div class="cg"><label>السرعة: <span class="cv" id="rv">1.0x</span></label><input type="range" id="rc" min=".5" max="1" step=".05" value="1" oninput="document.getElementById('rv').textContent=this.value+'x'"></div>
       <div class="cg"><label>الصوت: <span class="cv" id="vv">1.0x</span></label><input type="range" id="vc" min=".2" max="2" step=".1" value="1" oninput="document.getElementById('vv').textContent=this.value+'x'"></div>
@@ -282,41 +249,6 @@ footer a:hover{color:#a78bfa}
   </footer>
 </div>
 <div class="toast" id="toast"></div>
-
-
-
-
-<!-- شريط إدخال رابط Colab -->
-<div id="colabBar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,31,.95);padding:10px 16px;display:flex;gap:8px;z-index:9999;border-top:1px solid rgba(167,139,250,.3);backdrop-filter:blur(10px)">
-  <input id="colabUrl" type="text" placeholder="🔗 الصق رابط ngrok هنا مثال: https://xxxx.ngrok-free.app"
-    style="flex:1;padding:9px 14px;border-radius:8px;border:1px solid rgba(167,139,250,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;outline:none;direction:ltr"
-    onkeydown="if(event.key==='Enter')applyUrl()">
-  <button onclick="applyUrl()"
-    style="padding:9px 18px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap">
-    تطبيق ✓
-  </button>
-  <button onclick="document.getElementById('colabBar').style.display='none'"
-    style="padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#9ca3af;cursor:pointer">
-    ✕
-  </button>
-</div>
-<script>
-function applyUrl(){
-  const url = document.getElementById('colabUrl').value.trim().replace(/\/$/,'');
-  if(!url){alert('الرجاء إدخال الرابط');return;}
-  localStorage.setItem('sl_backend_url', url);
-  if(typeof CONFIG !== 'undefined') CONFIG.API_BASE = url;
-  document.getElementById('colabBar').style.display='none';
-  const t=document.getElementById('toast');
-  if(t){t.textContent='✅ تم تحديث رابط الخادم';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-  location.reload();
-}
-// أظهر الرابط الحالي في الحقل
-window.addEventListener('load', function(){
-  const saved = localStorage.getItem('sl_backend_url');
-  if(saved) document.getElementById('colabUrl').value = saved;
-});
-</script>
 
 <script src="script.js"></script>
 </body>
