@@ -3,7 +3,8 @@
 // ============================================================
 
 const CONFIG = {
-  API_BASE: '',  // ✅ فارغ - يُملأ من localStorage أو زر 🔗
+  API_BASE: 'https://sl-dubbing-backend-production.up.railway.app', 
+  
   GUEST_LIMIT: 6,
   LANGS: [
     {c:'ar', n:'العربية', f:'🇸🇦'},
