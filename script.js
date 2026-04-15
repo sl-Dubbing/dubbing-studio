@@ -1,145 +1,171 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign in | sl-Dubbing</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-:root { --bg-color: #ffffff; --text-main: #111827; --text-muted: #6b7280; --border-color: #e5e7eb; --border-focus: #111827; --btn-grey: #a1a1aa; --btn-grey-hover: #71717a; --radius: 10px; }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; }
-.login-container { width: 100%; max-width: 400px; padding: 40px 20px; display: flex; flex-direction: column; margin-top: 4vh; }
-.logo { text-align: center; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 60px; color: var(--text-main); text-decoration: none; }
-.logo span { font-weight: 900; margin-right: 2px; }
-.title { text-align: center; font-size: 1.75rem; font-weight: 700; margin-bottom: 40px; letter-spacing: -0.02em; }
-.oauth-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
-.divider { height: 1px; background-color: var(--border-color); margin-bottom: 30px; }
-.form-group { margin-bottom: 20px; }
-.label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
-.input-wrap { position: relative; }
-input[type="email"], input[type="password"] { width: 100%; height: 48px; padding: 0 16px; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; outline: none; transition: border-color 0.2s; }
-input:focus { border-color: var(--border-focus); }
-.toggle-pwd { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; font-size: 1.1rem; }
-.submit-btn { width: 100%; height: 48px; background-color: var(--btn-grey); color: #fff; border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
-.submit-btn:hover { background-color: var(--btn-grey-hover); }
-.footer-text { text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-main); }
-.footer-text a { color: var(--text-main); font-weight: 600; text-decoration: none; cursor: pointer; }
-.google-btn-wrapper { width: 100%; display: flex; justify-content: center; }
-</style>
-</head>
-<body>
+// script.js
+const API_BASE = window.location.origin; // or set explicit backend URL
+let selectedVoice = 'muhamed';
+let selectedLang = 'ar';
+let currentJobId = null;
+let pollInterval = null;
 
-<div class="login-container">
-  <a href="index.html" class="logo"><span>||</span>sl-Dubbing</a>
-  <h1 class="title" id="pageTitle">Welcome back</h1>
+document.addEventListener('DOMContentLoaded', () => {
+  // populate languages grid
+  const langs = ['ar','en','es','fr','de','it','pt','tr','ru','zh','ja','ko','hi'];
+  const langGrid = document.getElementById('langGrid');
+  langs.forEach(l => {
+    const el = document.createElement('div');
+    el.className = 'lang-box' + (l === selectedLang ? ' active' : '');
+    el.innerText = l.toUpperCase();
+    el.onclick = () => {
+      document.querySelectorAll('.lang-box').forEach(n => n.classList.remove('active'));
+      el.classList.add('active');
+      selectedLang = l;
+    };
+    langGrid.appendChild(el);
+  });
 
-  <div class="oauth-group">
-    <div class="google-btn-wrapper" id="googleBtn"></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <form id="authForm">
-    <div class="form-group">
-      <div class="label-row"><label for="email">Email</label></div>
-      <input type="email" id="email" required>
-    </div>
-    <div class="form-group">
-      <div class="label-row">
-        <label for="password">Password (Min 6 chars)</label>
-      </div>
-      <div class="input-wrap">
-        <input type="password" id="password" required minlength="6">
-        <i class="fas fa-eye toggle-pwd" onclick="togglePassword()"></i>
-      </div>
-    </div>
-    <button type="submit" class="submit-btn" id="submitBtn">Sign in</button>
-  </form>
-
-  <p class="footer-text">
-    <span id="toggleText">Don't have an account?</span> 
-    <a onclick="toggleMode()">Sign up</a>
-  </p>
-  
-  <p class="footer-text" style="margin-top:10px; font-size:0.8rem; color:var(--text-muted)">
-    Need a new Google account? <a href="https://accounts.google.com/signup" target="_blank">Create one</a>
-  </p>
-</div>
-
-<script>
-const GOOGLE_CLIENT_ID = "497619073475-6vjelufub8gci231ettdhmk5pv0cdde3.apps.googleusercontent.com";
-const API_BASE = "https://sl-dubbing-backend-production.up.railway.app";
-let isLoginMode = true; // نتحكم بالواجهة إما "دخول" أو "تسجيل"
-
-window.onload = function () {
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleResponse });
-  google.accounts.id.renderButton(document.getElementById("googleBtn"), { theme: "outline", size: "large", width: document.getElementById("googleBtn").offsetWidth });
-};
-
-function toggleMode() {
-    isLoginMode = !isLoginMode;
-    document.getElementById('pageTitle').innerText = isLoginMode ? "Welcome back" : "Create an account";
-    document.getElementById('submitBtn').innerText = isLoginMode ? "Sign in" : "Sign up";
-    document.getElementById('toggleText').innerText = isLoginMode ? "Don't have an account?" : "Already have an account?";
-    document.querySelector('.footer-text a').innerText = isLoginMode ? "Sign up" : "Sign in";
-}
-
-async function handleGoogleResponse(response) {
-  try {
-    const res = await fetch(`${API_BASE}/api/auth/google`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ credential: response.credential })
-    });
-    const data = await res.json();
-    if (data.success) finishAuth(data.user); else alert("Error: " + data.error);
-  } catch (err) { alert("Server connection failed."); }
-}
-
-document.getElementById('authForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.innerText = "Processing...";
-  
-  const endpoint = isLoginMode ? '/api/auth/login' : '/api/auth/register';
-  try {
-      const res = await fetch(API_BASE + endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include', // مهم جداً لاستلام الكوكي
-          body: JSON.stringify({
-              email: document.getElementById('email').value,
-              password: document.getElementById('password').value
-          })
-      });
-      const data = await res.json();
-      if (data.success) finishAuth(data.user);
-      else alert("Error: " + data.error);
-  } catch (err) { alert("Server connection failed."); }
-  finally { btn.disabled = false; btn.innerText = isLoginMode ? "Sign in" : "Sign up"; }
+  // srt file handling
+  const srtFile = document.getElementById('srtFile');
+  const srtZone = document.getElementById('srtZone');
+  srtFile.addEventListener('change', () => {
+    if (srtFile.files && srtFile.files.length) {
+      srtZone.classList.add('ok');
+      srtZone.querySelector('.srt-lbl').innerText = srtFile.files[0].name;
+    }
+  });
 });
 
-function finishAuth(user) {
-    let avatarHtml = user.auth_method === 'google' 
-        ? `<img src="${user.avatar}" style="width:100%; height:100%; object-fit:cover;">` 
-        : user.name.charAt(0).toUpperCase();
-        
-    localStorage.setItem('sl_user', JSON.stringify({
-        email: user.email, name: user.name, avatar: avatarHtml, credits: user.credits
-    }));
-    
-    const returnUrl = sessionStorage.getItem('returnUrl') || 'index.html';
-    sessionStorage.removeItem('returnUrl');
-    window.location.href = returnUrl;
+function selectVoice(id, el) {
+  selectedVoice = id;
+  document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
 }
 
-function togglePassword() {
-  const pwd = document.getElementById('password');
-  const icon = document.querySelector('.toggle-pwd');
-  if (pwd.type === 'password') { pwd.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); } 
-  else { pwd.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+function showToast(msg, color='#0f0f10') {
+  let t = document.createElement('div');
+  t.className = 'toast show';
+  t.style.background = color;
+  t.innerText = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.classList.remove('show'); t.remove(); }, 3500);
 }
-</script>
-</body>
-</html>
+
+async function startDubbing() {
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = true;
+  startBtn.innerText = 'جاري الإرسال...';
+
+  const srtInput = document.getElementById('srtFile');
+  if (!srtInput.files || !srtInput.files.length) {
+    showToast('يرجى رفع ملف SRT أولاً', '#b91c1c');
+    startBtn.disabled = false;
+    startBtn.innerText = 'ابدأ معالجة الدبلجة';
+    return;
+  }
+
+  const file = srtInput.files[0];
+  const srtText = await file.text();
+
+  const payload = {
+    srt: srtText,
+    lang: selectedLang,
+    voice_mode: selectedVoice === 'source' ? 'source' : 'xtts',
+    voice_id: selectedVoice === 'source' ? '' : selectedVoice,
+    voice_url: '' // leave empty unless you have a sample URL
+  };
+
+  try {
+    const res = await fetch(API_BASE + '/api/dub', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showToast('خطأ: ' + (data.error || res.statusText), '#b91c1c');
+      startBtn.disabled = false;
+      startBtn.innerText = 'ابدأ معالجة الدبلجة';
+      return;
+    }
+
+    currentJobId = data.job_id;
+    showToast('تم إنشاء المهمة. جاري المعالجة...', '#065f2c');
+    document.getElementById('progressArea').style.display = 'block';
+    document.getElementById('statusTxt').innerText = 'قيد الانتظار...';
+    document.getElementById('progBar').style.width = '5%';
+    pollInterval = setInterval(() => pollJob(currentJobId), 2000);
+
+  } catch (err) {
+    console.error(err);
+    showToast('فشل الاتصال بالخادم', '#b91c1c');
+    startBtn.disabled = false;
+    startBtn.innerText = 'ابدأ معالجة الدبلجة';
+  }
+}
+
+async function pollJob(jobId) {
+  try {
+    const res = await fetch(API_BASE + '/api/job/' + encodeURIComponent(jobId), {
+      method: 'GET',
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      if (res.status === 404) {
+        clearInterval(pollInterval);
+        document.getElementById('statusTxt').innerText = 'المهمة غير موجودة';
+        showToast('المهمة غير موجودة', '#b91c1c');
+      }
+      return;
+    }
+
+    const status = data.status;
+    if (status === 'processing') {
+      document.getElementById('statusTxt').innerText = 'قيد المعالجة...';
+      const bar = document.getElementById('progBar');
+      let cur = parseInt(bar.style.width) || 10;
+      cur = Math.min(90, cur + Math.floor(Math.random()*10)+5);
+      bar.style.width = cur + '%';
+      document.getElementById('pctTxt').innerText = bar.style.width;
+    } else if (status === 'completed') {
+      clearInterval(pollInterval);
+      document.getElementById('statusTxt').innerText = 'اكتملت المعالجة';
+      document.getElementById('progBar').style.width = '100%';
+      document.getElementById('pctTxt').innerText = '100%';
+      showResult(data.audio_url);
+    } else if (status === 'failed') {
+      clearInterval(pollInterval);
+      document.getElementById('statusTxt').innerText = 'فشلت المعالجة';
+      showToast('فشلت المعالجة. تم استرجاع الرصيد.', '#b91c1c');
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('startBtn').innerText = 'ابدأ معالجة الدبلجة';
+    }
+  } catch (err) {
+    console.error('poll error', err);
+  }
+}
+
+function showResult(audioUrl) {
+  if (!audioUrl) {
+    showToast('لم يتم العثور على ملف الصوت', '#b91c1c');
+    return;
+  }
+  if (audioUrl.startsWith('file://')) {
+    const local = audioUrl.replace('file://', '');
+    const name = local.split('/').pop();
+    audioUrl = window.location.origin + '/api/file/' + name;
+  }
+
+  const resCard = document.getElementById('resCard');
+  const aud = document.getElementById('dubAud');
+  const dl = document.getElementById('dlBtn');
+
+  aud.src = audioUrl;
+  dl.href = audioUrl;
+  dl.setAttribute('download', 'dub_' + (currentJobId || 'audio') + '.mp3');
+  resCard.style.display = 'block';
+
+  document.getElementById('progressArea').style.display = 'none';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('startBtn').innerText = 'ابدأ معالجة الدبلجة';
+  showToast('تمت المعالجة بنجاح', '#065f2c');
+}
