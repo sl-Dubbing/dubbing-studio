@@ -6,122 +6,86 @@
 <title>sl-Dubbing | استوديو الدبلجة الاحترافي</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* (نفس الـ CSS كما في النسخة السابقة) */
-:root { --bg: #f5f5f7; --card: #ffffff; --border: #e5e7eb; --text: #111827; --muted: #6b7280; --primary: #0f0f10; --mint: #a4fec4; --green-dk: #065f2c; --radius: 14px; --shadow: 0 1px 3px rgba(0,0,0,.07); }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-body { background: var(--bg); color: var(--text); min-height: 100vh; text-align: right; line-height: 1.6; }
-.topbar { background: var(--primary); padding: 13px 18px; display: flex; align-items: center; justify-content: space-between; gap:12px; }
-.logo { font-size: 1.15rem; font-weight: 800; color: #fff; letter-spacing: -.02em; text-decoration: none; }
-.logo span { color: var(--mint); }
-.pill { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: #fff; border: 1px solid rgba(255,255,255,.2); padding: 4px 12px; border-radius: 20px; }
-.auth-section { display:flex; gap:10px; align-items:center; }
-.auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.12); padding:6px 10px; border-radius:8px; cursor:pointer; }
-.profile { display:flex; gap:10px; align-items:center; color:#fff; }
-.profile .credits { font-weight:700; background: rgba(255,255,255,0.06); padding:6px 8px; border-radius:8px; }
-.wrap { max-width: 900px; margin: 0 auto; padding: 32px 18px 60px; }
-/* باقي الـ CSS كما في الملف السابق (محذوف هنا للتركيز) */
-.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 28px; margin-bottom: 18px; box-shadow: var(--shadow); }
-.ttl { font-size: .95rem; font-weight: 700; display: flex; align-items: center; gap: 9px; margin-bottom: 20px; }
-.srt-zone { border: 1.5px dashed var(--border); border-radius: 10px; padding: 20px; background: #fafafa; text-align: center; cursor: pointer; transition: all .18s; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-.srt-zone.ok { border-color: #059669; background: #f0fdf4; cursor: default; }
-.spk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 6px; }
-.lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 12px 0 20px; }
-.btn-go { background: var(--primary); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; font-size: 1.05rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s; margin-top: 10px; }
-#progressArea { display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
-.prog-bar-wrap { background: #e5e7eb; border-radius: 8px; height: 8px; overflow: hidden; margin-top: 10px; }
-.prog-bar { background: var(--primary); width: 0%; height: 100%; transition: width .4s; }
-.res-card { display: none; margin-top: 20px; }
-audio { width: 100%; margin-top: 10px; }
-.toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; color: white; border-radius: 10px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.9rem; transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; background: #0f0f10;}
-.toast.show { transform: translateY(0); opacity: 1; }
-@media(max-width: 600px) { .spk-grid { grid-template-columns: 1fr 1fr; } }
+/* CSS مختصر — استخدم نفس CSS المفصّل سابقًا */
+:root { --bg:#f5f5f7; --card:#fff; --primary:#0f0f10; --mint:#a4fec4; --green-dk:#065f2c; --border:#e5e7eb; --radius:12px; }
+*{box-sizing:border-box;font-family:Segoe UI,system-ui,sans-serif}
+body{background:var(--bg);color:#111827;text-align:right}
+.topbar{background:var(--primary);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;color:#fff}
+.logo{font-weight:800}
+.auth-section .auth-btn{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.12);padding:6px 10px;border-radius:8px;cursor:pointer}
+.wrap{max-width:900px;margin:24px auto;padding:18px}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.btn-go{background:var(--primary);color:#fff;padding:12px;border-radius:10px;border:none;cursor:pointer;width:100%}
+.srt-zone{border:1.5px dashed var(--border);padding:18px;text-align:center;border-radius:10px;cursor:pointer}
+.lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:12px}
+.lang-box{padding:10px;border-radius:8px;border:1px solid var(--border);text-align:center;cursor:pointer}
+.lang-box.active{background:var(--mint);border-color:var(--primary);font-weight:700}
+#progressArea{display:none;margin-top:16px}
+.prog-bar-wrap{background:#e5e7eb;border-radius:8px;height:8px;overflow:hidden}
+.prog-bar{height:100%;width:0;background:var(--primary);transition:width .4s}
+.res-card{display:none;margin-top:12px}
+audio{width:100%}
+.toast{position:fixed;bottom:20px;right:20px;background:#0f0f10;color:#fff;padding:10px 16px;border-radius:8px;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
 </style>
 </head>
 <body>
-
 <div class="topbar">
-  <a href="index.html" class="logo">sl<span>-Dubbing</span></a>
-
+  <div class="logo">sl<span style="color:#a4fec4">-Dubbing</span></div>
   <div class="auth-section" id="authSection">
-    <!-- Login buttons or profile will be injected by script.js -->
     <button class="auth-btn" id="showLoginBtn">تسجيل / دخول</button>
   </div>
 </div>
 
 <div class="wrap">
-  <!-- Login modal (hidden by default) -->
-  <div id="loginModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:20px; border-radius:12px; width:320px; text-align:right;">
-      <h3 style="margin-bottom:10px;">تسجيل الدخول أو إنشاء حساب</h3>
-      <input id="authEmail" type="text" placeholder="البريد الإلكتروني" style="width:100%; padding:8px; margin-bottom:8px;">
-      <input id="authPassword" type="password" placeholder="كلمة المرور" style="width:100%; padding:8px; margin-bottom:8px;">
-      <div style="display:flex; gap:8px;">
-        <button id="loginBtn" class="btn-go" style="flex:1;">دخول</button>
-        <button id="registerBtn" class="btn-go" style="flex:1; background:#6b7280;">تسجيل</button>
+  <div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:999">
+    <div style="background:#fff;padding:18px;border-radius:12px;width:320px;margin:auto;text-align:right">
+      <h3>تسجيل / دخول</h3>
+      <input id="authEmail" placeholder="البريد الإلكتروني" style="width:100%;padding:8px;margin:6px 0">
+      <input id="authPassword" type="password" placeholder="كلمة المرور" style="width:100%;padding:8px;margin:6px 0">
+      <div style="display:flex;gap:8px">
+        <button id="loginBtn" class="btn-go" style="flex:1">دخول</button>
+        <button id="registerBtn" class="btn-go" style="flex:1;background:#6b7280">تسجيل</button>
       </div>
-      <div style="margin-top:10px; text-align:center;">
-        <small style="color:#6b7280;">أو استخدم Google (إن كان مفعلًا)</small>
-      </div>
-      <div style="margin-top:10px; display:flex; gap:8px;">
-        <button id="googleBtn" class="auth-btn" style="flex:1;"><i class="fab fa-google"></i> Google</button>
-        <button onclick="closeLogin()" class="auth-btn" style="flex:1;">إغلاق</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main UI (SRT upload, voice selection, etc.) -->
-  <div class="card">
-    <div class="ttl"><i class="fas fa-link"></i> مصدر الفيديو أو الصوت</div>
-    <div class="grp">
-      <label class="lbl">رابط يوتيوب</label>
-      <input type="text" id="ytUrl" placeholder="الصق رابط اليوتيوب هنا لتجربة استنساخ المصدر...">
+      <div style="margin-top:8px;text-align:center"><button id="googleBtn" class="auth-btn">Google</button> <button onclick="closeLogin()" class="auth-btn">إغلاق</button></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="ttl"><i class="fas fa-file-waveform"></i> ملف الترجمة SRT <span class="badge">مطلوب</span></div>
+    <div class="ttl"><i class="fas fa-file-waveform"></i> ملف الترجمة SRT</div>
     <input type="file" id="srtFile" accept=".srt" style="display:none">
-    <div class="srt-zone" id="srtZone" onclick="document.getElementById('srtFile').click()">
-      <i class="fas fa-upload"></i>
-      <div class="srt-lbl">انقر لرفع ملف الترجمة (SRT)</div>
+    <div class="srt-zone" id="srtZone" onclick="document.getElementById('srtFile').click()">انقر لرفع ملف SRT</div>
+  </div>
+
+  <div class="card">
+    <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار صوت</div>
+    <div class="spk-grid" id="spkGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div class="spk-card" onclick="selectVoice('source', this)">صوت المصدر</div>
+      <div class="spk-card active" onclick="selectVoice('muhamed', this)">Muhamed</div>
+      <div class="spk-card" onclick="selectVoice('dmitry', this)">Dmitry</div>
+      <div class="spk-card" onclick="selectVoice('baris', this)">Baris</div>
     </div>
   </div>
 
   <div class="card">
-    <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار صوت الدبلجة</div>
-    <p style="font-size:.8rem; color:var(--muted); margin-bottom:15px;">اختر الصوت الذي سيقوم بقراءة الترجمة.</p>
-    <div class="spk-grid" id="spkGrid">
-      <div class="spk-card" onclick="selectVoice('source', this)"><i class="fas fa-check-circle chk"></i><div class="spk-av" style="background: #3b82f6;">🎙️</div><div class="spk-nm">صوت المصدر</div><div class="spk-sub">استنساخ من الفيديو</div></div>
-      <div class="spk-card active" onclick="selectVoice('muhamed', this)"><div class="def-badge">افتراضي</div><i class="fas fa-check-circle chk"></i><div class="spk-av">M</div><div class="spk-nm">محمد (Muhamed)</div><div class="spk-sub">نبرة بشرية هادئة</div></div>
-      <div class="spk-card" onclick="selectVoice('dmitry', this)"><i class="fas fa-check-circle chk"></i><div class="spk-av" style="background: #f59e0b;">D</div><div class="spk-nm">ديمتري (Dmitry)</div><div class="spk-sub">صوت قوي</div></div>
-      <div class="spk-card" onclick="selectVoice('baris', this)"><i class="fas fa-check-circle chk"></i><div class="spk-av" style="background: #ef4444;">B</div><div class="spk-nm">باريش (Baris)</div><div class="spk-sub">صوت وثائقي</div></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ttl"><i class="fas fa-language"></i> لغة الدبلجة المطلوبة والجودة</div>
+    <div class="ttl"><i class="fas fa-language"></i> اللغة</div>
     <div class="lang-grid" id="langGrid"></div>
-    <button class="btn-go" id="startBtn" onclick="startDubbing()"><i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة</button>
+    <button class="btn-go" id="startBtn" onclick="startDubbing()">ابدأ معالجة الدبلجة</button>
 
     <div id="progressArea">
-      <div class="prog-meta" style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; color:var(--muted);">
-        <span id="statusTxt">جاري المعالجة...</span>
-        <span id="pctTxt">0%</span>
-      </div>
-      <div class="prog-bar-wrap">
-        <div class="prog-bar" id="progBar"></div>
-      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px"><span id="statusTxt">جاري المعالجة...</span><span id="pctTxt">0%</span></div>
+      <div class="prog-bar-wrap" style="margin-top:8px"><div class="prog-bar" id="progBar"></div></div>
     </div>
   </div>
 
   <div class="card res-card" id="resCard">
-    <div class="ttl"><i class="fas fa-check-circle"></i> ملف الدبلجة جاهز</div>
+    <div class="ttl">ملف الدبلجة جاهز</div>
     <audio id="dubAud" controls></audio>
-    <a id="dlBtn" class="btn-go" style="background:var(--green-dk); margin-top:15px;" download><i class="fas fa-download"></i> تحميل ملف الصوت (MP3)</a>
+    <a id="dlBtn" class="btn-go" style="background:#065f2c;margin-top:10px" download>تحميل (MP3)</a>
   </div>
-
 </div>
 
+<div id="toasts"></div>
 <script src="script.js"></script>
 </body>
 </html>
