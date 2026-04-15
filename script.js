@@ -1,5 +1,7 @@
 // script.js
-const API_BASE = window.location.origin; // or set explicit backend URL
+// IMPORTANT: set your backend URL here
+const API_BASE = 'https://sl-dubbing-backend.railway.app';
+
 let selectedVoice = 'muhamed';
 let selectedLang = 'ar';
 let currentJobId = null;
@@ -30,6 +32,20 @@ document.addEventListener('DOMContentLoaded', () => {
       srtZone.querySelector('.srt-lbl').innerText = srtFile.files[0].name;
     }
   });
+
+  // auth UI
+  document.getElementById('showLoginBtn').addEventListener('click', () => {
+    document.getElementById('loginModal').style.display = 'flex';
+  });
+  document.getElementById('loginBtn').addEventListener('click', login);
+  document.getElementById('registerBtn').addEventListener('click', register);
+  document.getElementById('googleBtn').addEventListener('click', () => {
+    // If you have Google One-Tap or client, implement here.
+    alert('Google login: استخدم زر Google في صفحة تسجيل الدخول (يتطلب إعداد Google client).');
+  });
+
+  // check auth on load
+  checkAuth();
 });
 
 function selectVoice(id, el) {
@@ -47,6 +63,102 @@ function showToast(msg, color='#0f0f10') {
   setTimeout(()=>{ t.classList.remove('show'); t.remove(); }, 3500);
 }
 
+function closeLogin() {
+  document.getElementById('loginModal').style.display = 'none';
+}
+
+// ----------------- Auth functions -----------------
+async function login() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  if (!email || !password) { showToast('أدخل البريد وكلمة المرور', '#b91c1c'); return; }
+  try {
+    const res = await fetch(API_BASE + '/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email, password}),
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showToast('فشل تسجيل الدخول: ' + (data.error || res.statusText), '#b91c1c');
+      return;
+    }
+    closeLogin();
+    showToast('تم تسجيل الدخول', '#065f2c');
+    renderProfile(data.user);
+  } catch (err) {
+    console.error(err);
+    showToast('خطأ في الاتصال', '#b91c1c');
+  }
+}
+
+async function register() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  if (!email || !password) { showToast('أدخل البريد وكلمة المرور', '#b91c1c'); return; }
+  try {
+    const res = await fetch(API_BASE + '/api/auth/register', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email, password}),
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showToast('فشل التسجيل: ' + (data.error || res.statusText), '#b91c1c');
+      return;
+    }
+    closeLogin();
+    showToast('تم إنشاء الحساب وتسجيل الدخول', '#065f2c');
+    renderProfile(data.user);
+  } catch (err) {
+    console.error(err);
+    showToast('خطأ في الاتصال', '#b91c1c');
+  }
+}
+
+async function logout() {
+  try {
+    await fetch(API_BASE + '/api/auth/logout', {method:'POST', credentials:'include'});
+  } catch (e) { /* ignore */ }
+  // reset UI
+  document.getElementById('authSection').innerHTML = '<button class="auth-btn" id="showLoginBtn">تسجيل / دخول</button>';
+  document.getElementById('showLoginBtn').addEventListener('click', () => { document.getElementById('loginModal').style.display = 'flex'; });
+  showToast('تم تسجيل الخروج', '#065f2c');
+}
+
+async function checkAuth() {
+  try {
+    const res = await fetch(API_BASE + '/api/user', {method:'GET', credentials:'include'});
+    const data = await res.json();
+    if (res.ok && data.success) {
+      renderProfile(data.user);
+    } else {
+      // show login button
+      document.getElementById('authSection').innerHTML = '<button class="auth-btn" id="showLoginBtn">تسجيل / دخول</button>';
+      document.getElementById('showLoginBtn').addEventListener('click', () => { document.getElementById('loginModal').style.display = 'flex'; });
+    }
+  } catch (err) {
+    console.error('auth check failed', err);
+  }
+}
+
+function renderProfile(user) {
+  const sec = document.getElementById('authSection');
+  sec.innerHTML = `
+    <div class="profile">
+      <div style="text-align:right;">
+        <div id="userName" style="font-weight:700;">${user.name}</div>
+        <div class="credits" id="userCredits">رصيد: ${user.credits}</div>
+      </div>
+      <button class="auth-btn" id="logoutBtn">خروج</button>
+    </div>
+  `;
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+}
+
+// ----------------- Dubbing flow -----------------
 async function startDubbing() {
   const startBtn = document.getElementById('startBtn');
   startBtn.disabled = true;
@@ -68,7 +180,7 @@ async function startDubbing() {
     lang: selectedLang,
     voice_mode: selectedVoice === 'source' ? 'source' : 'xtts',
     voice_id: selectedVoice === 'source' ? '' : selectedVoice,
-    voice_url: '' // leave empty unless you have a sample URL
+    voice_url: ''
   };
 
   try {
@@ -110,7 +222,11 @@ async function pollJob(jobId) {
     });
     const data = await res.json();
     if (!res.ok || !data.success) {
-      if (res.status === 404) {
+      if (res.status === 401) {
+        clearInterval(pollInterval);
+        showToast('الرجاء تسجيل الدخول', '#b91c1c');
+        document.getElementById('progressArea').style.display = 'none';
+      } else if (res.status === 404) {
         clearInterval(pollInterval);
         document.getElementById('statusTxt').innerText = 'المهمة غير موجودة';
         showToast('المهمة غير موجودة', '#b91c1c');
@@ -132,6 +248,11 @@ async function pollJob(jobId) {
       document.getElementById('progBar').style.width = '100%';
       document.getElementById('pctTxt').innerText = '100%';
       showResult(data.audio_url);
+      // update credits display
+      if (data.remaining_credits !== undefined) {
+        const c = document.getElementById('userCredits');
+        if (c) c.innerText = 'رصيد: ' + data.remaining_credits;
+      }
     } else if (status === 'failed') {
       clearInterval(pollInterval);
       document.getElementById('statusTxt').innerText = 'فشلت المعالجة';
@@ -152,7 +273,7 @@ function showResult(audioUrl) {
   if (audioUrl.startsWith('file://')) {
     const local = audioUrl.replace('file://', '');
     const name = local.split('/').pop();
-    audioUrl = window.location.origin + '/api/file/' + name;
+    audioUrl = API_BASE.replace(/\/$/, '') + '/api/file/' + name;
   }
 
   const resCard = document.getElementById('resCard');
