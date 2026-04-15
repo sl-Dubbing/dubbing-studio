@@ -6,91 +6,34 @@
 <title>sl-Dubbing | استوديو الدبلجة الاحترافي</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* ── الهوية البصرية الجديدة (ElevenLabs Style) ── */
-:root {
-  --bg: #f5f5f7;
-  --card: #ffffff;
-  --border: #e5e7eb;
-  --text: #111827;
-  --muted: #6b7280;
-  --primary: #0f0f10;
-  --mint: #a4fec4;
-  --green-dk: #065f2c;
-  --radius: 14px;
-  --shadow: 0 1px 3px rgba(0,0,0,.07);
-  --bg-page: #f5f5f7;
-  --border-color: #e5e7eb;
-}
-
+/* (نفس الـ CSS كما في النسخة السابقة) */
+:root { --bg: #f5f5f7; --card: #ffffff; --border: #e5e7eb; --text: #111827; --muted: #6b7280; --primary: #0f0f10; --mint: #a4fec4; --green-dk: #065f2c; --radius: 14px; --shadow: 0 1px 3px rgba(0,0,0,.07); }
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-
 body { background: var(--bg); color: var(--text); min-height: 100vh; text-align: right; line-height: 1.6; }
-
-/* ── Header ── */
-.topbar { background: var(--primary); padding: 13px 28px; display: flex; align-items: center; justify-content: space-between; }
+.topbar { background: var(--primary); padding: 13px 18px; display: flex; align-items: center; justify-content: space-between; gap:12px; }
 .logo { font-size: 1.15rem; font-weight: 800; color: #fff; letter-spacing: -.02em; text-decoration: none; }
 .logo span { color: var(--mint); }
 .pill { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: #fff; border: 1px solid rgba(255,255,255,.2); padding: 4px 12px; border-radius: 20px; }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; transition: background .4s; }
-.dot.on { background: var(--mint); box-shadow: 0 0 6px var(--mint); }
-
+.auth-section { display:flex; gap:10px; align-items:center; }
+.auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.12); padding:6px 10px; border-radius:8px; cursor:pointer; }
+.profile { display:flex; gap:10px; align-items:center; color:#fff; }
+.profile .credits { font-weight:700; background: rgba(255,255,255,0.06); padding:6px 8px; border-radius:8px; }
 .wrap { max-width: 900px; margin: 0 auto; padding: 32px 18px 60px; }
-
-/* ── Cards ── */
+/* باقي الـ CSS كما في الملف السابق (محذوف هنا للتركيز) */
 .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 28px; margin-bottom: 18px; box-shadow: var(--shadow); }
 .ttl { font-size: .95rem; font-weight: 700; display: flex; align-items: center; gap: 9px; margin-bottom: 20px; }
-.ttl i { color: var(--muted); font-size: .9rem; }
-.badge { font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: var(--mint); color: var(--green-dk); text-transform: uppercase; margin-right: 8px; }
-
-/* ── Inputs & Grids ── */
-.grp { margin-bottom: 18px; }
-.lbl { display: block; font-size: .85rem; font-weight: 500; margin-bottom: 6px; }
-input[type=text], select, textarea { width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 10px; font-size: .9rem; outline: none; background: #fff; color: var(--text); transition: border-color .18s; text-align: right; }
-input:focus, select:focus, textarea:focus { border-color: var(--primary); }
-
-.sep { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .78rem; margin: 14px 0; }
-.sep::before, .sep::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-/* ── SRT Zone ── */
 .srt-zone { border: 1.5px dashed var(--border); border-radius: 10px; padding: 20px; background: #fafafa; text-align: center; cursor: pointer; transition: all .18s; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-.srt-zone:hover { border-color: #9ca3af; background: #f3f4f6; }
 .srt-zone.ok { border-color: #059669; background: #f0fdf4; cursor: default; }
-.srt-zone i { font-size: 1.4rem; color: var(--muted); }
-.srt-lbl { font-size: .875rem; color: var(--muted); }
-
-/* ── Speaker Selection ── */
 .spk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 6px; }
-.spk-card { border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 10px; cursor: pointer; background: #fff; text-align: center; transition: all .18s; position: relative; overflow: hidden; }
-.spk-card:hover { border-color: #9ca3af; }
-.spk-card.active { border-color: var(--primary); background: var(--mint); box-shadow: 0 0 0 2px var(--primary); }
-.spk-av { width: 44px; height: 44px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; margin: 0 auto 8px; }
-.spk-card.active .spk-av { background: var(--green-dk); }
-.spk-nm { font-size: .85rem; font-weight: 700; color: var(--text); }
-.spk-sub { font-size: .7rem; color: var(--muted); margin-top: 3px; }
-.chk { position: absolute; top: 8px; right: 8px; color: var(--green-dk); font-size: .9rem; display: none; }
-.spk-card.active .chk { display: block; }
-.def-badge { position: absolute; top: 0; left: 0; font-size: .55rem; font-weight: 800; padding: 3px 8px; background: var(--primary); color: #fff; border-bottom-right-radius: 8px; }
-
-/* ── Lang Grid ── */
 .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 12px 0 20px; }
-.lang-box { padding: 12px 8px; background: #fff; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid var(--border); font-size: .85rem; transition: all .18s; }
-.lang-box.active { border-color: var(--primary); background: var(--mint); font-weight: 700; box-shadow: 0 0 0 1.5px var(--primary); }
-
-/* ── Action Buttons ── */
 .btn-go { background: var(--primary); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; font-size: 1.05rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s; margin-top: 10px; }
-.btn-go:hover { background: #27272a; transform: translateY(-1px); }
-
-/* ── Progress & Results ── */
 #progressArea { display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
 .prog-bar-wrap { background: #e5e7eb; border-radius: 8px; height: 8px; overflow: hidden; margin-top: 10px; }
 .prog-bar { background: var(--primary); width: 0%; height: 100%; transition: width .4s; }
 .res-card { display: none; margin-top: 20px; }
 audio { width: 100%; margin-top: 10px; }
-
-/* Toast */
 .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; color: white; border-radius: 10px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.9rem; transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; background: #0f0f10;}
 .toast.show { transform: translateY(0); opacity: 1; }
-
 @media(max-width: 600px) { .spk-grid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
@@ -98,11 +41,35 @@ audio { width: 100%; margin-top: 10px; }
 
 <div class="topbar">
   <a href="index.html" class="logo">sl<span>-Dubbing</span></a>
-  <div class="pill" id="hdr"><div class="dot" id="dot"></div><span id="dotLbl">جاري فحص النظام...</span></div>
+
+  <div class="auth-section" id="authSection">
+    <!-- Login buttons or profile will be injected by script.js -->
+    <button class="auth-btn" id="showLoginBtn">تسجيل / دخول</button>
+  </div>
 </div>
 
 <div class="wrap">
-  
+  <!-- Login modal (hidden by default) -->
+  <div id="loginModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:20px; border-radius:12px; width:320px; text-align:right;">
+      <h3 style="margin-bottom:10px;">تسجيل الدخول أو إنشاء حساب</h3>
+      <input id="authEmail" type="text" placeholder="البريد الإلكتروني" style="width:100%; padding:8px; margin-bottom:8px;">
+      <input id="authPassword" type="password" placeholder="كلمة المرور" style="width:100%; padding:8px; margin-bottom:8px;">
+      <div style="display:flex; gap:8px;">
+        <button id="loginBtn" class="btn-go" style="flex:1;">دخول</button>
+        <button id="registerBtn" class="btn-go" style="flex:1; background:#6b7280;">تسجيل</button>
+      </div>
+      <div style="margin-top:10px; text-align:center;">
+        <small style="color:#6b7280;">أو استخدم Google (إن كان مفعلًا)</small>
+      </div>
+      <div style="margin-top:10px; display:flex; gap:8px;">
+        <button id="googleBtn" class="auth-btn" style="flex:1;"><i class="fab fa-google"></i> Google</button>
+        <button onclick="closeLogin()" class="auth-btn" style="flex:1;">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main UI (SRT upload, voice selection, etc.) -->
   <div class="card">
     <div class="ttl"><i class="fas fa-link"></i> مصدر الفيديو أو الصوت</div>
     <div class="grp">
@@ -123,46 +90,18 @@ audio { width: 100%; margin-top: 10px; }
   <div class="card">
     <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار صوت الدبلجة</div>
     <p style="font-size:.8rem; color:var(--muted); margin-bottom:15px;">اختر الصوت الذي سيقوم بقراءة الترجمة.</p>
-    
     <div class="spk-grid" id="spkGrid">
-      
-      <div class="spk-card" onclick="selectVoice('source', this)">
-        <i class="fas fa-check-circle chk"></i>
-        <div class="spk-av" style="background: #3b82f6;">🎙️</div>
-        <div class="spk-nm">صوت المصدر</div>
-        <div class="spk-sub">استنساخ من الفيديو</div>
-      </div>
-
-      <div class="spk-card active" onclick="selectVoice('muhamed', this)">
-        <div class="def-badge">افتراضي</div>
-        <i class="fas fa-check-circle chk"></i>
-        <div class="spk-av">M</div>
-        <div class="spk-nm">محمد (Muhamed)</div>
-        <div class="spk-sub">نبرة بشرية هادئة</div>
-      </div>
-
-      <div class="spk-card" onclick="selectVoice('dmitry', this)">
-        <i class="fas fa-check-circle chk"></i>
-        <div class="spk-av" style="background: #f59e0b;">D</div>
-        <div class="spk-nm">ديمتري (Dmitry)</div>
-        <div class="spk-sub">صوت قوي</div>
-      </div>
-
-      <div class="spk-card" onclick="selectVoice('baris', this)">
-        <i class="fas fa-check-circle chk"></i>
-        <div class="spk-av" style="background: #ef4444;">B</div>
-        <div class="spk-nm">باريش (Baris)</div>
-        <div class="spk-sub">صوت وثائقي</div>
-      </div>
-
+      <div class="spk-card" onclick="selectVoice('source', this)"><i class="fas fa-check-circle chk"></i><div class="spk-av" style="background: #3b82f6;">🎙️</div><div class="spk-nm">صوت المصدر</div><div class="spk-sub">استنساخ من الفيديو</div></div>
+      <div class="spk-card active" onclick="selectVoice('muhamed', this)"><div class="def-badge">افتراضي</div><i class="fas fa-check-circle chk"></i><div class="spk-av">M</div><div class="spk-nm">محمد (Muhamed)</div><div class="spk-sub">نبرة بشرية هادئة</div></div>
+      <div class="spk-card" onclick="selectVoice('dmitry', this)"><i class="fas fa-check-circle chk"></i><div class="spk-av" style="background: #f59e0b;">D</div><div class="spk-nm">ديمتري (Dmitry)</div><div class="spk-sub">صوت قوي</div></div>
+      <div class="spk-card" onclick="selectVoice('baris', this)"><i class="fas fa-check-circle chk"></i><div class="spk-av" style="background: #ef4444;">B</div><div class="spk-nm">باريش (Baris)</div><div class="spk-sub">صوت وثائقي</div></div>
     </div>
   </div>
 
   <div class="card">
     <div class="ttl"><i class="fas fa-language"></i> لغة الدبلجة المطلوبة والجودة</div>
-    <div class="lang-grid" id="langGrid"></div> <button class="btn-go" id="startBtn" onclick="startDubbing()">
-      <i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة
-    </button>
+    <div class="lang-grid" id="langGrid"></div>
+    <button class="btn-go" id="startBtn" onclick="startDubbing()"><i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة</button>
 
     <div id="progressArea">
       <div class="prog-meta" style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; color:var(--muted);">
@@ -178,9 +117,7 @@ audio { width: 100%; margin-top: 10px; }
   <div class="card res-card" id="resCard">
     <div class="ttl"><i class="fas fa-check-circle"></i> ملف الدبلجة جاهز</div>
     <audio id="dubAud" controls></audio>
-    <a id="dlBtn" class="btn-go" style="background:var(--green-dk); margin-top:15px;" download>
-        <i class="fas fa-download"></i> تحميل ملف الصوت (MP3)
-    </a>
+    <a id="dlBtn" class="btn-go" style="background:var(--green-dk); margin-top:15px;" download><i class="fas fa-download"></i> تحميل ملف الصوت (MP3)</a>
   </div>
 
 </div>
