@@ -1,87 +1,113 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>sl-Dubbing | استوديو الدبلجة الاحترافي</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-/* CSS مختصر — استخدم نفس CSS المفصّل سابقًا */
-:root { --bg:#f5f5f7; --card:#fff; --primary:#0f0f10; --mint:#a4fec4; --green-dk:#065f2c; --border:#e5e7eb; --radius:12px; }
-*{box-sizing:border-box;font-family:Segoe UI,system-ui,sans-serif}
-body{background:var(--bg);color:#111827;text-align:right}
-.topbar{background:var(--primary);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;color:#fff}
-.logo{font-weight:800}
-.auth-section .auth-btn{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.12);padding:6px 10px;border-radius:8px;cursor:pointer}
-.wrap{max-width:900px;margin:24px auto;padding:18px}
-.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
-.btn-go{background:var(--primary);color:#fff;padding:12px;border-radius:10px;border:none;cursor:pointer;width:100%}
-.srt-zone{border:1.5px dashed var(--border);padding:18px;text-align:center;border-radius:10px;cursor:pointer}
-.lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:12px}
-.lang-box{padding:10px;border-radius:8px;border:1px solid var(--border);text-align:center;cursor:pointer}
-.lang-box.active{background:var(--mint);border-color:var(--primary);font-weight:700}
-#progressArea{display:none;margin-top:16px}
-.prog-bar-wrap{background:#e5e7eb;border-radius:8px;height:8px;overflow:hidden}
-.prog-bar{height:100%;width:0;background:var(--primary);transition:width .4s}
-.res-card{display:none;margin-top:12px}
-audio{width:100%}
-.toast{position:fixed;bottom:20px;right:20px;background:#0f0f10;color:#fff;padding:10px 16px;border-radius:8px;transform:translateY(100px);opacity:0;transition:all .3s}
-.toast.show{transform:translateY(0);opacity:1}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استوديو الدبلجة | sl-Dubbing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --bg: #f5f5f7; 
+            --card: #fff; 
+            --primary: #0f0f10; 
+            --mint: #a4fec4; 
+            --green-dk: #065f2c; 
+            --border: #e5e7eb; 
+            --radius: 12px; 
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg); color: #111827; text-align: right; margin: 0; }
+        
+        /* Topbar */
+        .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+        .logo { font-weight: 800; font-size: 1.2rem; }
+        .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        
+        /* Layout */
+        .wrap { max-width: 900px; margin: 24px auto; padding: 18px; }
+        .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .ttl { font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        /* UI Components */
+        .btn-go { background: var(--primary); color: #fff; padding: 14px; border-radius: 10px; border: none; cursor: pointer; width: 100%; font-weight: 600; }
+        .btn-go:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .srt-zone { border: 2px dashed var(--border); padding: 30px; text-align: center; border-radius: 10px; cursor: pointer; }
+        .srt-zone.ok { border-color: var(--green-dk); background: #f0fdf4; color: var(--green-dk); }
+        
+        .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        
+        .spk-card, .lang-box { 
+            padding: 15px 10px; border-radius: 10px; border: 1px solid var(--border); 
+            text-align: center; cursor: pointer; transition: 0.2s; background: #fff;
+        }
+        .spk-card.active, .lang-box.active { background: var(--mint); border-color: var(--primary); font-weight: 700; }
+
+        /* Progress & Result */
+        #progressArea { display: none; margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 10px; }
+        .prog-bar-wrap { background: #e5e7eb; border-radius: 50px; height: 10px; overflow: hidden; margin-top: 10px; }
+        .prog-bar { height: 100%; width: 0; background: var(--primary); transition: width 0.4s ease; }
+        
+        .res-card { display: none; border: 2px solid var(--green-dk); }
+        audio { width: 100%; margin-top: 10px; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 20px; right: 20px; color: #fff; padding: 12px 20px; border-radius: 10px; transform: translateY(100px); opacity: 0; transition: 0.4s; z-index: 1000; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
 </head>
 <body>
+
 <div class="topbar">
-  <div class="logo">sl<span style="color:#a4fec4">-Dubbing</span></div>
-  <div class="auth-section" id="authSection">
-    <button class="auth-btn" id="showLoginBtn">تسجيل / دخول</button>
-  </div>
+    <div class="logo">sl<span style="color:#a4fec4">-Dubbing</span></div>
+    <div class="auth-section" id="authSection">
+        <button class="auth-btn" id="showLoginBtn" onclick="location.href='login.html'">تسجيل الدخول</button>
+    </div>
 </div>
 
 <div class="wrap">
-  <div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:999">
-    <div style="background:#fff;padding:18px;border-radius:12px;width:320px;margin:auto;text-align:right">
-      <h3>تسجيل / دخول</h3>
-      <input id="authEmail" placeholder="البريد الإلكتروني" style="width:100%;padding:8px;margin:6px 0">
-      <input id="authPassword" type="password" placeholder="كلمة المرور" style="width:100%;padding:8px;margin:6px 0">
-      <div style="display:flex;gap:8px">
-        <button id="loginBtn" class="btn-go" style="flex:1">دخول</button>
-        <button id="registerBtn" class="btn-go" style="flex:1;background:#6b7280">تسجيل</button>
-      </div>
-      <div style="margin-top:8px;text-align:center"><button id="googleBtn" class="auth-btn">Google</button> <button onclick="closeLogin()" class="auth-btn">إغلاق</button></div>
+    <div class="card">
+        <div class="ttl"><i class="fas fa-file-waveform"></i> ملف الترجمة SRT</div>
+        <input type="file" id="srtFile" accept=".srt" style="display:none">
+        <div class="srt-zone" id="srtZone" onclick="document.getElementById('srtFile').click()">
+            انقر هنا لرفع ملف SRT الخاص بالفيديو
+        </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="ttl"><i class="fas fa-file-waveform"></i> ملف الترجمة SRT</div>
-    <input type="file" id="srtFile" accept=".srt" style="display:none">
-    <div class="srt-zone" id="srtZone" onclick="document.getElementById('srtFile').click()">انقر لرفع ملف SRT</div>
-  </div>
-
-  <<div class="card">
-  <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار الأصوات (تحديث تلقائي)</div>
-  <div class="spk-grid" id="spkGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));gap:10px">
+    <div class="card">
+        <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار صوت الدبلجة (تحديث تلقائي من المجلد)</div>
+        <div class="spk-grid" id="spkGrid">
+            </div>
     </div>
-</div>
 
-  <div class="card">
-    <div class="ttl"><i class="fas fa-language"></i> اللغة</div>
-    <div class="lang-grid" id="langGrid"></div>
-    <button class="btn-go" id="startBtn" onclick="startDubbing()">ابدأ معالجة الدبلجة</button>
+    <div class="card">
+        <div class="ttl"><i class="fas fa-language"></i> لغة الدبلجة</div>
+        <div class="lang-grid" id="langGrid">
+            </div>
+        <button class="btn-go" id="startBtn" onclick="startDubbing()">
+            <i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة الآن
+        </button>
 
-    <div id="progressArea">
-      <div style="display:flex;justify-content:space-between;margin-top:8px"><span id="statusTxt">جاري المعالجة...</span><span id="pctTxt">0%</span></div>
-      <div class="prog-bar-wrap" style="margin-top:8px"><div class="prog-bar" id="progBar"></div></div>
+        <div id="progressArea">
+            <div style="display:flex; justify-content:space-between;">
+                <span id="statusTxt">جاري المعالجة...</span>
+                <span id="pctTxt">0%</span>
+            </div>
+            <div class="prog-bar-wrap">
+                <div class="prog-bar" id="progBar"></div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="card res-card" id="resCard">
-    <div class="ttl">ملف الدبلجة جاهز</div>
-    <audio id="dubAud" controls></audio>
-    <a id="dlBtn" class="btn-go" style="background:#065f2c;margin-top:10px" download>تحميل (MP3)</a>
-  </div>
+    <div class="card res-card" id="resCard">
+        <div class="ttl" style="color:var(--green-dk)"><i class="fas fa-check-circle"></i> ملف الصوت جاهز!</div>
+        <audio id="dubAud" controls></audio>
+        <a id="dlBtn" class="btn-go" style="background:var(--green-dk); margin-top:15px; display:block; text-align:center; text-decoration:none" download>تحميل MP3</a>
+    </div>
 </div>
 
 <div id="toasts"></div>
+
 <script src="script.js"></script>
 </body>
 </html>
