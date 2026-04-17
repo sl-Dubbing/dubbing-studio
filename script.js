@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const showLoginBtn = document.getElementById('showLoginBtn');
     if (showLoginBtn) {
         showLoginBtn.addEventListener('click', () => {
-            document.getElementById('loginModal').style.display = 'flex';
+            const modal = document.getElementById('loginModal');
+            if (modal) modal.style.display = 'flex';
         });
     }
     
@@ -58,33 +59,30 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
 });
 
-// --- نظام جلب الأصوات الديناميكي (تم تصحيح المسارات هنا) ---
+// --- نظام جلب الأصوات الديناميكي (تم تصحيح المتغيرات هنا) ---
 async function loadVoicesFromGithub() {
     const spkGrid = document.getElementById('spkGrid');
     if (!spkGrid) return;
     
-    spkGrid.innerHTML = '<div style="color:#6b7280; padding:10px;">جاري تحميل الأصوات...</div>';
+    spkGrid.innerHTML = ''; // تنظيف القسم
+
+    // 1. إضافة صوت المصدر دائماً كخيار أول
+    const sourceCard = document.createElement('div');
+    sourceCard.className = 'spk-card active';
+    sourceCard.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av">S</div><div class="spk-nm">صوت المصدر</div>`;
+    sourceCard.onclick = () => selectVoice('source', sourceCard);
+    spkGrid.appendChild(sourceCard);
 
     try {
-        // تم تصحيح استدعاء المتغيرات هنا بحذف CONFIG
+        // تم تصحيح الرابط هنا لاستخدام المتغيرات الصحيحة
         const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples?t=${Date.now()}`;
         const response = await fetch(url);
         
-        if (!response.ok) throw new Error("فشل الاتصال بـ GitHub");
+        if (!response.ok) throw new Error("فشل الاتصال بـ GitHub API");
 
         const files = await response.json();
         const audioFiles = files.filter(file => file.name.toLowerCase().endsWith('.mp3'));
 
-        spkGrid.innerHTML = ''; // تنظيف القسم
-
-        // 1. إضافة صوت المصدر دائماً
-        const sourceCard = document.createElement('div');
-        sourceCard.className = 'spk-card active';
-        sourceCard.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av">S</div><div class="spk-nm">صوت المصدر</div>`;
-        sourceCard.onclick = () => selectVoice('source', sourceCard);
-        spkGrid.appendChild(sourceCard);
-
-        // 2. إضافة الأصوات من GitHub
         audioFiles.forEach(file => {
             const voiceName = file.name.replace(/\.[^/.]+$/, "");
             const card = document.createElement('div');
@@ -98,8 +96,7 @@ async function loadVoicesFromGithub() {
             spkGrid.appendChild(card);
         });
     } catch (error) {
-        console.error("⚠️ فشل جلب عينات GitHub:", error);
-        spkGrid.innerHTML = '<div style="color:#ef4444; padding:10px;">تعذر تحميل الأصوات الإضافية</div>';
+        console.error("⚠️ خطأ في جلب العينات:", error);
     }
 }
 
@@ -108,28 +105,29 @@ function selectVoice(id, el) {
     document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
 
-    // تشغيل معاينة الصوت
+    // تشغيل معاينة الصوت إذا لم يكن "صوت المصدر"
     if (id !== 'source') {
-        // نستخدم المسار النسبي لمجلد samples في مستودعك
         const audio = new Audio(`samples/${id}.mp3`);
-        audio.play().catch(e => console.log("العينة الصوتية غير متوفرة للمعاينة"));
+        audio.play().catch(e => console.warn("معاينة الصوت غير متاحة لهذا الملف"));
     }
 }
 
 // --- وظائف التنبيه ---
 function showToast(msg, color='#0f0f10') {
+    const container = document.getElementById('toasts');
+    if (!container) return;
     const t = document.createElement('div');
     t.className = 'toast show';
     t.style.background = color;
     t.innerText = msg;
-    const container = document.getElementById('toasts');
-    if (container) {
-        container.appendChild(t);
-        setTimeout(()=>{ t.remove(); }, 3500);
-    }
+    container.appendChild(t);
+    setTimeout(()=>{ t.remove(); }, 3500);
 }
 
-function closeLogin() { document.getElementById('loginModal').style.display = 'none'; }
+function closeLogin() { 
+    const modal = document.getElementById('loginModal');
+    if (modal) modal.style.display = 'none'; 
+}
 
 // --- وظائف الهوية (Auth) ---
 async function login() {
@@ -148,7 +146,7 @@ async function login() {
         closeLogin();
         showToast('تم تسجيل الدخول', '#065f2c');
         renderProfile(data.user);
-    } catch (err) { console.error(err); showToast('خطأ في الاتصال', '#b91c1c'); }
+    } catch (err) { console.error(err); showToast('خطأ في الاتصال بالسيرفر', '#b91c1c'); }
 }
 
 async function register() {
@@ -165,14 +163,14 @@ async function register() {
         const data = await res.json();
         if (!res.ok || !data.success) { showToast('فشل التسجيل: ' + (data.error || res.statusText), '#b91c1c'); return; }
         closeLogin();
-        showToast('تم إنشاء الحساب وتسجيل الدخول', '#065f2c');
+        showToast('تم إنشاء الحساب', '#065f2c');
         renderProfile(data.user);
     } catch (err) { console.error(err); showToast('خطأ في الاتصال', '#b91c1c'); }
 }
 
 async function logout() {
     try { await fetch(API_BASE + '/api/auth/logout', {method:'POST', credentials:'include'}); } catch(e){}
-    location.reload(); // إعادة تحميل الصفحة لتنظيف الحالة
+    location.reload(); 
 }
 
 async function checkAuth() {
@@ -180,7 +178,7 @@ async function checkAuth() {
         const res = await fetch(API_BASE + '/api/user', {method:'GET', credentials:'include'});
         const data = await res.json();
         if (res.ok && data.success) renderProfile(data.user);
-    } catch (err) { console.error('auth check failed', err); }
+    } catch (err) { console.warn('User not logged in'); }
 }
 
 function renderProfile(user) {
@@ -190,7 +188,7 @@ function renderProfile(user) {
     <div style="display:flex;gap:10px;align-items:center">
         <div style="text-align:right">
             <div style="font-weight:700">${user.name || user.email.split('@')[0]}</div>
-            <div style="background:rgba(255,255,255,0.06);padding:6px;border-radius:8px" class="credits">رصيد: ${user.credits}</div>
+            <div style="background:rgba(255,255,255,0.06);padding:6px;border-radius:8px">رصيد: ${user.credits}</div>
         </div>
         <button class="auth-btn" id="logoutBtn">خروج</button>
     </div>`;
@@ -236,7 +234,7 @@ async function startDubbing() {
             return; 
         }
         currentJobId = data.job_id;
-        showToast('تم إنشاء المهمة. جاري المعالجة...', '#065f2c');
+        showToast('تم البدء! جاري المعالجة...', '#065f2c');
         document.getElementById('progressArea').style.display = 'block';
         document.getElementById('statusTxt').innerText = 'قيد الانتظار...';
         document.getElementById('progBar').style.width = '5%';
@@ -253,14 +251,7 @@ async function pollJob(jobId) {
     try {
         const res = await fetch(API_BASE + '/api/job/' + encodeURIComponent(jobId), { method: 'GET', credentials: 'include' });
         const data = await res.json();
-        if (!res.ok || !data.success) {
-            if (res.status === 401) { 
-                clearInterval(pollInterval); 
-                showToast('الرجاء تسجيل الدخول', '#b91c1c'); 
-                document.getElementById('progressArea').style.display='none'; 
-            }
-            return;
-        }
+        if (!res.ok || !data.success) return;
         
         const status = data.status;
         if (status === 'processing') {
@@ -272,39 +263,33 @@ async function pollJob(jobId) {
             document.getElementById('pctTxt').innerText = bar.style.width;
         } else if (status === 'completed') {
             clearInterval(pollInterval);
-            document.getElementById('statusTxt').innerText = 'اكتملت المعالجة';
+            document.getElementById('statusTxt').innerText = 'اكتملت المعالجة!';
             document.getElementById('progBar').style.width = '100%';
             document.getElementById('pctTxt').innerText = '100%';
             showResult(data.audio_url);
         } else if (status === 'failed') {
             clearInterval(pollInterval);
-            document.getElementById('statusTxt').innerText = 'فشلت المعالجة';
-            showToast('فشلت المعالجة. تم استرجاع الرصيد.', '#b91c1c');
+            showToast('فشلت المعالجة للأسف', '#b91c1c');
             document.getElementById('startBtn').disabled = false;
-            document.getElementById('startBtn').innerText = 'ابدأ معالجة الدبلجة';
         }
-    } catch (err) { console.error('poll error', err); }
+    } catch (err) { console.error('Error polling job', err); }
 }
 
 function showResult(audioUrl) {
-    if (!audioUrl) { showToast('لم يتم العثور على ملف الصوت', '#b91c1c'); return; }
-    
     if (audioUrl.startsWith('file://')) {
         const name = audioUrl.split('/').pop();
         audioUrl = API_BASE + '/api/file/' + name;
     }
-    
     const resCard = document.getElementById('resCard');
     const aud = document.getElementById('dubAud');
     const dl = document.getElementById('dlBtn');
     
     aud.src = audioUrl;
     dl.href = audioUrl;
-    dl.setAttribute('download', `dub_${currentJobId || 'audio'}.mp3`);
     
     resCard.style.display = 'block';
     document.getElementById('progressArea').style.display = 'none';
     document.getElementById('startBtn').disabled = false;
     document.getElementById('startBtn').innerText = 'ابدأ معالجة الدبلجة';
-    showToast('تمت المعالجة بنجاح', '#065f2c');
+    showToast('جاهز للتحميل!', '#065f2c');
 }
