@@ -215,7 +215,7 @@ function selSpk(id, el) {
     
     // معاينة الصوت إذا كان عينة جاهزة
     if(id && id !== 'custom_upload') {
-        const preview = new Audio(`samples/${id}.mp3`);
+        const audio = new Audio("samples/" + id + ".mp3");
         preview.play().catch(e => console.log("No preview file found"));
     }
 }
