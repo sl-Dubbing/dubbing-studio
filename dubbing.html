@@ -57,15 +57,11 @@ audio{width:100%}
     <div class="srt-zone" id="srtZone" onclick="document.getElementById('srtFile').click()">انقر لرفع ملف SRT</div>
   </div>
 
-  <div class="card">
-    <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار صوت</div>
-    <div class="spk-grid" id="spkGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-      <div class="spk-card" onclick="selectVoice('source', this)">صوت المصدر</div>
-      <div class="spk-card active" onclick="selectVoice('muhamed', this)">Muhamed</div>
-      <div class="spk-card" onclick="selectVoice('dmitry', this)">Dmitry</div>
-      <div class="spk-card" onclick="selectVoice('baris', this)">Baris</div>
+  <<div class="card">
+  <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار الأصوات (تحديث تلقائي)</div>
+  <div class="spk-grid" id="spkGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));gap:10px">
     </div>
-  </div>
+</div>
 
   <div class="card">
     <div class="ttl"><i class="fas fa-language"></i> اللغة</div>
