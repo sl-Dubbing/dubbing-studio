@@ -92,7 +92,7 @@ function selectVoice(id, el) {
 
     if (id !== 'source') {
         // تشغيل معاينة الصوت من المجلد المحلي
-        const audio = new Audio(`samples/${id}.mp3`);
+       const audio = new Audio("samples/" + id + ".mp3");
         audio.play().catch(e => console.warn("معاينة الصوت غير متاحة"));
     }
 }
