@@ -1,7 +1,7 @@
 // script.js
 const API_BASE = 'https://web-production-14a1.up.railway.app';
 const GITHUB_USER = "sl-Dubbing"; 
-const REPO_NAME = "sl-dubbing-frontend-main";
+const REPO_NAME = "github.com/sl-Dubbing/sl-dubbing-frontend";
 
 let selectedVoice = 'source';
 let selectedLang = 'ar';
