@@ -1,8 +1,7 @@
 // script.js
 const API_BASE = 'https://web-production-14a1.up.railway.app';
-const GITHUB_USER = "sl-Dubbing"; 
-const REPO_NAME = "github.com/sl-Dubbing/sl-dubbing-frontend";
-
+const GITHUB_USER = "sl-Dubbing"; // الاسم الصحيح كما يظهر في رابط GitHub الخاص بك
+const REPO_NAME = "sl-dubbing-frontend"; // اسم المستودع الصحيح
 let selectedVoice = 'source';
 let selectedLang = 'ar';
 let currentJobId = null;
