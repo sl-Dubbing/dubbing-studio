@@ -12,34 +12,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. إنشاء شبكة اللغات
     const langs = ['ar','en','es','fr','de','it','pt','tr','ru','zh','ja','ko','hi'];
     const langGrid = document.getElementById('langGrid');
-    langs.forEach(l => {
-        const el = document.createElement('div');
-        el.className = 'lang-box' + (l === selectedLang ? ' active' : '');
-        el.innerText = l.toUpperCase();
-        el.onclick = () => {
-            document.querySelectorAll('.lang-box').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-            selectedLang = l;
-        };
-        langGrid.appendChild(el);
-    });
+    if (langGrid) {
+        langs.forEach(l => {
+            const el = document.createElement('div');
+            el.className = 'lang-box' + (l === selectedLang ? ' active' : '');
+            el.innerText = l.toUpperCase();
+            el.onclick = () => {
+                document.querySelectorAll('.lang-box').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+                selectedLang = l;
+            };
+            langGrid.appendChild(el);
+        });
+    }
 
     // 2. معالجة رفع الملف
     const srtFile = document.getElementById('srtFile');
     const srtZone = document.getElementById('srtZone');
-    srtFile.addEventListener('change', () => {
-        if (srtFile.files && srtFile.files.length) {
-            srtZone.classList.add('ok');
-            srtZone.innerText = srtFile.files[0].name;
-        }
-    });
+    if (srtFile) {
+        srtFile.addEventListener('change', () => {
+            if (srtFile.files && srtFile.files.length) {
+                srtZone.classList.add('ok');
+                srtZone.innerText = srtFile.files[0].name;
+            }
+        });
+    }
 
     // 3. أزرار الهوية
-    document.getElementById('showLoginBtn').addEventListener('click', () => {
-        document.getElementById('loginModal').style.display = 'flex';
-    });
-    document.getElementById('loginBtn').addEventListener('click', login);
-    document.getElementById('registerBtn').addEventListener('click', register);
+    const showLoginBtn = document.getElementById('showLoginBtn');
+    if (showLoginBtn) {
+        showLoginBtn.addEventListener('click', () => {
+            document.getElementById('loginModal').style.display = 'flex';
+        });
+    }
+    
+    const loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) loginBtn.addEventListener('click', login);
+    
+    const registerBtn = document.getElementById('registerBtn');
+    if (registerBtn) registerBtn.addEventListener('click', register);
     
     // 4. جلب الأصوات ديناميكياً من GitHub
     loadVoicesFromGithub();
@@ -47,25 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
 });
 
-// --- نظام جلب الأصوات الديناميكي ---
+// --- نظام جلب الأصوات الديناميكي (تم تصحيح المسارات هنا) ---
 async function loadVoicesFromGithub() {
     const spkGrid = document.getElementById('spkGrid');
-    if (!spkGrid) {
-        console.error("❌ لم يتم العثور على عنصر spkGrid في الصفحة!");
-        return;
-    }
+    if (!spkGrid) return;
     
-    spkGrid.innerHTML = ''; // تنظيف القسم
-
-    // 1. إضافة صوت المصدر فوراً (سيظهر دائماً)
-    const sourceCard = document.createElement('div');
-    sourceCard.className = 'spk-card active'; // جعله مختاراً تلقائياً
-    sourceCard.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av">S</div><div class="spk-nm">صوت المصدر</div>`;
-    sourceCard.onclick = () => selectVoice('source', sourceCard);
-    spkGrid.appendChild(sourceCard);
+    spkGrid.innerHTML = '<div style="color:#6b7280; padding:10px;">جاري تحميل الأصوات...</div>';
 
     try {
-        const url = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/samples?t=${Date.now()}`;
+        // تم تصحيح استدعاء المتغيرات هنا بحذف CONFIG
+        const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples?t=${Date.now()}`;
         const response = await fetch(url);
         
         if (!response.ok) throw new Error("فشل الاتصال بـ GitHub");
@@ -73,6 +75,16 @@ async function loadVoicesFromGithub() {
         const files = await response.json();
         const audioFiles = files.filter(file => file.name.toLowerCase().endsWith('.mp3'));
 
+        spkGrid.innerHTML = ''; // تنظيف القسم
+
+        // 1. إضافة صوت المصدر دائماً
+        const sourceCard = document.createElement('div');
+        sourceCard.className = 'spk-card active';
+        sourceCard.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av">S</div><div class="spk-nm">صوت المصدر</div>`;
+        sourceCard.onclick = () => selectVoice('source', sourceCard);
+        spkGrid.appendChild(sourceCard);
+
+        // 2. إضافة الأصوات من GitHub
         audioFiles.forEach(file => {
             const voiceName = file.name.replace(/\.[^/.]+$/, "");
             const card = document.createElement('div');
@@ -87,16 +99,8 @@ async function loadVoicesFromGithub() {
         });
     } catch (error) {
         console.error("⚠️ فشل جلب عينات GitHub:", error);
+        spkGrid.innerHTML = '<div style="color:#ef4444; padding:10px;">تعذر تحميل الأصوات الإضافية</div>';
     }
-}
-
-function createVoiceCard(id, displayName) {
-    const spkGrid = document.getElementById('spkGrid');
-    const card = document.createElement('div');
-    card.className = 'spk-card' + (id === selectedVoice ? ' active' : '');
-    card.innerText = displayName;
-    card.onclick = () => selectVoice(id, card);
-    spkGrid.appendChild(card);
 }
 
 function selectVoice(id, el) {
@@ -104,10 +108,11 @@ function selectVoice(id, el) {
     document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
 
-    // تشغيل معاينة الصوت إذا لم يكن "صوت المصدر"
+    // تشغيل معاينة الصوت
     if (id !== 'source') {
+        // نستخدم المسار النسبي لمجلد samples في مستودعك
         const audio = new Audio(`samples/${id}.mp3`);
-        audio.play().catch(e => console.log("العينة الصوتية غير متوفرة بعد"));
+        audio.play().catch(e => console.log("العينة الصوتية غير متوفرة للمعاينة"));
     }
 }
 
@@ -117,8 +122,11 @@ function showToast(msg, color='#0f0f10') {
     t.className = 'toast show';
     t.style.background = color;
     t.innerText = msg;
-    document.getElementById('toasts').appendChild(t);
-    setTimeout(()=>{ t.remove(); }, 3500);
+    const container = document.getElementById('toasts');
+    if (container) {
+        container.appendChild(t);
+        setTimeout(()=>{ t.remove(); }, 3500);
+    }
 }
 
 function closeLogin() { document.getElementById('loginModal').style.display = 'none'; }
@@ -164,9 +172,7 @@ async function register() {
 
 async function logout() {
     try { await fetch(API_BASE + '/api/auth/logout', {method:'POST', credentials:'include'}); } catch(e){}
-    document.getElementById('authSection').innerHTML = '<button class="auth-btn" id="showLoginBtn">تسجيل / دخول</button>';
-    document.getElementById('showLoginBtn').addEventListener('click', () => { document.getElementById('loginModal').style.display = 'flex'; });
-    showToast('تم تسجيل الخروج', '#065f2c');
+    location.reload(); // إعادة تحميل الصفحة لتنظيف الحالة
 }
 
 async function checkAuth() {
@@ -174,19 +180,16 @@ async function checkAuth() {
         const res = await fetch(API_BASE + '/api/user', {method:'GET', credentials:'include'});
         const data = await res.json();
         if (res.ok && data.success) renderProfile(data.user);
-        else {
-            document.getElementById('authSection').innerHTML = '<button class="auth-btn" id="showLoginBtn">تسجيل / دخول</button>';
-            document.getElementById('showLoginBtn').addEventListener('click', () => { document.getElementById('loginModal').style.display = 'flex'; });
-        }
     } catch (err) { console.error('auth check failed', err); }
 }
 
 function renderProfile(user) {
     const sec = document.getElementById('authSection');
+    if (!sec) return;
     sec.innerHTML = `
     <div style="display:flex;gap:10px;align-items:center">
         <div style="text-align:right">
-            <div style="font-weight:700">${user.name}</div>
+            <div style="font-weight:700">${user.name || user.email.split('@')[0]}</div>
             <div style="background:rgba(255,255,255,0.06);padding:6px;border-radius:8px" class="credits">رصيد: ${user.credits}</div>
         </div>
         <button class="auth-btn" id="logoutBtn">خروج</button>
@@ -256,10 +259,6 @@ async function pollJob(jobId) {
                 showToast('الرجاء تسجيل الدخول', '#b91c1c'); 
                 document.getElementById('progressArea').style.display='none'; 
             }
-            else if (res.status === 404) { 
-                clearInterval(pollInterval); 
-                document.getElementById('statusTxt').innerText='المهمة غير موجودة'; 
-            }
             return;
         }
         
@@ -277,10 +276,6 @@ async function pollJob(jobId) {
             document.getElementById('progBar').style.width = '100%';
             document.getElementById('pctTxt').innerText = '100%';
             showResult(data.audio_url);
-            if (data.remaining_credits !== undefined) {
-                const c = document.querySelector('.credits');
-                if (c) c.innerText = 'رصيد: ' + data.remaining_credits;
-            }
         } else if (status === 'failed') {
             clearInterval(pollInterval);
             document.getElementById('statusTxt').innerText = 'فشلت المعالجة';
@@ -294,7 +289,6 @@ async function pollJob(jobId) {
 function showResult(audioUrl) {
     if (!audioUrl) { showToast('لم يتم العثور على ملف الصوت', '#b91c1c'); return; }
     
-    // التعامل مع روابط الملفات المحلية للسيرفر
     if (audioUrl.startsWith('file://')) {
         const name = audioUrl.split('/').pop();
         audioUrl = API_BASE + '/api/file/' + name;
