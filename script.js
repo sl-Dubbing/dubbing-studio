@@ -50,31 +50,43 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- نظام جلب الأصوات الديناميكي ---
 async function loadVoicesFromGithub() {
     const spkGrid = document.getElementById('spkGrid');
-    if (!spkGrid) return;
+    if (!spkGrid) {
+        console.error("❌ لم يتم العثور على عنصر spkGrid في الصفحة!");
+        return;
+    }
     
-    spkGrid.innerHTML = ''; // تنظيف الشبكة
-    
-    // إضافة خيار صوت المصدر يدوياً كخيار أول
-    createVoiceCard('source', 'صوت المصدر');
+    spkGrid.innerHTML = ''; // تنظيف القسم
+
+    // 1. إضافة صوت المصدر فوراً (سيظهر دائماً)
+    const sourceCard = document.createElement('div');
+    sourceCard.className = 'spk-card active'; // جعله مختاراً تلقائياً
+    sourceCard.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av">S</div><div class="spk-nm">صوت المصدر</div>`;
+    sourceCard.onclick = () => selectVoice('source', sourceCard);
+    spkGrid.appendChild(sourceCard);
 
     try {
-        const githubApiUrl = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples`;
-        const response = await fetch(githubApiUrl);
+        const url = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/samples?t=${Date.now()}`;
+        const response = await fetch(url);
         
-        if (!response.ok) throw new Error("Could not fetch samples");
-        
+        if (!response.ok) throw new Error("فشل الاتصال بـ GitHub");
+
         const files = await response.json();
-        const audioFiles = files.filter(file => file.name.endsWith('.mp3'));
+        const audioFiles = files.filter(file => file.name.toLowerCase().endsWith('.mp3'));
 
         audioFiles.forEach(file => {
-            const voiceName = file.name.replace('.mp3', '');
-            createVoiceCard(voiceName, voiceName);
+            const voiceName = file.name.replace(/\.[^/.]+$/, "");
+            const card = document.createElement('div');
+            card.className = 'spk-card';
+            card.onclick = () => selectVoice(voiceName, card);
+            card.innerHTML = `
+                <i class="fas fa-check-circle chk"></i>
+                <div class="spk-av">${voiceName[0].toUpperCase()}</div>
+                <div class="spk-nm">${voiceName}</div>
+            `;
+            spkGrid.appendChild(card);
         });
     } catch (error) {
-        console.error("خطأ في جلب العينات:", error);
-        // خيارات احتياطية في حال الفشل
-        createVoiceCard('muhamed', 'Muhamed');
-        createVoiceCard('dmitry', 'Dmitry');
+        console.error("⚠️ فشل جلب عينات GitHub:", error);
     }
 }
 
