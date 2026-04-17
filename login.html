@@ -117,11 +117,12 @@ window.onload = function () {
 // 2. دالة استقبال الرد من جوجل وإرساله لسيرفرنا
 async function handleGoogleResponse(response) {
   try {
-    const res = await fetch(`${API_BASE}/api/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential: response.credential })
-    });
+   const res = await fetch(`${API_BASE}/api/auth/google`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // <--- هذا السطر هو مفتاح الحل
+    body: JSON.stringify({ credential: response.credential })
+});
     
     const data = await res.json();
     
