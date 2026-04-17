@@ -1,5 +1,5 @@
 // script.js
-const API_BASE = 'https://sl-dubbing-backend.railway.app'; // غيّر إلى عنوانك الفعلي
+const API_BASE = 'https://web-production-14a1.up.railway.app';
 
 let selectedVoice = 'muhamed';
 let selectedLang = 'ar';
