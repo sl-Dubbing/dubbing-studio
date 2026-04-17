@@ -1,7 +1,7 @@
 // script.js
 const API_BASE = 'https://web-production-14a1.up.railway.app';
-const GITHUB_USER = "Dashboard"; // اسم المستخدم الخاص بك
-const REPO_NAME = "sl-dubbing-frontend-main"; // اسم المستودع
+const GITHUB_USER = "abd19"; 
+const REPO_NAME = "sl-dubbing-frontend-main";
 
 let selectedVoice = 'source';
 let selectedLang = 'ar';
