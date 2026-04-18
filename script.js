@@ -29,21 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ---------------- التفاعل البصري الجديد ----------------
-    
+    // ---------------- التفاعل البصري لرفع الملفات والروابط ----------------
     const mediaFile = document.getElementById('mediaFile');
     const mediaZone = document.getElementById('mediaZone');
     const ytUrlInput = document.getElementById('ytUrl');
 
-    // 1. عند اختيار ملف من الجهاز
     if (mediaFile && mediaZone) {
         mediaFile.addEventListener('change', () => {
             if (mediaFile.files.length > 0) {
                 const file = mediaFile.files[0];
-                // تحديد أيقونة حسب نوع الملف (صوت أو فيديو)
                 const iconClass = file.type.startsWith('video') ? 'fa-file-video' : 'fa-file-audio';
                 
-                // تغيير شكل المربع للأخضر مع اسم الملف
                 mediaZone.innerHTML = `
                     <i class="fas ${iconClass} fa-beat" style="font-size:2.5rem; margin-bottom:10px; color:#065f2c; display:block;"></i>
                     <span style="font-weight:bold; color:#065f2c;">تم تجهيز الملف:</span><br>
@@ -52,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 mediaZone.style.borderColor = '#065f2c';
                 mediaZone.style.background = '#f0fdf4';
 
-                // مسح رابط اليوتيوب وإلغاء تفعيله لتجنب التضارب
                 if (ytUrlInput) {
                     ytUrlInput.value = '';
                     ytUrlInput.style.borderColor = 'var(--border)';
@@ -62,20 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. عند لصق رابط يوتيوب
     if (ytUrlInput) {
         ytUrlInput.addEventListener('input', () => {
             const url = ytUrlInput.value.trim();
-            // كود برمجي للتحقق هل الرابط فعلاً تابع ليوتيوب
             const ytRegex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
 
             if (ytRegex.test(url)) {
-                // إذا كان الرابط صحيحاً (يتحول للأخضر)
                 ytUrlInput.style.borderColor = '#065f2c';
                 ytUrlInput.style.boxShadow = '0 0 0 2px rgba(6, 95, 44, 0.2)';
-                showToast("✅ تم التعرف على رابط يوتيوب بنجاح!", "#065f2c");
+                showToast("✅ تم التعرف على رابط يوتيوب!", "#065f2c");
 
-                // إلغاء الملف المرفوع إن وجد لتجنب التضارب
                 if (mediaFile) mediaFile.value = '';
                 if (mediaZone) {
                     mediaZone.innerHTML = `
@@ -86,11 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     mediaZone.style.background = 'transparent';
                 }
             } else if (url.length > 0) {
-                // إذا كان الرابط خاطئاً (يتحول للأحمر)
                 ytUrlInput.style.borderColor = '#b91c1c';
                 ytUrlInput.style.boxShadow = 'none';
             } else {
-                // إذا كان الحقل فارغاً
                 ytUrlInput.style.borderColor = 'var(--border)';
                 ytUrlInput.style.boxShadow = 'none';
             }
@@ -103,7 +92,6 @@ async function loadVoicesFromGithub() {
     if (!spkGrid) return;
     spkGrid.innerHTML = '';
 
-    // إضافة صوت المصدر
     const sourceCard = document.createElement('div');
     sourceCard.className = 'spk-card active';
     sourceCard.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av">S</div><div class="spk-nm">صوت المصدر</div>`;
@@ -135,7 +123,7 @@ function selectVoice(id, el) {
     }
 }
 
-// دالة الدبلجة الجديدة (باستخدام FormData لدعم الملفات والروابط)
+// ---------------- الدبلجة التلقائية بالكامل ----------------
 window.startDubbing = async function() {
     const btn = document.getElementById('startBtn');
     const ytUrlInput = document.getElementById('ytUrl');
@@ -144,17 +132,16 @@ window.startDubbing = async function() {
     const mediaFile = mediaInput && mediaInput.files.length ? mediaInput.files[0] : null;
     
     if (!ytUrl && !mediaFile) {
-        showToast("يرجى وضع رابط يوتيوب أو رفع ملف من جهازك", "#b91c1c");
+        showToast("يرجى وضع رابط يوتيوب أو رفع ملف", "#b91c1c");
         return;
     }
 
     btn.disabled = true;
-    btn.innerText = "جاري إرسال الوسائط للسيرفر...";
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري الإرسال للسيرفر...`;
     
-    // سحب رابط الصوت ليقوم السيرفر بتقليده (مهم جداً)
     const voiceUrl = selectedVoice === 'source' ? '' : `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/samples/${selectedVoice}.mp3`;
 
-    // استخدام FormData لإرسال الملفات أو الروابط بدلاً من JSON
+    // استخدام FormData لإرسال البيانات
     const formData = new FormData();
     formData.append('lang', selectedLang);
     formData.append('voice_mode', selectedVoice === 'source' ? 'source' : 'xtts');
@@ -178,7 +165,8 @@ window.startDubbing = async function() {
             if (progArea) progArea.style.display = 'block';
             
             const statusTxt = document.getElementById('statusTxt');
-            if (statusTxt) statusTxt.innerText = 'تم الاستلام! جاري التفريغ والمزامنة...';
+            // السيرفر الآن سيقوم بكل شيء (تفريغ، تصحيح ذكي، ودبلجة)
+            if (statusTxt) statusTxt.innerText = 'تم الاستلام! جاري المعالجة الآلية بالكامل...';
             
             const progBar = document.getElementById('progBar');
             if (progBar) progBar.style.width = '5%';
@@ -187,12 +175,12 @@ window.startDubbing = async function() {
         } else { 
             showToast("خطأ: " + data.error, "#b91c1c"); 
             btn.disabled = false; 
-            btn.innerText = "ابدأ معالجة الدبلجة الآن";
+            btn.innerHTML = `<i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة الآن`;
         }
     } catch (e) { 
         showToast("فشل الاتصال بالسيرفر", "#b91c1c"); 
         btn.disabled = false; 
-        btn.innerText = "ابدأ معالجة الدبلجة الآن";
+        btn.innerHTML = `<i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة الآن`;
     }
 };
 
@@ -203,21 +191,21 @@ async function pollJob(jobId) {
         
         if (data.status === 'processing') {
             const statusTxt = document.getElementById('statusTxt');
-            if (statusTxt) statusTxt.innerText = 'جاري المعالجة (تفريغ، ترجمة، ودبلجة)...';
+            // رسالة تطمئن المستخدم أن الذكاء الاصطناعي يعمل بالخفاء
+            if (statusTxt) statusTxt.innerText = 'جاري استخراج الصوت، التصحيح الذكي، والدبلجة...';
             
             const bar = document.getElementById('progBar');
             const pct = document.getElementById('pctTxt');
             if (bar) {
                 let cur = parseInt(bar.style.width) || 10;
-                // التقدم أبطأ لأن معالجة الفيديو تأخذ وقتاً أطول
-                cur = Math.min(90, cur + 2); 
+                cur = Math.min(90, cur + 1); // التقدم بطيء قليلاً ليعكس العمليات المعقدة
                 bar.style.width = cur + '%';
                 if (pct) pct.innerText = cur + '%';
             }
         } else if (data.status === 'completed') {
             clearInterval(pollInterval);
             const statusTxt = document.getElementById('statusTxt');
-            if (statusTxt) statusTxt.innerText = 'اكتملت المعالجة!';
+            if (statusTxt) statusTxt.innerText = 'اكتملت المعالجة السحرية!';
             
             const bar = document.getElementById('progBar');
             const pct = document.getElementById('pctTxt');
@@ -236,10 +224,10 @@ async function pollJob(jobId) {
             const btn = document.getElementById('startBtn');
             if (btn) {
                 btn.disabled = false;
-                btn.innerText = "ابدأ معالجة الدبلجة الآن";
+                btn.innerHTML = `<i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة الآن`;
             }
             showToast("تمت الدبلجة بنجاح!", "#065f2c");
-            checkAuth(); // تحديث الرصيد بعد الخصم
+            checkAuth();
             
         } else if (data.status === 'failed') {
             clearInterval(pollInterval);
@@ -250,7 +238,7 @@ async function pollJob(jobId) {
             const btn = document.getElementById('startBtn');
             if (btn) {
                 btn.disabled = false;
-                btn.innerText = "ابدأ معالجة الدبلجة الآن";
+                btn.innerHTML = `<i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة الآن`;
             }
             checkAuth();
         }
