@@ -29,18 +29,70 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // إعداد ملف الفيديو أو الصوت من الجهاز (البديل لـ SRT)
+    // ---------------- التفاعل البصري الجديد ----------------
+    
     const mediaFile = document.getElementById('mediaFile');
-    if (mediaFile) {
+    const mediaZone = document.getElementById('mediaZone');
+    const ytUrlInput = document.getElementById('ytUrl');
+
+    // 1. عند اختيار ملف من الجهاز
+    if (mediaFile && mediaZone) {
         mediaFile.addEventListener('change', () => {
-            if (mediaFile.files.length) {
-                const zone = document.getElementById('mediaZone');
-                if (zone) {
-                    zone.innerText = "تم اختيار: " + mediaFile.files[0].name;
-                    zone.classList.add('ok');
+            if (mediaFile.files.length > 0) {
+                const file = mediaFile.files[0];
+                // تحديد أيقونة حسب نوع الملف (صوت أو فيديو)
+                const iconClass = file.type.startsWith('video') ? 'fa-file-video' : 'fa-file-audio';
+                
+                // تغيير شكل المربع للأخضر مع اسم الملف
+                mediaZone.innerHTML = `
+                    <i class="fas ${iconClass} fa-beat" style="font-size:2.5rem; margin-bottom:10px; color:#065f2c; display:block;"></i>
+                    <span style="font-weight:bold; color:#065f2c;">تم تجهيز الملف:</span><br>
+                    <span style="font-size:0.9rem; color:#111827;">${file.name}</span>
+                `;
+                mediaZone.style.borderColor = '#065f2c';
+                mediaZone.style.background = '#f0fdf4';
+
+                // مسح رابط اليوتيوب وإلغاء تفعيله لتجنب التضارب
+                if (ytUrlInput) {
+                    ytUrlInput.value = '';
+                    ytUrlInput.style.borderColor = 'var(--border)';
+                    ytUrlInput.style.boxShadow = 'none';
                 }
-                const ytInput = document.getElementById('ytUrl');
-                if (ytInput) ytInput.value = ''; // مسح رابط اليوتيوب إذا تم رفع ملف لمنع التضارب
+            }
+        });
+    }
+
+    // 2. عند لصق رابط يوتيوب
+    if (ytUrlInput) {
+        ytUrlInput.addEventListener('input', () => {
+            const url = ytUrlInput.value.trim();
+            // كود برمجي للتحقق هل الرابط فعلاً تابع ليوتيوب
+            const ytRegex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
+
+            if (ytRegex.test(url)) {
+                // إذا كان الرابط صحيحاً (يتحول للأخضر)
+                ytUrlInput.style.borderColor = '#065f2c';
+                ytUrlInput.style.boxShadow = '0 0 0 2px rgba(6, 95, 44, 0.2)';
+                showToast("✅ تم التعرف على رابط يوتيوب بنجاح!", "#065f2c");
+
+                // إلغاء الملف المرفوع إن وجد لتجنب التضارب
+                if (mediaFile) mediaFile.value = '';
+                if (mediaZone) {
+                    mediaZone.innerHTML = `
+                        <i class="fas fa-cloud-upload-alt" style="font-size:2rem; margin-bottom:10px; color:#9ca3af; display:block;"></i>
+                        انقر هنا لرفع ملف فيديو أو صوت من جهازك
+                    `;
+                    mediaZone.style.borderColor = 'var(--border)';
+                    mediaZone.style.background = 'transparent';
+                }
+            } else if (url.length > 0) {
+                // إذا كان الرابط خاطئاً (يتحول للأحمر)
+                ytUrlInput.style.borderColor = '#b91c1c';
+                ytUrlInput.style.boxShadow = 'none';
+            } else {
+                // إذا كان الحقل فارغاً
+                ytUrlInput.style.borderColor = 'var(--border)';
+                ytUrlInput.style.boxShadow = 'none';
             }
         });
     }
