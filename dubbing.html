@@ -65,12 +65,17 @@
     </div>
 </div>
 
-<div class="wrap">
-    <div class="card">
-        <div class="ttl"><i class="fas fa-file-waveform"></i> ملف الترجمة SRT</div>
-        <input type="file" id="srtFile" accept=".srt" style="display:none">
-        <div class="srt-zone" id="srtZone" onclick="document.getElementById('srtFile').click()">
-            انقر هنا لرفع ملف SRT الخاص بالفيديو
+<div class="card">
+        <div class="ttl"><i class="fas fa-video"></i> مصدر الفيديو أو الصوت</div>
+        
+        <input type="text" id="ytUrl" placeholder="ضع رابط يوتيوب هنا..." style="width:100%; padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border); outline:none; font-size:1rem; text-align:left; direction:ltr;">
+        
+        <div style="text-align:center; margin-bottom:12px; color:#6b7280; font-weight:bold; font-size:0.9rem;">أو</div>
+        
+        <input type="file" id="mediaFile" accept="video/*,audio/*" style="display:none">
+        <div class="srt-zone" id="mediaZone" onclick="document.getElementById('mediaFile').click()">
+            <i class="fas fa-cloud-upload-alt" style="font-size:2rem; margin-bottom:10px; color:#9ca3af; display:block;"></i>
+            انقر هنا لرفع ملف فيديو أو صوت من جهازك
         </div>
     </div>
 
