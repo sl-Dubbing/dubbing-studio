@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadVoicesFromGithub();
     checkAuth();
     
-    // Language Setup
+    // 🌍 Language Setup
     const langGrid = document.getElementById('langGrid');
     if (langGrid) {
         const langs = ['en','ar','es','fr','de','it','pt','tr','ru','zh','ja','ko','hi'];
@@ -29,42 +29,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // File Upload Handler
+    // 📁 File Selection Preview
     const mediaFile = document.getElementById('mediaFile');
     const mediaZone = document.getElementById('mediaZone');
     if (mediaFile && mediaZone) {
         mediaFile.addEventListener('change', () => {
             if (mediaFile.files.length > 0) {
                 const file = mediaFile.files[0];
-                const icon = file.type.startsWith('video') ? 'fa-file-video' : 'fa-file-audio';
                 mediaZone.innerHTML = `
-                    <i class="fas ${icon} fa-beat" style="font-size:2rem; margin-bottom:10px; color:#065f2c; display:block;"></i>
-                    <span style="font-weight:bold; color:#065f2c;">Ready:</span><br>
-                    <span style="font-size:0.85rem; color:#111827; word-break: break-all;">${file.name}</span>
+                    <i class="fas fa-file-alt fa-beat" style="font-size:2rem; margin-bottom:10px; color:#065f2c; display:block;"></i>
+                    <span style="font-weight:bold; color:#065f2c;">File Ready:</span><br>
+                    <span style="font-size:0.85rem; color:#111827;">${file.name}</span>
                 `;
                 mediaZone.style.borderColor = '#065f2c';
-                mediaZone.style.background = '#f0fdf4';
             }
         });
     }
 });
 
+// 🎙️ Load Voices correctly
 async function loadVoicesFromGithub() {
     const spkGrid = document.getElementById('spkGrid');
     if (!spkGrid) return;
     spkGrid.innerHTML = '';
 
-    // ✅ بطاقة Voice Clone مع أيقونة الميكروفون التفاعلية
+    // 1. Voice Clone (Single Mic Icon)
     const sourceCard = document.createElement('div');
     sourceCard.className = 'spk-card active';
     sourceCard.innerHTML = `
         <i class="fas fa-check-circle chk"></i>
-        <div class="mic-wrapper"><div class="switch"><div class="mic-on"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path></svg></div><div class="mic-off"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.17l6.02 6zM4.41 2.86L3 4.27l6 6V11c0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c1.22-.17 2.36-.63 3.33-1.32l2.39 2.39 1.41-1.41L4.41 2.86z"></path></svg></div></div></div>
+        <div class="voice-ai-icon">
+            <i class="fas fa-microphone"></i>
+        </div>
         <div class="spk-nm">Voice Clone</div>`;
     sourceCard.onclick = () => selectVoice('source', sourceCard);
     spkGrid.appendChild(sourceCard);
 
-    // ✅ بطاقات الأصوات الأخرى مع أيقونة "الرجل" (Person Icon)
+    // 2. Others (Person Icon)
     try {
         const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples?t=${Date.now()}`;
         const res = await fetch(url);
@@ -96,7 +97,7 @@ function selectVoice(id, el) {
 window.startDubbing = async function() {
     const btn = document.getElementById('startBtn');
     const mediaFile = document.getElementById('mediaFile').files[0];
-    if (!mediaFile) { showToast("Please select a file first", "#b91c1c"); return; }
+    if (!mediaFile) { showToast("Upload a file first", "#b91c1c"); return; }
 
     btn.disabled = true;
     btn.classList.add('loading');
@@ -116,8 +117,8 @@ window.startDubbing = async function() {
             document.getElementById('progressArea').style.display = 'block';
             document.getElementById('statusTxt').innerText = 'Generating...';
             pollInterval = setInterval(() => pollJob(currentJobId), 2000);
-        } else { showToast("Error: " + data.error, "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
-    } catch (e) { showToast("Connection failed", "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
+        } else { showToast(data.error, "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
+    } catch (e) { showToast("Connection error", "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
 };
 
 async function pollJob(jobId) {
@@ -138,16 +139,13 @@ async function pollJob(jobId) {
             document.getElementById('progBar').style.width = '100%';
             document.getElementById('pctTxt').innerText = '100%';
             document.getElementById('resCard').style.display = 'block';
-            
             document.getElementById('dubAud').src = data.audio_url;
             document.getElementById('dlBtn').href = data.audio_url;
-
             btn.disabled = false; btn.classList.remove('loading');
-            showToast("Magic Done! Ready.", "#065f2c");
+            showToast("Magic Done!", "#065f2c");
             checkAuth();
         } else if (data.status === 'failed') {
             clearInterval(pollInterval);
-            showToast("Failed to process.", "#b91c1c");
             btn.disabled = false; btn.classList.remove('loading');
             checkAuth();
         }
