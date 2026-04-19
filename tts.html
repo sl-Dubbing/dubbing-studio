@@ -13,7 +13,6 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: var(--bg); color: #111827; text-align: left; margin: 0; }
         
-        /* Layout & Header */
         .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; height: 60px; }
         .logo-top { font-weight: 800; font-size: 1.1rem; text-decoration: none; color: white; }
         .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; }
@@ -30,19 +29,16 @@
         textarea { width: 100%; height: 160px; border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; font-size: 1rem; resize: none; outline: none; transition: 0.3s; background: #fafafa; }
         textarea:focus { border-color: var(--primary); background: #fff; }
 
-        /* Grids */
         .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .item-card { padding: 18px 10px; border-radius: 14px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.2s; background: #fff; position: relative; }
         .item-card.active { background: var(--mint); border-color: var(--primary); font-weight: 700; }
         .chk { position: absolute; top: 8px; right: 8px; font-size: 0.75rem; color: var(--primary); display: none; }
         .item-card.active .chk { display: block; }
 
-        /* Icons */
         .spk-av, .voice-ai-icon { width: 52px; height: 52px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 1.4rem; color: #4b5563; transition: 0.3s; }
         .item-card.active .spk-av, .item-card.active .voice-ai-icon { background: var(--primary); color: var(--mint); }
         .item-card.active .voice-ai-icon.clone { background: #ef4444; color: #fff; }
 
-        /* Generate Button */
         .btn-wrapper { display: flex; justify-content: center; margin-top: 30px; }
         .btn { background-color: #101010; color: white; width: 100%; height: 60px; border-radius: 30px; border: solid 1px #fff2; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; overflow: hidden; position: relative; transition: 0.3s; font-size: 1.1rem; font-weight: 600; }
         .btn.loading .txt-1 { transform: translateY(-35px); opacity: 0; }
@@ -54,7 +50,6 @@
         .txt-1, .txt-2 { display: flex; gap: 2px; transition: all 0.5s; position: absolute; }
         .txt-2 { transform: translateY(35px); opacity: 0; }
 
-        /* Progress & Results */
         #progressArea { display: none; margin-top: 25px; padding: 18px; background: #f9fafb; border-radius: 12px; border: 1px solid var(--border); }
         .prog-bar-wrap { background: #e5e7eb; border-radius: 50px; height: 10px; overflow: hidden; margin-top: 10px; }
         .prog-bar { height: 100%; width: 0; background: var(--primary); transition: width 0.4s ease; }
@@ -65,7 +60,6 @@
         .Btn-dl { width: 50px; height: 50px; border-radius: 50%; background: #1b1b1b; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; flex-shrink: 0; }
         .svgIcon { fill: var(--mint); }
 
-        /* Translation Note */
         .trans-note { font-size: 0.85rem; background: #f0fdf4; border: 1px solid #bcf0da; padding: 10px; border-radius: 8px; margin-top: 15px; color: #065f2c; display: none; }
 
         .toast { position: fixed; bottom: 25px; right: 25px; padding: 14px 22px; color: #fff; border-radius: 12px; z-index: 1000; font-weight: 600; transform: translateY(100px); opacity: 0; transition: 0.4s; }
@@ -133,7 +127,6 @@
 
 <script>
 const API_BASE = 'https://web-production-14a1.up.railway.app';
-// 🟢 تم ضبط الإعدادات لتطابق مستودعك بدقة متناهية
 const GITHUB_USER = "sl-Dubbing"; 
 const REPO_NAME = "sl-dubbing-frontend";
 const SAMPLES_FOLDER = "speakers"; 
@@ -151,7 +144,7 @@ const ALL_LANGS = [
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     renderLangs();
-    loadVoices(); // سيقوم بطلب الملفات من GitHub تلقائياً
+    loadVoices();
     
     document.getElementById('cloneFile').addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -180,21 +173,25 @@ function selectLang(c, el) {
     el.classList.add('active');
 }
 
-// 🟢 دالة مساعدة لإنشاء بطاقة الصوت
-function createVoiceCard(name, grid) {
+// 🟢 دالة إنشاء البطاقات الصوتية
+function addVoiceCard(name, grid) {
+    // نتأكد أن البطاقة غير موجودة لتجنب التكرار
+    if (document.getElementById('voice-' + name)) return;
+    
     const card = document.createElement('div');
+    card.id = 'voice-' + name;
     card.className = 'item-card';
     card.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av"><i class="fas fa-user"></i></div><div class="spk-nm">${name}</div>`;
     card.onclick = () => setVoice(name, card);
     grid.appendChild(card);
 }
 
-// 🟢 السحر هنا: جلب محتويات مجلد speakers تلقائياً
+// 🟢 تحميل الأصوات بذكاء (يقرأ المجلد، وإن فشل يضع الأساسيات)
 async function loadVoices() {
     const grid = document.getElementById('spkGrid');
     grid.innerHTML = '';
 
-    // 1. بطاقة استنساخ الصوت (دائماً موجودة)
+    // 1. بطاقة استنساخ الصوت الأصلية (دائماً تظهر)
     const cloneCard = document.createElement('div');
     cloneCard.className = 'item-card active';
     cloneCard.innerHTML = `
@@ -205,23 +202,28 @@ async function loadVoices() {
     cloneCard.onclick = () => { setVoice('source', cloneCard); document.getElementById('cloneFile').click(); };
     grid.appendChild(cloneCard);
 
-    // 2. الجلب التلقائي من GitHub مع خطة بديلة
+    const defaultVoices = ['muhammad', 'adam', 'bella'];
+
     try {
+        // محاولة القراءة التلقائية من مستودعك
         const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${SAMPLES_FOLDER}`);
-        if (!res.ok) throw new Error("GitHub API Rate Limit");
-        
-        const files = await res.json();
-        // تصفية ملفات mp3 وإضافتها للشبكة
-        files.filter(f => f.name.endsWith('.mp3')).forEach(file => {
-            const name = file.name.replace('.mp3', '');
-            createVoiceCard(name, grid);
-        });
+        if (res.ok) {
+            const files = await res.json();
+            const mp3Files = files.filter(f => f.name.endsWith('.mp3'));
+            if (mp3Files.length > 0) {
+                mp3Files.forEach(file => {
+                    const name = file.name.replace('.mp3', '');
+                    addVoiceCard(name, grid);
+                });
+                return; // النجاح في التحميل التلقائي!
+            }
+        }
     } catch (e) {
-        console.warn("GitHub API Rate Limit Hit. Loading Default Backup Voices...");
-        // الخطة البديلة: إذا حظرنا GitHub بسبب كثرة التحديث، ستظهر هذه الأسماء فوراً
-        const defaultVoices = ['muhammad', 'adam', 'bella'];
-        defaultVoices.forEach(name => createVoiceCard(name, grid));
+        console.warn("GitHub API rate limit exceeded. Falling back to default voices.");
     }
+    
+    // 🟢 الخطة البديلة المضمونة: إذا حظرنا GitHub، ستظهر الأصوات الأساسية فوراً
+    defaultVoices.forEach(name => addVoiceCard(name, grid));
 }
 
 function setVoice(id, el) {
@@ -248,10 +250,11 @@ async function generateSpeech() {
 
     let finalSampleB64 = clonedFileBase64; 
 
+    // جلب الملف الصوتي المختار من رابط موقعك المباشر
     if (selectedVoice !== 'source') {
         try {
             document.getElementById('statusTxt').innerText = 'Loading Voice...';
-            // 🟢 استخدام المسار الصحيح للمجلد (speakers) من رابط موقعك المباشر
+            // المسار المضمون لموقعك:
             const fileUrl = `https://${GITHUB_USER}.github.io/${REPO_NAME}/${SAMPLES_FOLDER}/${selectedVoice}.mp3`;
             const response = await fetch(fileUrl);
             
@@ -265,7 +268,7 @@ async function generateSpeech() {
             });
         } catch (e) {
             console.error(e);
-            showToast(`Failed to load: ${selectedVoice}.mp3 from ${SAMPLES_FOLDER} folder.`, "error");
+            showToast(`Failed to load: ${selectedVoice}.mp3. Please check if it exists!`, "error");
             btn.disabled = false; btn.classList.remove('loading');
             return;
         }
