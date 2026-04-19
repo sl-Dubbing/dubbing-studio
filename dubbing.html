@@ -22,12 +22,22 @@
         
         /* Topbar */
         .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
-        .logo { font-weight: 800; font-size: 1.2rem; text-decoration: none; color: white; }
+        .logo-top { font-weight: 800; font-size: 1.2rem; text-decoration: none; color: white; }
         .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .auth-section .auth-btn:hover { background: rgba(255,255,255,0.1); }
         
+        /* ── Central Logo Section ── */
+        .brand-header { text-align: center; margin: 40px auto 10px; }
+        .main-logo-img { 
+            width: 100px; /* يمكنكِ تعديل الحجم من هنا */
+            height: auto; 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            margin-bottom: 10px;
+        }
+        .brand-name { font-size: 2.2rem; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
+        .brand-name span { color: var(--green-dk); border-bottom: 5px solid var(--mint); }
+
         /* Layout */
-        .wrap { max-width: 900px; margin: 24px auto; padding: 18px; }
+        .wrap { max-width: 900px; margin: 0 auto 50px; padding: 18px; }
         .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .ttl { font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
         
@@ -43,24 +53,17 @@
         .chk { position: absolute; top: 6px; right: 6px; font-size: 0.75rem; color: var(--primary); display: none; z-index: 10; }
         .spk-card.active .chk { display: block; }
 
-        /* Microphone Switch Icon */
-        .mic-wrapper { display: flex; justify-content: center; margin-bottom: 8px; }
-        .switch { position: relative; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; background-color: #3c4043; color: #fff; border-radius: 50%; transition: all .3s ease; }
-        .mic-on, .mic-off { width: 22px; height: 22px; display: flex; justify-content: center; align-items: center; transition: all .3s ease; }
-        .mic-on { z-index: 4; }
-        .mic-off { position: absolute; inset: 0; z-index: 5; opacity: 0; display: flex; justify-content: center; align-items: center; }
-        .spk-card.active .switch { background-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); } 
-        .spk-card.active .mic-off { opacity: 1; }
-        .spk-card.active .mic-on { opacity: 0; }
-
-        /* ✅ Avatar Style for Person Icon */
-        .spk-av { 
-            width: 44px; height: 44px; background: #e5e7eb; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            margin: 0 auto 8px; font-size: 1.2rem; color: #4b5563; 
-            transition: 0.3s;
+        /* ✅ Microphone Style for Voice Clone */
+        .voice-ai-icon {
+            width: 44px; height: 44px; background: #f3f4f6; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 8px; color: #374151; font-size: 1.3rem; transition: 0.3s;
         }
-        .spk-card.active .spk-av { background: #0f0f10; color: #a4fec4; }
+        .spk-card.active .voice-ai-icon { background: var(--primary); color: var(--mint); }
+
+        /* ✅ Person Icon for others */
+        .spk-av { width: 44px; height: 44px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 1.2rem; color: #4b5563; transition: 0.3s; }
+        .spk-card.active .spk-av { background: var(--primary); color: var(--mint); }
         .spk-nm { font-size: 0.85rem; font-weight: 600; }
 
         /* Generate Button */
@@ -108,7 +111,6 @@
         }
         .Btn:hover .tooltip { opacity: 1; transition-duration: .3s; top: -45px; }
         .Btn:hover { background-color: rgb(150, 94, 255); }
-        .Btn:hover .icon2 { border-color: white; }
         .Btn:hover .svgIcon { fill: white; animation: slide-in-top 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
         @keyframes slide-in-top {
           0% { transform: translateY(-10px); opacity: 0; }
@@ -126,10 +128,15 @@
 <body>
 
 <div class="topbar">
-    <a href="index.html" class="logo">sl<span style="color:#a4fec4">-Dubbing</span></a>
+    <a href="index.html" class="logo-top">sl<span style="color:#a4fec4">-Dubbing</span></a>
     <div class="auth-section" id="authSection">
         <button class="auth-btn" onclick="location.href='login.html'">Login</button>
     </div>
+</div>
+
+<div class="brand-header">
+    <img src="logo/logo.png" alt="sl-Dubbing Logo" class="main-logo-img">
+    <div class="brand-name">sl-<span>Dubbing</span></div>
 </div>
 
 <div class="wrap">
