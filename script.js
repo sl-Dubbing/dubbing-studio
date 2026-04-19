@@ -54,6 +54,7 @@ async function loadVoicesFromGithub() {
     if (!spkGrid) return;
     spkGrid.innerHTML = '';
 
+    // ✅ بطاقة Voice Clone مع أيقونة الميكروفون التفاعلية
     const sourceCard = document.createElement('div');
     sourceCard.className = 'spk-card active';
     sourceCard.innerHTML = `
@@ -63,6 +64,7 @@ async function loadVoicesFromGithub() {
     sourceCard.onclick = () => selectVoice('source', sourceCard);
     spkGrid.appendChild(sourceCard);
 
+    // ✅ بطاقات الأصوات الأخرى مع أيقونة "الرجل" (Person Icon)
     try {
         const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples?t=${Date.now()}`;
         const res = await fetch(url);
@@ -71,7 +73,10 @@ async function loadVoicesFromGithub() {
             const name = file.name.replace(/\.[^/.]+$/, "");
             const card = document.createElement('div');
             card.className = 'spk-card';
-            card.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av">${name[0].toUpperCase()}</div><div class="spk-nm">${name}</div>`;
+            card.innerHTML = `
+                <i class="fas fa-check-circle chk"></i>
+                <div class="spk-av"><i class="fas fa-user"></i></div>
+                <div class="spk-nm">${name}</div>`;
             card.onclick = () => selectVoice(name, card);
             spkGrid.appendChild(card);
         });
@@ -134,7 +139,6 @@ async function pollJob(jobId) {
             document.getElementById('pctTxt').innerText = '100%';
             document.getElementById('resCard').style.display = 'block';
             
-            // ✅ Update Audio and the New Download Icon Link
             document.getElementById('dubAud').src = data.audio_url;
             document.getElementById('dlBtn').href = data.audio_url;
 
