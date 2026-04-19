@@ -53,8 +53,15 @@
         .spk-card.active .mic-off { opacity: 1; }
         .spk-card.active .mic-on { opacity: 0; }
 
-        .spk-av { width: 44px; height: 44px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 800; font-size: 1.1rem; color: #4b5563; }
+        /* ✅ Avatar Style for Person Icon */
+        .spk-av { 
+            width: 44px; height: 44px; background: #e5e7eb; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin: 0 auto 8px; font-size: 1.2rem; color: #4b5563; 
+            transition: 0.3s;
+        }
         .spk-card.active .spk-av { background: #0f0f10; color: #a4fec4; }
+        .spk-nm { font-size: 0.85rem; font-weight: 600; }
 
         /* Generate Button */
         .btn-wrapper { display: flex; justify-content: center; margin-top: 20px; width: 100%; }
@@ -71,11 +78,10 @@
         .btn.loading .btn-svg { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* ── Fancy Result & Download Layout ── */
+        /* Result & Download */
         .result-container { display: flex; align-items: center; gap: 15px; margin-top: 15px; }
         audio { flex-grow: 1; }
 
-        /* Download Button CSS (vinodjangid07) */
         .Btn {
           width: 50px; height: 50px; border: none; border-radius: 50%;
           background-color: rgb(27, 27, 27); display: flex; flex-direction: column;
@@ -109,7 +115,6 @@
           100% { transform: translateY(0px); opacity: 1; }
         }
 
-        /* Status & Toasts */
         #progressArea { display: none; margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 10px; border: 1px solid var(--border); }
         .prog-bar-wrap { background: #e5e7eb; border-radius: 50px; height: 10px; overflow: hidden; margin-top: 10px; }
         .prog-bar { height: 100%; width: 0; background: var(--primary); transition: width 0.4s ease; }
