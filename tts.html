@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Speech Synthesis | sl-Dubbing</title>
+    <title>AI Smart TTS | sl-Dubbing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
@@ -13,13 +13,13 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: var(--bg); color: #111827; text-align: left; margin: 0; }
         
-        /* Header */
+        /* Layout & Header */
         .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; height: 60px; }
         .logo-top { font-weight: 800; font-size: 1.1rem; text-decoration: none; color: white; }
-        .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; }
         
-        .brand-header { text-align: center; margin: 35px auto 10px; }
-        .main-logo-img { max-width: 130px; height: auto; display: block; margin: 0 auto 10px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08)); }
+        .brand-header { text-align: center; margin: 40px auto 15px; }
+        .main-logo-img { max-width: 140px; height: auto; display: block; margin: 0 auto 10px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08)); }
         .brand-name { font-size: 2.4rem; font-weight: 900; color: var(--primary); letter-spacing: -1.5px; }
         .brand-name span { color: var(--green-dk); border-bottom: 6px solid var(--mint); }
 
@@ -27,35 +27,26 @@
         .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .ttl { font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--primary); }
 
-        /* Text Area */
         textarea { width: 100%; height: 160px; border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; font-size: 1rem; resize: none; outline: none; transition: 0.3s; background: #fafafa; }
-        textarea:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(164, 254, 196, 0.3); }
+        textarea:focus { border-color: var(--primary); background: #fff; }
 
         /* Grids */
-        .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .item-card { padding: 18px 10px; border-radius: 14px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.2s; background: #fff; position: relative; }
-        .item-card.active { background: var(--mint); border-color: var(--primary); font-weight: 700; box-shadow: 0 0 0 1px var(--primary); }
-        
+        .item-card.active { background: var(--mint); border-color: var(--primary); font-weight: 700; }
         .chk { position: absolute; top: 8px; right: 8px; font-size: 0.75rem; color: var(--primary); display: none; }
         .item-card.active .chk { display: block; }
 
         /* Icons */
-        .spk-av, .voice-ai-icon { width: 50px; height: 50px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 1.4rem; color: #4b5563; transition: 0.3s; }
+        .spk-av, .voice-ai-icon { width: 52px; height: 52px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 1.4rem; color: #4b5563; transition: 0.3s; }
         .item-card.active .spk-av, .item-card.active .voice-ai-icon { background: var(--primary); color: var(--mint); }
         .item-card.active .voice-ai-icon.clone { background: #ef4444; color: #fff; }
-        .spk-nm { font-size: 0.85rem; font-weight: 600; color: var(--primary); }
-
-        /* Speed Control */
-        .controls-row { margin-top: 20px; }
-        .speed-label { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; color: #6b7280; margin-bottom: 10px; }
-        input[type="range"] { width: 100%; height: 6px; background: var(--border); border-radius: 5px; outline: none; accent-color: var(--primary); cursor: pointer; }
 
         /* Generate Button */
         .btn-wrapper { display: flex; justify-content: center; margin-top: 30px; }
         .btn { background-color: #101010; color: white; width: 100%; height: 60px; border-radius: 30px; border: solid 1px #fff2; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; overflow: hidden; position: relative; transition: 0.3s; font-size: 1.1rem; font-weight: 600; }
         .btn.loading .txt-1 { transform: translateY(-35px); opacity: 0; }
         .btn.loading .txt-2 { transform: translateY(0); opacity: 1; }
-        .btn-svg { height: 22px; fill: #e8e8e8; transition: 0.3s; }
         .btn.loading .btn-svg { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         
@@ -73,6 +64,9 @@
         audio { flex-grow: 1; }
         .Btn-dl { width: 50px; height: 50px; border-radius: 50%; background: #1b1b1b; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; flex-shrink: 0; }
         .svgIcon { fill: var(--mint); }
+
+        /* Translation Note */
+        .trans-note { font-size: 0.85rem; background: #f0fdf4; border: 1px solid #bcf0da; padding: 10px; border-radius: 8px; margin-top: 15px; color: #065f2c; display: none; }
 
         .toast { position: fixed; bottom: 25px; right: 25px; padding: 14px 22px; color: #fff; border-radius: 12px; z-index: 1000; font-weight: 600; transform: translateY(100px); opacity: 0; transition: 0.4s; }
         .toast.show { transform: translateY(0); opacity: 1; }
@@ -93,48 +87,41 @@
 <div class="wrap">
     <div class="card">
         <div class="ttl"><i class="fas fa-microphone-lines"></i> 1. Select Voice</div>
-        <div class="spk-grid" id="spkGrid">
-            <div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #6b7280;">
-                <i class="fas fa-spinner fa-spin"></i> Loading voices from GitHub...
-            </div>
-        </div>
+        <div class="spk-grid" id="spkGrid"></div>
         <input type="file" id="cloneFile" accept="audio/*" style="display:none">
     </div>
 
     <div class="card">
-        <div class="ttl"><i class="fas fa-language"></i> 2. Target Language</div>
+        <div class="ttl"><i class="fas fa-language"></i> 2. Target Output Language</div>
+        <p style="font-size: 0.8rem; color: #6b7280; margin-top:-10px; margin-bottom:15px;">Paste text in ANY language; we will translate it for you.</p>
         <div class="lang-grid" id="langs"></div>
     </div>
 
     <div class="card">
         <div class="ttl"><i class="fas fa-keyboard"></i> 3. Input Text</div>
-        <textarea id="txt" placeholder="Write something incredible here..."></textarea>
+        <textarea id="txt" placeholder="Enter text in any language (e.g. French, Arabic, Chinese)..."></textarea>
         
-        <div class="controls-row">
-            <div class="speed-label"><span>Reading Speed</span> <span id="speedTxt">1.0x</span></div>
-            <input type="range" id="speedRange" min="0.5" max="2.0" step="0.1" value="1.0" oninput="document.getElementById('speedTxt').innerText = this.value + 'x'">
-        </div>
-
         <div class="btn-wrapper">
           <button class="btn" id="generateBtn" onclick="generateSpeech()">
             <svg class="btn-svg" width="22" viewBox="0 0 24 24"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path></svg>
             <div class="txt-wrapper">
-              <div class="txt-1">Generate Audio</div>
+              <div class="txt-1">Translate & Speak</div>
               <div class="txt-2">Processing...</div>
             </div>
           </button>
         </div>
 
         <div id="progressArea">
-            <div style="display:flex; justify-content:space-between;"><span id="statusTxt" style="font-weight:600">Starting...</span><span id="pctTxt" style="font-weight:700">0%</span></div>
+            <div style="display:flex; justify-content:space-between;"><span id="statusTxt" style="font-weight:600">Analyzing...</span><span id="pctTxt" style="font-weight:700">0%</span></div>
             <div class="prog-bar-wrap"><div class="prog-bar" id="progBar"></div></div>
+            <div id="translatedBox" class="trans-note"></div>
         </div>
     </div>
 
     <div class="card res-card" id="resCard">
-        <div class="ttl" style="color:var(--green-dk)"><i class="fas fa-check-circle"></i> Result Ready!</div>
+        <div class="ttl" style="color:var(--green-dk)"><i class="fas fa-check-circle"></i> Magic Complete!</div>
         <div class="result-container">
-            <a href="#" class="Btn-dl" id="dlBtn" download="sl-dubbing-tts.mp3">
+            <a href="#" class="Btn-dl" id="dlBtn" download="translated-speech.mp3">
                 <svg class="svgIcon" width="20" viewBox="0 0 384 512"><path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path></svg>
             </a>
             <audio id="dubAud" controls></audio>
@@ -156,24 +143,21 @@ let clonedFileBase64 = null;
 const ALL_LANGS = [
     {c:'en',n:'English',f:'🇺🇸'}, {c:'ar',n:'Arabic',f:'🇸🇦'}, {c:'es',n:'Spanish',f:'🇪🇸'},
     {c:'fr',n:'French',f:'🇫🇷'}, {c:'de',n:'German',f:'🇩🇪'}, {c:'it',n:'Italian',f:'🇮🇹'},
-    {c:'pt',n:'Portuguese',f:'🇵🇹'}, {c:'tr',n:'Turkish',f:'🇹🇷'}, {c:'ru',n:'Russian',f:'🇷🇺'},
-    {c:'zh',n:'Chinese',f:'🇨🇳'}, {c:'ja',n:'Japanese',f:'🇯🇵'}, {c:'ko',n:'Korean',f:'🇰🇷'},
-    {c:'hi',n:'Hindi',f:'🇮🇳'}
+    {c:'ru',n:'Russian',f:'🇷🇺'}, {c:'zh',n:'Chinese',f:'🇨🇳'}, {c:'ja',n:'Japanese',f:'🇯🇵'}
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     renderLangs();
-    loadVoicesFromGithub();
+    loadVoices();
     
-    // File upload logic for cloning
     document.getElementById('cloneFile').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (ev) => { clonedFileBase64 = ev.target.result.split(',')[1]; };
             reader.readAsDataURL(file);
-            showToast("Voice sample loaded!", "#065f2c");
+            showToast("Voice Loaded!", "#065f2c");
         }
     });
 });
@@ -183,7 +167,7 @@ function renderLangs() {
     grid.innerHTML = ALL_LANGS.map(l => `
         <div class="item-card ${l.c === selectedLang ? 'active' : ''}" onclick="selectLang('${l.c}', this)">
             <span class="lang-flag">${l.f}</span>
-            <span class="spk-nm">${l.n}</span>
+            <span style="font-size:0.8rem;">${l.n}</span>
         </div>
     `).join('');
 }
@@ -194,42 +178,32 @@ function selectLang(c, el) {
     el.classList.add('active');
 }
 
-async function loadVoicesFromGithub() {
+async function loadVoices() {
     const grid = document.getElementById('spkGrid');
     grid.innerHTML = '';
 
-    // 1. Voice Clone Card
     const cloneCard = document.createElement('div');
     cloneCard.className = 'item-card active';
     cloneCard.innerHTML = `
         <i class="fas fa-check-circle chk"></i>
         <div class="voice-ai-icon clone"><i class="fas fa-wand-magic-sparkles"></i></div>
         <div class="spk-nm">Voice Clone</div>
-        <small style="font-size:0.6rem; color:#6b7280;">(Upload Sample)</small>
     `;
-    cloneCard.onclick = () => {
-        setVoice('source', cloneCard);
-        document.getElementById('cloneFile').click();
-    };
+    cloneCard.onclick = () => { setVoice('source', cloneCard); document.getElementById('cloneFile').click(); };
     grid.appendChild(cloneCard);
 
-    // 2. Fetch voices from GitHub /samples
     try {
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples?t=${Date.now()}`);
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples`);
         const files = await res.json();
         files.filter(f => f.name.endsWith('.mp3')).forEach(file => {
             const name = file.name.replace('.mp3', '');
             const card = document.createElement('div');
             card.className = 'item-card';
-            card.innerHTML = `
-                <i class="fas fa-check-circle chk"></i>
-                <div class="spk-av"><i class="fas fa-user"></i></div>
-                <div class="spk-nm">${name}</div>
-            `;
+            card.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av"><i class="fas fa-user"></i></div><div class="spk-nm">${name}</div>`;
             card.onclick = () => setVoice(name, card);
             grid.appendChild(card);
         });
-    } catch (e) { console.error("Samples fetch failed"); }
+    } catch (e) {}
 }
 
 function setVoice(id, el) {
@@ -247,27 +221,21 @@ async function generateSpeech() {
     btn.classList.add('loading');
     document.getElementById('progressArea').style.display = 'block';
     document.getElementById('resCard').style.display = 'none';
-
-    // Prepare Payload
-    const payload = {
-        text: text,
-        lang: selectedLang,
-        speed: parseFloat(document.getElementById('speedRange').value),
-        voice_id: selectedVoice,
-        sample_b64: (selectedVoice === 'source') ? clonedFileBase64 : null
-    };
+    document.getElementById('translatedBox').style.display = 'none';
 
     try {
         const res = await fetch(`${API_BASE}/api/tts`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+                text: text, lang: selectedLang, voice_id: selectedVoice,
+                sample_b64: (selectedVoice === 'source') ? clonedFileBase64 : null
+            }),
             credentials: 'include'
         });
         const data = await res.json();
         if (!data.success) throw new Error(data.error);
 
-        // SSE Tracker
         const source = new EventSource(`${API_BASE}/api/progress/${data.job_id}`);
         source.onmessage = (e) => {
             const progress = JSON.parse(e.data);
@@ -280,8 +248,16 @@ async function generateSpeech() {
                 document.getElementById('resCard').style.display = 'block';
                 document.getElementById('dubAud').src = progress.audio_url;
                 document.getElementById('dlBtn').href = progress.audio_url;
+                
+                // Show translated text
+                if(progress.final_text) {
+                    const tBox = document.getElementById('translatedBox');
+                    tBox.style.display = 'block';
+                    tBox.innerHTML = `<strong>Translated Text:</strong><br>${progress.final_text}`;
+                }
+
                 btn.disabled = false; btn.classList.remove('loading');
-                showToast("Done!", "#059669");
+                showToast("Speech Ready!", "#059669");
                 checkAuth();
             }
         };
