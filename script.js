@@ -37,9 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mediaFile.files.length > 0) {
                 const file = mediaFile.files[0];
                 mediaZone.innerHTML = `
-                    <i class="fas fa-file-alt fa-beat" style="font-size:2rem; margin-bottom:10px; color:#065f2c; display:block;"></i>
-                    <span style="font-weight:bold; color:#065f2c;">File Ready:</span><br>
-                    <span style="font-size:0.85rem; color:#111827;">${file.name}</span>
+                    <i class="fas fa-file-audio fa-beat" style="font-size:2rem; margin-bottom:10px; color:#065f2c; display:block;"></i>
+                    <span style="font-weight:bold; color:#065f2c;">Ready:</span><br>
+                    <span style="font-size:0.8rem; color:#111827;">${file.name}</span>
                 `;
                 mediaZone.style.borderColor = '#065f2c';
             }
@@ -97,7 +97,7 @@ function selectVoice(id, el) {
 window.startDubbing = async function() {
     const btn = document.getElementById('startBtn');
     const mediaFile = document.getElementById('mediaFile').files[0];
-    if (!mediaFile) { showToast("Upload a file first", "#b91c1c"); return; }
+    if (!mediaFile) { showToast("Select a file first", "#b91c1c"); return; }
 
     btn.disabled = true;
     btn.classList.add('loading');
@@ -117,8 +117,8 @@ window.startDubbing = async function() {
             document.getElementById('progressArea').style.display = 'block';
             document.getElementById('statusTxt').innerText = 'Generating...';
             pollInterval = setInterval(() => pollJob(currentJobId), 2000);
-        } else { showToast(data.error, "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
-    } catch (e) { showToast("Connection error", "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
+        } else { showToast("Error", "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
+    } catch (e) { showToast("Server error", "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
 };
 
 async function pollJob(jobId) {
