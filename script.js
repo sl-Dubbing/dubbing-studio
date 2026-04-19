@@ -155,7 +155,7 @@ window.startDubbing = async function() {
         const res = await fetch(API_BASE + '/api/dub', {
             method: 'POST',
             body: formData, 
-            credentials: 'include'
+            credentials: 'include' // إرسال الهوية
         });
         const data = await res.json();
         
@@ -165,7 +165,6 @@ window.startDubbing = async function() {
             if (progArea) progArea.style.display = 'block';
             
             const statusTxt = document.getElementById('statusTxt');
-            // السيرفر الآن سيقوم بكل شيء (تفريغ، تصحيح ذكي، ودبلجة)
             if (statusTxt) statusTxt.innerText = 'تم الاستلام! جاري المعالجة الآلية بالكامل...';
             
             const progBar = document.getElementById('progBar');
@@ -191,14 +190,13 @@ async function pollJob(jobId) {
         
         if (data.status === 'processing') {
             const statusTxt = document.getElementById('statusTxt');
-            // رسالة تطمئن المستخدم أن الذكاء الاصطناعي يعمل بالخفاء
             if (statusTxt) statusTxt.innerText = 'جاري استخراج الصوت، التصحيح الذكي، والدبلجة...';
             
             const bar = document.getElementById('progBar');
             const pct = document.getElementById('pctTxt');
             if (bar) {
                 let cur = parseInt(bar.style.width) || 10;
-                cur = Math.min(90, cur + 1); // التقدم بطيء قليلاً ليعكس العمليات المعقدة
+                cur = Math.min(90, cur + 1); 
                 bar.style.width = cur + '%';
                 if (pct) pct.innerText = cur + '%';
             }
@@ -260,12 +258,26 @@ async function checkAuth() {
                         <div style="font-weight:700">${data.user.name || 'مستخدم'}</div>
                         <div style="background:rgba(255,255,255,0.06);padding:6px;border-radius:8px">رصيد: ${data.user.credits}</div>
                     </div>
-                    <button class="auth-btn" onclick="location.reload()">خروج</button>
+                    <button class="auth-btn" onclick="logout()">خروج</button>
                 </div>`;
             }
         }
     } catch (e) {}
 }
+
+// دالة تسجيل خروج حقيقية تتصل بالسيرفر لمسح الهوية
+window.logout = async function() {
+    try {
+        await fetch(API_BASE + '/api/auth/logout', { 
+            method: 'POST', 
+            credentials: 'include' 
+        });
+        location.reload();
+    } catch (e) {
+        console.error("Logout error", e);
+        location.reload();
+    }
+};
 
 function showToast(msg, color='#0f0f10') {
     const t = document.createElement('div');
