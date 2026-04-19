@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استوديو الدبلجة | sl-Dubbing</title>
+    <title>Dubbing Studio | sl-Dubbing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
@@ -16,7 +16,7 @@
             --radius: 12px; 
         }
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: var(--bg); color: #111827; text-align: right; margin: 0; }
+        body { background: var(--bg); color: #111827; text-align: left; margin: 0; }
         
         /* Topbar */
         .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
@@ -52,8 +52,7 @@
         .res-card { display: none; border: 2px solid var(--green-dk); }
         audio { width: 100%; margin-top: 10px; }
 
-        /* Toast */
-        .toast { position: fixed; bottom: 20px; right: 20px; color: #fff; padding: 12px 20px; border-radius: 10px; transform: translateY(100px); opacity: 0; transition: 0.4s; z-index: 1000; }
+        .toast { position: fixed; bottom: 20px; left: 20px; color: #fff; padding: 12px 20px; border-radius: 10px; transform: translateY(100px); opacity: 0; transition: 0.4s; z-index: 1000; }
         .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
@@ -62,38 +61,35 @@
 <div class="topbar">
     <div class="logo">sl<span style="color:#a4fec4">-Dubbing</span></div>
     <div class="auth-section" id="authSection">
-        <button class="auth-btn" id="showLoginBtn" onclick="sessionStorage.setItem('returnUrl', 'dubbing.html'); location.href='login.html'">تسجيل الدخول</button>
+        <button class="auth-btn" id="showLoginBtn" onclick="sessionStorage.setItem('returnUrl', 'dubbing.html'); location.href='login.html'">Login</button>
     </div>
 </div>
 
 <div class="wrap">
     <div class="card">
-        <div class="ttl"><i class="fas fa-file-upload"></i> رفع ملف الفيديو أو الصوت</div>
-        
+        <div class="ttl"><i class="fas fa-file-upload"></i> Upload Video or Audio File</div>
         <input type="file" id="mediaFile" accept="video/*,audio/*" style="display:none">
         <div class="srt-zone" id="mediaZone" onclick="document.getElementById('mediaFile').click()">
             <i class="fas fa-cloud-upload-alt" style="font-size:2rem; margin-bottom:10px; color:#9ca3af; display:block;"></i>
-            انقر هنا لرفع ملف فيديو أو صوت من جهازك
+            Click here to upload a file from your device
         </div>
     </div>
 
     <div class="card">
-        <div class="ttl"><i class="fas fa-microphone-lines"></i> اختيار صوت الدبلجة (تحديث تلقائي من المجلد)</div>
-        <div class="spk-grid" id="spkGrid">
-            </div>
+        <div class="ttl"><i class="fas fa-microphone-lines"></i> Select Dubbing Voice</div>
+        <div class="spk-grid" id="spkGrid"></div>
     </div>
 
     <div class="card">
-        <div class="ttl"><i class="fas fa-language"></i> لغة الدبلجة</div>
-        <div class="lang-grid" id="langGrid">
-            </div>
+        <div class="ttl"><i class="fas fa-language"></i> Target Language</div>
+        <div class="lang-grid" id="langGrid"></div>
         <button class="btn-go" id="startBtn" onclick="startDubbing()">
-            <i class="fas fa-bolt"></i> ابدأ معالجة الدبلجة الآن
+            <i class="fas fa-bolt"></i> Start Dubbing Process Now
         </button>
 
         <div id="progressArea">
             <div style="display:flex; justify-content:space-between;">
-                <span id="statusTxt">جاري المعالجة...</span>
+                <span id="statusTxt">Processing...</span>
                 <span id="pctTxt">0%</span>
             </div>
             <div class="prog-bar-wrap">
@@ -103,14 +99,13 @@
     </div>
 
     <div class="card res-card" id="resCard">
-        <div class="ttl" style="color:var(--green-dk)"><i class="fas fa-check-circle"></i> ملف الصوت جاهز!</div>
+        <div class="ttl" style="color:var(--green-dk)"><i class="fas fa-check-circle"></i> Audio File Ready!</div>
         <audio id="dubAud" controls></audio>
-        <a id="dlBtn" class="btn-go" style="background:var(--green-dk); margin-top:15px; display:block; text-align:center; text-decoration:none" download>تحميل MP3</a>
+        <a id="dlBtn" class="btn-go" style="background:var(--green-dk); margin-top:15px; display:block; text-align:center; text-decoration:none" download>Download MP3</a>
     </div>
 </div>
 
 <div id="toasts"></div>
-
 <script src="script.js"></script>
 </body>
 </html>
