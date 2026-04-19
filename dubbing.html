@@ -62,7 +62,7 @@
 <div class="topbar">
     <div class="logo">sl<span style="color:#a4fec4">-Dubbing</span></div>
     <div class="auth-section" id="authSection">
-        <button class="auth-btn" id="showLoginBtn" onclick="location.href='login.html'">تسجيل الدخول</button>
+        <button class="auth-btn" id="showLoginBtn" onclick="sessionStorage.setItem('returnUrl', window.location.href); location.href='login.html'">تسجيل الدخول</button>
     </div>
 </div>
 
