@@ -20,7 +20,6 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: var(--bg); color: #111827; text-align: left; margin: 0; }
         
-        /* Topbar */
         .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; height: 60px; }
         .logo-top { font-weight: 800; font-size: 1.2rem; text-decoration: none; color: white; }
         .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
@@ -28,11 +27,11 @@
         /* ── Central Logo Section ── */
         .brand-header { text-align: center; margin: 30px auto 10px; }
         .main-logo-img { 
-            max-width: 120px; 
+            max-width: 150px; /* حجم الشعار */
             height: auto; 
             display: block;
-            margin: 0 auto 10px;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+            margin: 0 auto 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
         }
         .brand-name { font-size: 2.2rem; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
         .brand-name span { color: var(--green-dk); border-bottom: 5px solid var(--mint); }
@@ -42,53 +41,49 @@
         .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .ttl { font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
         
-        /* Drop Zone */
         .srt-zone { border: 2px dashed var(--border); padding: 30px; text-align: center; border-radius: 10px; cursor: pointer; transition: 0.3s; }
         .srt-zone:hover { background: #f9fafb; border-color: #d1d5db; }
         .srt-zone.ok { border-color: var(--green-dk); background: #f0fdf4; color: var(--green-dk); }
         
-        /* Grids & Cards */
         .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .spk-card, .lang-box { padding: 15px 10px; border-radius: 12px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.2s; background: #fff; position: relative; }
         .spk-card.active, .lang-box.active { background: var(--mint); border-color: var(--primary); font-weight: 700; }
         .chk { position: absolute; top: 6px; right: 6px; font-size: 0.75rem; color: var(--primary); display: none; }
         .spk-card.active .chk { display: block; }
 
-        /* ✅ Fixed Voice Clone Icon (No Duplicates) */
+        /* ✅ Voice Clone Icon Fix (Single Icon) */
         .voice-ai-icon {
-            width: 44px; height: 44px; background: #3c4043; border-radius: 50%;
+            width: 50px; height: 50px; background: #3c4043; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 8px; color: #fff; font-size: 1.2rem; transition: 0.3s;
+            margin: 0 auto 10px; color: #fff; font-size: 1.4rem; transition: 0.3s;
         }
-        .spk-card.active .voice-ai-icon { background: #ef4444; color: #fff; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        .spk-card.active .voice-ai-icon { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
 
-        /* Person Icon */
-        .spk-av { width: 44px; height: 44px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 1.2rem; color: #4b5563; transition: 0.3s; }
+        .spk-av { width: 50px; height: 50px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 1.3rem; color: #4b5563; transition: 0.3s; }
         .spk-card.active .spk-av { background: var(--primary); color: var(--mint); }
-        .spk-nm { font-size: 0.85rem; font-weight: 600; }
+        .spk-nm { font-size: 0.9rem; font-weight: 600; }
 
-        /* Generate Button */
+        /* Button & Result Styles as before */
         .btn-wrapper { display: flex; justify-content: center; margin-top: 20px; width: 100%; }
         .btn {
           background-color: #101010; color: white; width: 100%; height: 58px; border-radius: 24px; border: solid 1px #fff2;
           cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; overflow: hidden; position: relative;
         }
-        .btn-svg { height: 22px; fill: #e8e8e8; z-index: 2; }
-        .txt-wrapper { position: relative; height: 24px; overflow: hidden; display: flex; align-items: center; z-index: 2; min-width: 100px; justify-content: center;}
-        .txt-1, .txt-2 { display: flex; gap: 2px; transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1); position: absolute; }
+        .btn-svg { height: 22px; fill: #e8e8e8; }
+        .txt-wrapper { position: relative; height: 24px; overflow: hidden; display: flex; align-items: center; min-width: 100px; justify-content: center;}
+        .txt-1, .txt-2 { display: flex; gap: 2px; transition: all 0.5s; position: absolute; }
         .txt-2 { transform: translateY(35px); opacity: 0; }
         .btn.loading .txt-1 { transform: translateY(-35px); opacity: 0; }
         .btn.loading .txt-2 { transform: translateY(0); opacity: 1; }
         .btn.loading .btn-svg { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Result Area */
         .result-container { display: flex; align-items: center; gap: 15px; margin-top: 15px; }
         audio { flex-grow: 1; }
-        .Btn { width: 50px; height: 50px; border: none; border-radius: 50%; background-color: rgb(27, 27, 27); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; transition-duration: .3s; flex-shrink: 0; text-decoration: none; }
+        .Btn { width: 50px; height: 50px; border: none; border-radius: 50%; background-color: rgb(27, 27, 27); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; text-decoration: none; }
         .svgIcon { fill: rgb(214, 178, 255); }
         .icon2 { width: 18px; height: 5px; border-bottom: 2px solid rgb(182, 143, 255); border-left: 2px solid rgb(182, 143, 255); border-right: 2px solid rgb(182, 143, 255); }
-        .tooltip { position: absolute; top: -40px; opacity: 0; background-color: rgb(12, 12, 12); color: white; padding: 5px 10px; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition-duration: .2s; pointer-events: none; font-size: 12px; }
+        .tooltip { position: absolute; top: -40px; opacity: 0; background-color: rgb(12, 12, 12); color: white; padding: 5px 10px; border-radius: 5px; display: flex; font-size: 12px; transition: 0.3s; }
         .Btn:hover .tooltip { opacity: 1; top: -45px; }
         .Btn:hover { background-color: rgb(150, 94, 255); }
 
@@ -104,12 +99,11 @@
 
 <div class="topbar">
     <a href="index.html" class="logo-top">sl<span style="color:#a4fec4">-Dubbing</span></a>
-    <div class="auth-section" id="authSection">
-        </div>
+    <div class="auth-section" id="authSection"></div>
 </div>
 
 <div class="brand-header">
-    <img src="logo/logo.png" alt="sl-Dubbing" class="main-logo-img" onerror="this.style.display='none'">
+    <img src="./logo/logo.png" alt="sl-Dubbing" class="main-logo-img" id="mainLogo">
     <div class="brand-name">sl-<span>Dubbing</span></div>
 </div>
 
