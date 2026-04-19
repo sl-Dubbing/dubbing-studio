@@ -1,5 +1,5 @@
 const API_BASE = 'https://web-production-14a1.up.railway.app';
-let selectedVoice = '';
+let selectedVoice = 'v1';
 let currentJobId = null;
 let pollInterval = null;
 
@@ -10,21 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function loadVoicesForLang() {
     const grid = document.getElementById('spkGrid');
-    const lang = document.getElementById('ttsLang').value;
+    if (!grid) return;
     grid.innerHTML = '';
     
-    // قائمة تجريبية للأصوات (يمكنك ربطها بـ API الأصوات لاحقاً)
     const voices = [
-        { id: 'v1', name: 'Adam', gender: 'male' },
-        { id: 'v2', name: 'Bella', gender: 'female' },
-        { id: 'v3', name: 'Charlie', gender: 'male' }
+        { id: 'v1', name: 'Adam' },
+        { id: 'v2', name: 'Bella' },
+        { id: 'v3', name: 'Charlie' }
     ];
 
     voices.forEach((v, index) => {
         const card = document.createElement('div');
-        card.className = 'spk-card' + (index === 0 ? ' active' : '');
-        if(index === 0) selectedVoice = v.id;
-        
+        card.className = 'spk-card' + (v.id === selectedVoice ? ' active' : '');
         card.innerHTML = `
             <div class="spk-av"><i class="fas fa-user"></i></div>
             <div class="spk-nm">${v.name}</div>
@@ -98,7 +95,7 @@ async function pollTTSJob(jobId) {
             
             const btn = document.getElementById('startBtn');
             btn.classList.remove('loading'); btn.disabled = false;
-            showToast("Speech generated successfully!", "#065f2c");
+            showToast("Speech generated!", "#065f2c");
             checkAuth();
         }
     } catch (e) { console.error(e); }
