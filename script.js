@@ -1,9 +1,9 @@
 const API_BASE = 'https://web-production-14a1.up.railway.app';
 const GITHUB_USER = "sl-Dubbing"; 
-const REPO_NAME = "sl-dubbing-frontend";
+const REPO_NAME = "dubbing-studio"; // 🟢 هنا كان الخطأ القاتل وتم إصلاحه!
 
 let selectedVoice = 'source';
-let selectedLang = 'ar'; // اللغة الافتراضية
+let selectedLang = 'ar'; 
 let currentJobId = null;
 let pollInterval = null;
 
@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadVoices();
     checkAuth();
     
-    // إعداد لغات الدبلجة
     const langGrid = document.getElementById('langGrid');
     if (langGrid) {
         const langs = ['en','ar','es','fr','de','it','pt','tr','ru','zh','ja','ko','hi'];
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // إعداد رفع الملفات
     const mediaFile = document.getElementById('mediaFile');
     const mediaZone = document.getElementById('mediaZone');
     if (mediaFile && mediaZone) {
@@ -48,13 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 🟢 استخدام الأصوات المباشرة لتجنب خطأ 403 من GitHub
 function loadVoices() {
     const spkGrid = document.getElementById('spkGrid');
     if (!spkGrid) return;
     spkGrid.innerHTML = '';
 
-    // 1. بطاقة استنساخ الصوت الأصلية من الفيديو
     const sourceCard = document.createElement('div');
     sourceCard.className = 'spk-card active';
     sourceCard.innerHTML = `
@@ -64,7 +60,7 @@ function loadVoices() {
     sourceCard.onclick = () => selectVoice('source', sourceCard);
     spkGrid.appendChild(sourceCard);
 
-    // 2. قائمة الأصوات الثابتة
+    // الأسماء الثابتة للأصوات
     const myVoices = ['muhammad', 'adam', 'bella']; 
     myVoices.forEach(name => {
         const card = document.createElement('div');
@@ -92,6 +88,7 @@ window.startDubbing = async function() {
     btn.disabled = true;
     btn.classList.add('loading');
     
+    // 🟢 الآن سيتم توجيه الرابط للمستودع الصحيح
     const voiceUrl = selectedVoice === 'source' ? '' : `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/samples/${selectedVoice}.mp3`;
     const formData = new FormData();
     formData.append('lang', selectedLang);
@@ -142,7 +139,6 @@ async function pollJob(jobId) {
             showToast("Video Dubbing Complete!", "#065f2c");
             checkAuth();
         } else if (data.status === 'failed' || data.status === 'error') {
-            // 🟢 هنا يكمن الحل! الآن سيظهر لكِ الخطأ بوضوح
             clearInterval(pollInterval);
             btn.disabled = false; btn.classList.remove('loading');
             document.getElementById('statusTxt').innerText = 'Process Failed!';
