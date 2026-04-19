@@ -21,17 +21,18 @@
         body { background: var(--bg); color: #111827; text-align: left; margin: 0; }
         
         /* Topbar */
-        .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+        .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; height: 60px; }
         .logo-top { font-weight: 800; font-size: 1.2rem; text-decoration: none; color: white; }
         .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         
         /* ── Central Logo Section ── */
-        .brand-header { text-align: center; margin: 40px auto 10px; }
+        .brand-header { text-align: center; margin: 30px auto 10px; }
         .main-logo-img { 
-            width: 100px; /* يمكنكِ تعديل الحجم من هنا */
+            max-width: 120px; 
             height: auto; 
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-            margin-bottom: 10px;
+            display: block;
+            margin: 0 auto 10px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
         .brand-name { font-size: 2.2rem; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
         .brand-name span { color: var(--green-dk); border-bottom: 5px solid var(--mint); }
@@ -48,20 +49,20 @@
         
         /* Grids & Cards */
         .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .spk-card, .lang-box { padding: 15px 10px; border-radius: 12px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.2s; background: #fff; position: relative; overflow: hidden; }
+        .spk-card, .lang-box { padding: 15px 10px; border-radius: 12px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.2s; background: #fff; position: relative; }
         .spk-card.active, .lang-box.active { background: var(--mint); border-color: var(--primary); font-weight: 700; }
-        .chk { position: absolute; top: 6px; right: 6px; font-size: 0.75rem; color: var(--primary); display: none; z-index: 10; }
+        .chk { position: absolute; top: 6px; right: 6px; font-size: 0.75rem; color: var(--primary); display: none; }
         .spk-card.active .chk { display: block; }
 
-        /* ✅ Microphone Style for Voice Clone */
+        /* ✅ Fixed Voice Clone Icon (No Duplicates) */
         .voice-ai-icon {
-            width: 44px; height: 44px; background: #f3f4f6; border-radius: 50%;
+            width: 44px; height: 44px; background: #3c4043; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 8px; color: #374151; font-size: 1.3rem; transition: 0.3s;
+            margin: 0 auto 8px; color: #fff; font-size: 1.2rem; transition: 0.3s;
         }
-        .spk-card.active .voice-ai-icon { background: var(--primary); color: var(--mint); }
+        .spk-card.active .voice-ai-icon { background: #ef4444; color: #fff; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
 
-        /* ✅ Person Icon for others */
+        /* Person Icon */
         .spk-av { width: 44px; height: 44px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 1.2rem; color: #4b5563; transition: 0.3s; }
         .spk-card.active .spk-av { background: var(--primary); color: var(--mint); }
         .spk-nm { font-size: 0.85rem; font-weight: 600; }
@@ -81,41 +82,15 @@
         .btn.loading .btn-svg { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Result & Download */
+        /* Result Area */
         .result-container { display: flex; align-items: center; gap: 15px; margin-top: 15px; }
         audio { flex-grow: 1; }
-
-        .Btn {
-          width: 50px; height: 50px; border: none; border-radius: 50%;
-          background-color: rgb(27, 27, 27); display: flex; flex-direction: column;
-          align-items: center; justify-content: center; cursor: pointer;
-          position: relative; transition-duration: .3s;
-          box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.11); flex-shrink: 0;
-          text-decoration: none;
-        }
-        .svgIcon { fill: rgb(214, 178, 255); transition-duration: .3s; }
-        .icon2 {
-          width: 18px; height: 5px; border-bottom: 2px solid rgb(182, 143, 255);
-          border-left: 2px solid rgb(182, 143, 255); border-right: 2px solid rgb(182, 143, 255);
-        }
-        .tooltip {
-          position: absolute; top: -40px; opacity: 0; background-color: rgb(12, 12, 12);
-          color: white; padding: 5px 10px; border-radius: 5px; display: flex;
-          align-items: center; justify-content: center; transition-duration: .2s;
-          pointer-events: none; letter-spacing: 0.5px; font-size: 12px;
-        }
-        .tooltip::before {
-          position: absolute; content: ""; width: 8px; height: 8px;
-          background-color: rgb(12, 12, 12); transform: rotate(45deg);
-          bottom: -4px; transition-duration: .3s;
-        }
-        .Btn:hover .tooltip { opacity: 1; transition-duration: .3s; top: -45px; }
+        .Btn { width: 50px; height: 50px; border: none; border-radius: 50%; background-color: rgb(27, 27, 27); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; transition-duration: .3s; flex-shrink: 0; text-decoration: none; }
+        .svgIcon { fill: rgb(214, 178, 255); }
+        .icon2 { width: 18px; height: 5px; border-bottom: 2px solid rgb(182, 143, 255); border-left: 2px solid rgb(182, 143, 255); border-right: 2px solid rgb(182, 143, 255); }
+        .tooltip { position: absolute; top: -40px; opacity: 0; background-color: rgb(12, 12, 12); color: white; padding: 5px 10px; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition-duration: .2s; pointer-events: none; font-size: 12px; }
+        .Btn:hover .tooltip { opacity: 1; top: -45px; }
         .Btn:hover { background-color: rgb(150, 94, 255); }
-        .Btn:hover .svgIcon { fill: white; animation: slide-in-top 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
-        @keyframes slide-in-top {
-          0% { transform: translateY(-10px); opacity: 0; }
-          100% { transform: translateY(0px); opacity: 1; }
-        }
 
         #progressArea { display: none; margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 10px; border: 1px solid var(--border); }
         .prog-bar-wrap { background: #e5e7eb; border-radius: 50px; height: 10px; overflow: hidden; margin-top: 10px; }
@@ -130,12 +105,11 @@
 <div class="topbar">
     <a href="index.html" class="logo-top">sl<span style="color:#a4fec4">-Dubbing</span></a>
     <div class="auth-section" id="authSection">
-        <button class="auth-btn" onclick="location.href='login.html'">Login</button>
-    </div>
+        </div>
 </div>
 
 <div class="brand-header">
-    <img src="logo/logo.png" alt="sl-Dubbing Logo" class="main-logo-img">
+    <img src="logo/logo.png" alt="sl-Dubbing" class="main-logo-img" onerror="this.style.display='none'">
     <div class="brand-name">sl-<span>Dubbing</span></div>
 </div>
 
