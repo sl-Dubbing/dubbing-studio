@@ -29,10 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ---------------- التفاعل البصري لرفع الملفات والروابط ----------------
+    // ---------------- التفاعل البصري لرفع الملفات فقط ----------------
     const mediaFile = document.getElementById('mediaFile');
     const mediaZone = document.getElementById('mediaZone');
-    const ytUrlInput = document.getElementById('ytUrl');
 
     if (mediaFile && mediaZone) {
         mediaFile.addEventListener('change', () => {
@@ -47,41 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 mediaZone.style.borderColor = '#065f2c';
                 mediaZone.style.background = '#f0fdf4';
-
-                if (ytUrlInput) {
-                    ytUrlInput.value = '';
-                    ytUrlInput.style.borderColor = 'var(--border)';
-                    ytUrlInput.style.boxShadow = 'none';
-                }
-            }
-        });
-    }
-
-    if (ytUrlInput) {
-        ytUrlInput.addEventListener('input', () => {
-            const url = ytUrlInput.value.trim();
-            const ytRegex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
-
-            if (ytRegex.test(url)) {
-                ytUrlInput.style.borderColor = '#065f2c';
-                ytUrlInput.style.boxShadow = '0 0 0 2px rgba(6, 95, 44, 0.2)';
-                showToast("✅ تم التعرف على رابط يوتيوب!", "#065f2c");
-
-                if (mediaFile) mediaFile.value = '';
-                if (mediaZone) {
-                    mediaZone.innerHTML = `
-                        <i class="fas fa-cloud-upload-alt" style="font-size:2rem; margin-bottom:10px; color:#9ca3af; display:block;"></i>
-                        انقر هنا لرفع ملف فيديو أو صوت من جهازك
-                    `;
-                    mediaZone.style.borderColor = 'var(--border)';
-                    mediaZone.style.background = 'transparent';
-                }
-            } else if (url.length > 0) {
-                ytUrlInput.style.borderColor = '#b91c1c';
-                ytUrlInput.style.boxShadow = 'none';
-            } else {
-                ytUrlInput.style.borderColor = 'var(--border)';
-                ytUrlInput.style.boxShadow = 'none';
             }
         });
     }
@@ -123,16 +87,14 @@ function selectVoice(id, el) {
     }
 }
 
-// ---------------- الدبلجة التلقائية بالكامل ----------------
+// ---------------- الدبلجة التلقائية ----------------
 window.startDubbing = async function() {
     const btn = document.getElementById('startBtn');
-    const ytUrlInput = document.getElementById('ytUrl');
-    const ytUrl = ytUrlInput ? ytUrlInput.value.trim() : '';
     const mediaInput = document.getElementById('mediaFile');
     const mediaFile = mediaInput && mediaInput.files.length ? mediaInput.files[0] : null;
     
-    if (!ytUrl && !mediaFile) {
-        showToast("يرجى وضع رابط يوتيوب أو رفع ملف", "#b91c1c");
+    if (!mediaFile) {
+        showToast("يرجى رفع ملف فيديو أو صوت أولاً", "#b91c1c");
         return;
     }
 
@@ -141,21 +103,18 @@ window.startDubbing = async function() {
     
     const voiceUrl = selectedVoice === 'source' ? '' : `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/samples/${selectedVoice}.mp3`;
 
-    // استخدام FormData لإرسال البيانات
     const formData = new FormData();
     formData.append('lang', selectedLang);
     formData.append('voice_mode', selectedVoice === 'source' ? 'source' : 'xtts');
     formData.append('voice_id', selectedVoice === 'source' ? '' : selectedVoice);
     formData.append('voice_url', voiceUrl);
-    
-    if (ytUrl) formData.append('yt_url', ytUrl);
-    if (mediaFile) formData.append('media_file', mediaFile);
+    formData.append('media_file', mediaFile); // إرسال الملف فقط
 
     try {
         const res = await fetch(API_BASE + '/api/dub', {
             method: 'POST',
             body: formData, 
-            credentials: 'include' // إرسال الهوية
+            credentials: 'include' 
         });
         const data = await res.json();
         
@@ -165,7 +124,7 @@ window.startDubbing = async function() {
             if (progArea) progArea.style.display = 'block';
             
             const statusTxt = document.getElementById('statusTxt');
-            if (statusTxt) statusTxt.innerText = 'تم الاستلام! جاري المعالجة الآلية بالكامل...';
+            if (statusTxt) statusTxt.innerText = 'تم رفع الملف! جاري المعالجة...';
             
             const progBar = document.getElementById('progBar');
             if (progBar) progBar.style.width = '5%';
@@ -190,7 +149,7 @@ async function pollJob(jobId) {
         
         if (data.status === 'processing') {
             const statusTxt = document.getElementById('statusTxt');
-            if (statusTxt) statusTxt.innerText = 'جاري استخراج الصوت، التصحيح الذكي، والدبلجة...';
+            if (statusTxt) statusTxt.innerText = 'جاري المعالجة والدبلجة...';
             
             const bar = document.getElementById('progBar');
             const pct = document.getElementById('pctTxt');
@@ -265,7 +224,6 @@ async function checkAuth() {
     } catch (e) {}
 }
 
-// دالة تسجيل خروج حقيقية تتصل بالسيرفر لمسح الهوية
 window.logout = async function() {
     try {
         await fetch(API_BASE + '/api/auth/logout', { 
