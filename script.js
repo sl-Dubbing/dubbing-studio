@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadVoicesFromGithub();
     checkAuth();
     
-    // 🌍 Language Setup
     const langGrid = document.getElementById('langGrid');
     if (langGrid) {
         const langs = ['en','ar','es','fr','de','it','pt','tr','ru','zh','ja','ko','hi'];
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 📁 File Selection Preview
     const mediaFile = document.getElementById('mediaFile');
     const mediaZone = document.getElementById('mediaZone');
     if (mediaFile && mediaZone) {
@@ -37,9 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mediaFile.files.length > 0) {
                 const file = mediaFile.files[0];
                 mediaZone.innerHTML = `
-                    <i class="fas fa-file-audio fa-beat" style="font-size:2rem; margin-bottom:10px; color:#065f2c; display:block;"></i>
-                    <span style="font-weight:bold; color:#065f2c;">Ready:</span><br>
-                    <span style="font-size:0.8rem; color:#111827;">${file.name}</span>
+                    <i class="fas fa-file-check fa-beat" style="font-size:2rem; margin-bottom:10px; color:#065f2c; display:block;"></i>
+                    <span style="font-weight:bold; color:#065f2c;">File Ready!</span><br>
+                    <span style="font-size:0.85rem; color:#111827;">${file.name}</span>
                 `;
                 mediaZone.style.borderColor = '#065f2c';
             }
@@ -47,25 +45,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 🎙️ Load Voices correctly
 async function loadVoicesFromGithub() {
     const spkGrid = document.getElementById('spkGrid');
     if (!spkGrid) return;
     spkGrid.innerHTML = '';
 
-    // 1. Voice Clone (Single Mic Icon)
     const sourceCard = document.createElement('div');
     sourceCard.className = 'spk-card active';
     sourceCard.innerHTML = `
         <i class="fas fa-check-circle chk"></i>
-        <div class="voice-ai-icon">
-            <i class="fas fa-microphone"></i>
-        </div>
+        <div class="voice-ai-icon"><i class="fas fa-microphone"></i></div>
         <div class="spk-nm">Voice Clone</div>`;
     sourceCard.onclick = () => selectVoice('source', sourceCard);
     spkGrid.appendChild(sourceCard);
 
-    // 2. Others (Person Icon)
     try {
         const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples?t=${Date.now()}`;
         const res = await fetch(url);
@@ -97,8 +90,7 @@ function selectVoice(id, el) {
 window.startDubbing = async function() {
     const btn = document.getElementById('startBtn');
     const mediaFile = document.getElementById('mediaFile').files[0];
-    if (!mediaFile) { showToast("Select a file first", "#b91c1c"); return; }
-
+    if (!mediaFile) { showToast("Upload a file first", "#b91c1c"); return; }
     btn.disabled = true;
     btn.classList.add('loading');
     
@@ -118,7 +110,7 @@ window.startDubbing = async function() {
             document.getElementById('statusTxt').innerText = 'Generating...';
             pollInterval = setInterval(() => pollJob(currentJobId), 2000);
         } else { showToast("Error", "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
-    } catch (e) { showToast("Server error", "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
+    } catch (e) { showToast("Connection error", "#b91c1c"); btn.disabled = false; btn.classList.remove('loading'); }
 };
 
 async function pollJob(jobId) {
@@ -161,7 +153,7 @@ async function checkAuth() {
                 <div style="display:flex; gap:12px; align-items:center">
                     <div style="text-align:right">
                         <div style="font-weight:700; color:#fff">${data.user.name || 'User'}</div>
-                        <div style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:8px; font-size:0.8rem; color:#a4fec4">
+                        <div style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:8px; font-size:0.85rem; color:#a4fec4">
                            Balance: ${data.user.credits} 💰
                         </div>
                     </div>
