@@ -133,8 +133,10 @@
 
 <script>
 const API_BASE = 'https://web-production-14a1.up.railway.app';
+// 🟢 تم ضبط الإعدادات لتطابق مستودعك بدقة متناهية
 const GITHUB_USER = "sl-Dubbing"; 
 const REPO_NAME = "sl-dubbing-frontend";
+const SAMPLES_FOLDER = "speakers"; 
 
 let selectedVoice = 'source'; 
 let selectedLang = 'en';
@@ -149,7 +151,7 @@ const ALL_LANGS = [
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     renderLangs();
-    loadVoices();
+    loadVoices(); // سيقوم بطلب الملفات من GitHub تلقائياً
     
     document.getElementById('cloneFile').addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -178,10 +180,21 @@ function selectLang(c, el) {
     el.classList.add('active');
 }
 
-function loadVoices() {
+// 🟢 دالة مساعدة لإنشاء بطاقة الصوت
+function createVoiceCard(name, grid) {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av"><i class="fas fa-user"></i></div><div class="spk-nm">${name}</div>`;
+    card.onclick = () => setVoice(name, card);
+    grid.appendChild(card);
+}
+
+// 🟢 السحر هنا: جلب محتويات مجلد speakers تلقائياً
+async function loadVoices() {
     const grid = document.getElementById('spkGrid');
     grid.innerHTML = '';
 
+    // 1. بطاقة استنساخ الصوت (دائماً موجودة)
     const cloneCard = document.createElement('div');
     cloneCard.className = 'item-card active';
     cloneCard.innerHTML = `
@@ -192,15 +205,23 @@ function loadVoices() {
     cloneCard.onclick = () => { setVoice('source', cloneCard); document.getElementById('cloneFile').click(); };
     grid.appendChild(cloneCard);
 
-    // الأسماء الثابتة للأصوات
-    const myVoices = ['muhammad', 'adam', 'bella']; 
-    myVoices.forEach(name => {
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av"><i class="fas fa-user"></i></div><div class="spk-nm">${name}</div>`;
-        card.onclick = () => setVoice(name, card);
-        grid.appendChild(card);
-    });
+    // 2. الجلب التلقائي من GitHub مع خطة بديلة
+    try {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${SAMPLES_FOLDER}`);
+        if (!res.ok) throw new Error("GitHub API Rate Limit");
+        
+        const files = await res.json();
+        // تصفية ملفات mp3 وإضافتها للشبكة
+        files.filter(f => f.name.endsWith('.mp3')).forEach(file => {
+            const name = file.name.replace('.mp3', '');
+            createVoiceCard(name, grid);
+        });
+    } catch (e) {
+        console.warn("GitHub API Rate Limit Hit. Loading Default Backup Voices...");
+        // الخطة البديلة: إذا حظرنا GitHub بسبب كثرة التحديث، ستظهر هذه الأسماء فوراً
+        const defaultVoices = ['muhammad', 'adam', 'bella'];
+        defaultVoices.forEach(name => createVoiceCard(name, grid));
+    }
 }
 
 function setVoice(id, el) {
@@ -215,7 +236,6 @@ async function generateSpeech() {
     
     if (!text) return showToast("Enter text first", "error");
 
-    // 🟢 حماية: إذا تم اختيار Voice Clone ولم يتم رفع ملف
     if (selectedVoice === 'source' && !clonedFileBase64) {
         return showToast("Please upload a voice sample first!", "error");
     }
@@ -226,14 +246,13 @@ async function generateSpeech() {
     document.getElementById('resCard').style.display = 'none';
     document.getElementById('translatedBox').style.display = 'none';
 
-    // 🟢 السر الحقيقي هنا: قراءة الملف من المتصفح وتحويله إلى Base64
     let finalSampleB64 = clonedFileBase64; 
 
     if (selectedVoice !== 'source') {
         try {
             document.getElementById('statusTxt').innerText = 'Loading Voice...';
-            // 🟢 استخدام الرابط المباشر والكامل لموقعك لضمان عدم ضياع المسار (يحل مشكلة 404 نهائياً)
-            const fileUrl = `https://sl-dubbing.github.io/dubbing-studio/samples/${selectedVoice}.mp3`;
+            // 🟢 استخدام المسار الصحيح للمجلد (speakers) من رابط موقعك المباشر
+            const fileUrl = `https://${GITHUB_USER}.github.io/${REPO_NAME}/${SAMPLES_FOLDER}/${selectedVoice}.mp3`;
             const response = await fetch(fileUrl);
             
             if (!response.ok) throw new Error("Voice file not found (404)!");
@@ -246,7 +265,7 @@ async function generateSpeech() {
             });
         } catch (e) {
             console.error(e);
-            showToast("Failed to load local voice file. Check if " + selectedVoice + ".mp3 exists in the repo.", "error");
+            showToast(`Failed to load: ${selectedVoice}.mp3 from ${SAMPLES_FOLDER} folder.`, "error");
             btn.disabled = false; btn.classList.remove('loading');
             return;
         }
@@ -260,7 +279,7 @@ async function generateSpeech() {
                 text: text, 
                 lang: selectedLang, 
                 voice_id: selectedVoice,
-                sample_b64: finalSampleB64 // 🟢 نرسل كود الصوت الفعلي للسيرفر!
+                sample_b64: finalSampleB64 
             }),
             credentials: 'include'
         });
