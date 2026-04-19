@@ -32,7 +32,8 @@
         .btn-go { background: var(--primary); color: #fff; padding: 14px; border-radius: 10px; border: none; cursor: pointer; width: 100%; font-weight: 600; }
         .btn-go:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        .srt-zone { border: 2px dashed var(--border); padding: 30px; text-align: center; border-radius: 10px; cursor: pointer; }
+        .srt-zone { border: 2px dashed var(--border); padding: 30px; text-align: center; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .srt-zone:hover { background: #f9fafb; border-color: #d1d5db; }
         .srt-zone.ok { border-color: var(--green-dk); background: #f0fdf4; color: var(--green-dk); }
         
         .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
@@ -67,11 +68,7 @@
 
 <div class="wrap">
     <div class="card">
-        <div class="ttl"><i class="fas fa-video"></i> مصدر الفيديو أو الصوت</div>
-        
-        <input type="text" id="ytUrl" placeholder="ضع رابط يوتيوب هنا..." style="width:100%; padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border); outline:none; font-size:1rem; text-align:left; direction:ltr;">
-        
-        <div style="text-align:center; margin-bottom:12px; color:#6b7280; font-weight:bold; font-size:0.9rem;">أو</div>
+        <div class="ttl"><i class="fas fa-file-upload"></i> رفع ملف الفيديو أو الصوت</div>
         
         <input type="file" id="mediaFile" accept="video/*,audio/*" style="display:none">
         <div class="srt-zone" id="mediaZone" onclick="document.getElementById('mediaFile').click()">
