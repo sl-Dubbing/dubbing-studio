@@ -13,7 +13,6 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: var(--bg); color: #111827; text-align: left; margin: 0; }
         
-        /* Layout & Header */
         .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; height: 60px; }
         .logo-top { font-weight: 800; font-size: 1.1rem; text-decoration: none; color: white; }
         .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; }
@@ -30,19 +29,16 @@
         textarea { width: 100%; height: 160px; border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; font-size: 1rem; resize: none; outline: none; transition: 0.3s; background: #fafafa; }
         textarea:focus { border-color: var(--primary); background: #fff; }
 
-        /* Grids */
         .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .item-card { padding: 18px 10px; border-radius: 14px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.2s; background: #fff; position: relative; }
         .item-card.active { background: var(--mint); border-color: var(--primary); font-weight: 700; }
         .chk { position: absolute; top: 8px; right: 8px; font-size: 0.75rem; color: var(--primary); display: none; }
         .item-card.active .chk { display: block; }
 
-        /* Icons */
         .spk-av, .voice-ai-icon { width: 52px; height: 52px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 1.4rem; color: #4b5563; transition: 0.3s; }
         .item-card.active .spk-av, .item-card.active .voice-ai-icon { background: var(--primary); color: var(--mint); }
         .item-card.active .voice-ai-icon.clone { background: #ef4444; color: #fff; }
 
-        /* Generate Button */
         .btn-wrapper { display: flex; justify-content: center; margin-top: 30px; }
         .btn { background-color: #101010; color: white; width: 100%; height: 60px; border-radius: 30px; border: solid 1px #fff2; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; overflow: hidden; position: relative; transition: 0.3s; font-size: 1.1rem; font-weight: 600; }
         .btn.loading .txt-1 { transform: translateY(-35px); opacity: 0; }
@@ -54,7 +50,6 @@
         .txt-1, .txt-2 { display: flex; gap: 2px; transition: all 0.5s; position: absolute; }
         .txt-2 { transform: translateY(35px); opacity: 0; }
 
-        /* Progress & Results */
         #progressArea { display: none; margin-top: 25px; padding: 18px; background: #f9fafb; border-radius: 12px; border: 1px solid var(--border); }
         .prog-bar-wrap { background: #e5e7eb; border-radius: 50px; height: 10px; overflow: hidden; margin-top: 10px; }
         .prog-bar { height: 100%; width: 0; background: var(--primary); transition: width 0.4s ease; }
@@ -65,7 +60,6 @@
         .Btn-dl { width: 50px; height: 50px; border-radius: 50%; background: #1b1b1b; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; flex-shrink: 0; }
         .svgIcon { fill: var(--mint); }
 
-        /* Translation Note */
         .trans-note { font-size: 0.85rem; background: #f0fdf4; border: 1px solid #bcf0da; padding: 10px; border-radius: 8px; margin-top: 15px; color: #065f2c; display: none; }
 
         .toast { position: fixed; bottom: 25px; right: 25px; padding: 14px 22px; color: #fff; border-radius: 12px; z-index: 1000; font-weight: 600; transform: translateY(100px); opacity: 0; transition: 0.4s; }
@@ -178,7 +172,7 @@ function selectLang(c, el) {
     el.classList.add('active');
 }
 
-async function loadVoices() {
+function loadVoices() {
     const grid = document.getElementById('spkGrid');
     grid.innerHTML = '';
 
@@ -192,18 +186,15 @@ async function loadVoices() {
     cloneCard.onclick = () => { setVoice('source', cloneCard); document.getElementById('cloneFile').click(); };
     grid.appendChild(cloneCard);
 
-    try {
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples`);
-        const files = await res.json();
-        files.filter(f => f.name.endsWith('.mp3')).forEach(file => {
-            const name = file.name.replace('.mp3', '');
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av"><i class="fas fa-user"></i></div><div class="spk-nm">${name}</div>`;
-            card.onclick = () => setVoice(name, card);
-            grid.appendChild(card);
-        });
-    } catch (e) {}
+    // الأسماء الثابتة للأصوات
+    const myVoices = ['muhammad', 'adam', 'bella']; 
+    myVoices.forEach(name => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av"><i class="fas fa-user"></i></div><div class="spk-nm">${name}</div>`;
+        card.onclick = () => setVoice(name, card);
+        grid.appendChild(card);
+    });
 }
 
 function setVoice(id, el) {
@@ -215,7 +206,13 @@ function setVoice(id, el) {
 async function generateSpeech() {
     const text = document.getElementById('txt').value.trim();
     const btn = document.getElementById('generateBtn');
+    
     if (!text) return showToast("Enter text first", "error");
+
+    // 🟢 حماية: إذا تم اختيار Voice Clone ولم يتم رفع ملف
+    if (selectedVoice === 'source' && !clonedFileBase64) {
+        return showToast("Please upload a voice sample first!", "error");
+    }
 
     btn.disabled = true;
     btn.classList.add('loading');
@@ -223,16 +220,43 @@ async function generateSpeech() {
     document.getElementById('resCard').style.display = 'none';
     document.getElementById('translatedBox').style.display = 'none';
 
+    // 🟢 السر الحقيقي هنا: قراءة الملف من المتصفح وتحويله إلى Base64
+    let finalSampleB64 = clonedFileBase64; 
+
+    if (selectedVoice !== 'source') {
+        try {
+            document.getElementById('statusTxt').innerText = 'Loading Voice...';
+            // يسحب الملف من المجلد المحلي داخل الموقع
+            const response = await fetch(`samples/${selectedVoice}.mp3`);
+            if (!response.ok) throw new Error("Voice file not found!");
+            
+            const blob = await response.blob();
+            finalSampleB64 = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(blob);
+            });
+        } catch (e) {
+            console.error(e);
+            showToast("Failed to load local voice file.", "error");
+            btn.disabled = false; btn.classList.remove('loading');
+            return;
+        }
+    }
+
     try {
         const res = await fetch(`${API_BASE}/api/tts`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                text: text, lang: selectedLang, voice_id: selectedVoice,
-                sample_b64: (selectedVoice === 'source') ? clonedFileBase64 : null
+                text: text, 
+                lang: selectedLang, 
+                voice_id: selectedVoice,
+                sample_b64: finalSampleB64 // 🟢 نرسل كود الصوت الفعلي للسيرفر!
             }),
             credentials: 'include'
         });
+        
         const data = await res.json();
         if (!data.success) throw new Error(data.error);
 
@@ -249,7 +273,6 @@ async function generateSpeech() {
                 document.getElementById('dubAud').src = progress.audio_url;
                 document.getElementById('dlBtn').href = progress.audio_url;
                 
-                // Show translated text
                 if(progress.final_text) {
                     const tBox = document.getElementById('translatedBox');
                     tBox.style.display = 'block';
@@ -259,10 +282,13 @@ async function generateSpeech() {
                 btn.disabled = false; btn.classList.remove('loading');
                 showToast("Speech Ready!", "#059669");
                 checkAuth();
+            } else if (progress.status === 'error' || progress.status === 'failed') {
+                source.close();
+                throw new Error(progress.error || "Process failed");
             }
         };
     } catch (err) {
-        showToast(err.message, "#ef4444");
+        showToast(err.message, "error");
         btn.disabled = false; btn.classList.remove('loading');
     }
 }
