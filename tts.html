@@ -1,353 +1,133 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech - sl-Dubbing</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* ── ElevenLabs Light Theme ── */
-        :root {
-            --bg-page: #fafafa;
-            --bg-card: #ffffff;
-            --border-color: #e5e7eb;
-            --text-main: #0f0f10;
-            --text-muted: #6b7280;
-            --primary: #0f0f10;
-            --primary-hover: #27272a;
-            --mint: #a4fec4;
-            --green-dk: #065f2c;
-            --radius-md: 12px;
-            --radius-lg: 24px;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: var(--bg-page); color: var(--text-main); min-height: 100vh; overflow-x: hidden; line-height: 1.5; }
-        .page { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
-
-        /* Header */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 18px 0 40px; flex-wrap: wrap; gap: 12px; }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; font-weight: 800; text-decoration: none; color: var(--text-main); }
-        .user-zone { display: flex; align-items: center; gap: 12px; }
-        .btn-logout { padding: 8px 16px; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; color: #ef4444; cursor: pointer; font-weight: 600; transition: all .2s; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-main); }
-
-        /* Tool Box */
-        .tool-header { display: flex; align-items: center; gap: 15px; margin-bottom: 24px; }
-        .tool-header h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); }
-        .back-btn { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; font-size: .9rem; transition: all .2s; }
-        .back-btn:hover { background: var(--bg-page); }
-
-        .tool-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm); }
-        .lbl { display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-main); font-size: .95rem; }
-
-        /* Grid Systems */
-        .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 24px; }
-        .lang-btn { padding: 12px 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); cursor: pointer; transition: all .2s; text-align: center; font-size: .9rem; font-weight: 500; box-shadow: var(--shadow-sm); }
-        .lang-btn:hover { background: var(--bg-page); }
-        .lang-btn.active { border-color: var(--primary); background: #f3f4f6; font-weight: 700; box-shadow: 0 0 0 1px var(--primary); }
-        .lang-flag { font-size: 1.2rem; display: block; margin-bottom: 4px; }
-
-        /* Speaker Grid */
-        .spk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 24px; }
-        .spk-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 13px 10px; cursor: pointer; background: #fff; text-align: center; transition: all .18s; position: relative; }
-        .spk-card:hover { border-color: #9ca3af; }
-        .spk-card.active { border-color: var(--primary); background: var(--mint); box-shadow: 0 0 0 2px var(--primary); }
-        .spk-av { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; margin: 0 auto 7px; text-transform: uppercase; }
-        .spk-card.active .spk-av { background: var(--green-dk); }
-        .spk-nm { font-size: .85rem; font-weight: 600; }
-        .chk { position: absolute; top: 5px; right: 7px; color: var(--green-dk); font-size: .8rem; display: none; }
-        .spk-card.active .chk { display: block; }
-
-        /* Form */
-        .textarea { width: 100%; min-height: 160px; background: var(--bg-page); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-size: 1rem; padding: 16px; resize: vertical; outline: none; margin-bottom: 8px; transition: border .2s; }
-        .textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
-        .char-count { color: var(--text-muted); font-size: .85rem; margin-bottom: 24px; text-align: right; }
-
-        /* Buttons & Audio */
-        .action-btn { padding: 16px; background: var(--primary); border: none; border-radius: var(--radius-md); color: white; cursor: pointer; font-weight: 600; font-size: 1.05rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s; }
-        .action-btn:hover { background: var(--primary-hover); }
-        .action-btn:disabled { opacity: .6; cursor: not-allowed; }
-
-        .res-card { display: none; background: #f9fafb; border: 1px solid var(--border-color); padding: 16px 18px; border-radius: 10px; margin-top: 20px; }
-        .res-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; }
-        .res-lang { font-weight: 600; font-size: .9rem; }
-        audio { width: 100%; margin-top: 4px; outline: none; }
-        .dl-btn { padding: 7px 13px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; color: var(--text-main); font-weight: 600; font-size: .83rem; text-decoration: none; transition: all .15s; }
-        .dl-btn:hover { background: #f3f4f6; }
-
-        /* Loader */
-        .loader-wrapper { display: none; flex-direction: column; justify-content: center; align-items: center; margin: 20px 0; gap: 10px; }
-        .prog-bar-wrap { background: #e5e7eb; border-radius: 8px; height: 6px; width: 100%; overflow: hidden; margin-top: 10px; }
-        .prog-bar { background: var(--primary); width: 0%; height: 100%; border-radius: 8px; transition: width .4s; }
-        #statusTxt { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
-
-        /* Toast */
-        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; color: white; border-radius: 10px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.9rem; transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; background: #0f0f10;}
-        .toast.show { transform: translateY(0); opacity: 1; }
-    </style>
-</head>
-<body>
-<div class="page">
-    <div class="top-bar">
-        <a class="logo" href="index.html"><i class="fas fa-cube"></i> sl-Dubbing</a>
-        <div class="user-zone" id="hdr"></div>
-    </div>
-
-    <div class="tool-header">
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-        <h1>AI Speech Synthesis</h1>
-    </div>
-
-    <div class="tool-box">
-        <label class="lbl">1. Select Voice (Dynamic from samples)</label>
-        <div class="spk-grid" id="spkGrid">
-            <div class="spk-card" onclick="document.getElementById('customVoice').click()" style="border-style: dashed;">
-                <div class="spk-av" style="background:#6b7280"><i class="fas fa-plus"></i></div>
-                <div class="spk-nm">Upload Sample</div>
-                <input type="file" id="customVoice" hidden onchange="handleVoiceUpload(event)">
-            </div>
-        </div>
-
-        <div style="margin-bottom: 24px; display: flex; gap: 15px; background: var(--bg-page); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color);">
-            <label style="cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600; font-size: 0.9rem;">
-                <input type="radio" name="dub_quality" value="medium" onchange="activeQuality='medium'" checked>
-                <span>Standard (XTTS)</span>
-            </label>
-            <label style="cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:700; font-size: 0.9rem; color: #8b5cf6;">
-                <input type="radio" name="dub_quality" value="high" onchange="activeQuality='high'">
-                <span>Ultra Cinematic (CosyVoice) <i class="fas fa-crown"></i></span>
-            </label>
-        </div>
-
-        <label class="lbl">2. Select Language</label>
-        <div class="lang-grid" id="langs"></div>
-
-        <label class="lbl">3. Text Input</label>
-        <textarea class="textarea" id="txt" placeholder="Type or paste your text here..." oninput="document.getElementById('cc').textContent=this.value.length+' characters'"></textarea>
-        <div class="char-count" id="cc">0 characters</div>
-
-        <button class="action-btn" id="speakBtn" onclick="generateTTS()"><i class="fas fa-bolt"></i> Generate Audio</button>
-
-        <div class="loader-wrapper" id="loaderAnim">
-            <div id="statusTxt" style="display:flex; justify-content:space-between; width:100%;">
-                <span>Synthesizing...</span> <span id="pctTxt">0%</span>
-            </div>
-            <div class="prog-bar-wrap"><div class="prog-bar" id="progBar"></div></div>
-        </div>
-
-        <div class="res-card" id="resCard">
-            <div class="res-hd">
-                <span class="res-lang" id="resLangTxt">Result</span>
-                <a href="#" id="dl" target="_blank" class="dl-btn"><i class="fas fa-download"></i> Download</a>
-            </div>
-            <audio id="aud" controls></audio>
-        </div>
-
-    </div>
-</div>
-
-<div id="toasts"></div>
-
-<script>
-// --- Configuration ---
 const API_BASE = 'https://web-production-14a1.up.railway.app';
-const GITHUB_USER = "sl-Dubbing"; 
-const REPO_NAME = "sl-dubbing-frontend";
+let selectedVoice = '';
+let currentJobId = null;
+let pollInterval = null;
 
-let activeSpeakerId = ''; 
-let activeLang = 'en';
-let activeQuality = 'medium';
-let customVoiceFile = null;
-
-const LANGS = [
-    {c:'en', n:'English', f:'🇺🇸', engines: ['cosy', 'xtts', 'gtts']},
-    {c:'ar', n:'Arabic', f:'🇸🇦', engines: ['xtts', 'gtts']},
-    {c:'es', n:'Spanish', f:'🇪🇸', engines: ['xtts', 'gtts']},
-    {c:'fr', n:'French', f:'🇫🇷', engines: ['xtts', 'gtts']},
-    {c:'de', n:'German', f:'🇩🇪', engines: ['xtts', 'gtts']},
-    {c:'zh', n:'Chinese', f:'🇨🇳', engines: ['cosy', 'xtts', 'gtts']}
-];
-
-// --- Initialization & UI ---
 document.addEventListener('DOMContentLoaded', () => {
-    initUser();
-    renderLangs();
-    loadVoicesFromGithub();
+    checkAuth();
+    loadVoicesForLang();
 });
 
-function initUser() {
-    try {
-        const u = JSON.parse(localStorage.getItem('sl_user'));
-        if(u) {
-            document.getElementById('hdr').innerHTML = `
-                <div class="avatar">${u.avatar || 'U'}</div>
-                <span style="font-weight:600; font-size:0.9rem;">${u.name || u.email}</span>
-                <button class="btn-logout" onclick="logout()">Log Out</button>
-            `;
-        }
-    } catch(e){}
-}
-
-function logout() {
-    localStorage.removeItem('sl_user');
-    location.href = 'index.html';
-}
-
-function renderLangs() {
-    document.getElementById('langs').innerHTML = LANGS.map(l => 
-        `<div class="lang-btn ${l.c===activeLang?'active':''}" onclick="selLang('${l.c}',this)">
-            <span class="lang-flag">${l.f}</span><span>${l.n}</span>
-        </div>`
-    ).join('');
-}
-
-function selLang(c, b) {
-    activeLang = c;
-    document.querySelectorAll('.lang-btn').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-}
-
-function selSpk(id, el) {
-    activeSpeakerId = id;
-    document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    
-    // معاينة الصوت إذا كان عينة جاهزة
-    if(id && id !== 'custom_upload') {
-        const audio = new Audio("samples/" + id + ".mp3");
-        preview.play().catch(e => console.log("No preview file found"));
-    }
-}
-
-// --- الجلب التلقائي للأصوات من GitHub ---
-async function loadVoicesFromGithub() {
+function loadVoicesForLang() {
     const grid = document.getElementById('spkGrid');
-    try {
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/samples?t=${Date.now()}`);
-        const files = await res.json();
+    const lang = document.getElementById('ttsLang').value;
+    grid.innerHTML = '';
+    
+    // قائمة تجريبية للأصوات (يمكنك ربطها بـ API الأصوات لاحقاً)
+    const voices = [
+        { id: 'v1', name: 'Adam', gender: 'male' },
+        { id: 'v2', name: 'Bella', gender: 'female' },
+        { id: 'v3', name: 'Charlie', gender: 'male' }
+    ];
+
+    voices.forEach((v, index) => {
+        const card = document.createElement('div');
+        card.className = 'spk-card' + (index === 0 ? ' active' : '');
+        if(index === 0) selectedVoice = v.id;
         
-        const audioFiles = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
-        
-        audioFiles.forEach(file => {
-            const name = file.name.replace(/\.[^/.]+$/, "");
-            const card = document.createElement('div');
-            card.className = 'spk-card';
-            card.onclick = () => selSpk(name, card);
-            card.innerHTML = `
-                <i class="fas fa-check-circle chk"></i>
-                <div class="spk-av">${name[0].toUpperCase()}</div>
-                <div class="spk-nm">${name}</div>
-            `;
-            grid.appendChild(card);
-            
-            // اختيار الأول تلقائياً إذا لم يتم تحديد شيء
-            if(!activeSpeakerId) selSpk(name, card);
-        });
-    } catch(e) {
-        console.error("Failed to load samples", e);
-    }
+        card.innerHTML = `
+            <div class="spk-av"><i class="fas fa-user"></i></div>
+            <div class="spk-nm">${v.name}</div>
+        `;
+        card.onclick = () => {
+            document.querySelectorAll('.spk-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            selectedVoice = v.id;
+        };
+        grid.appendChild(card);
+    });
 }
 
-// --- معالجة رفع عينة جديدة ---
-function handleVoiceUpload(event) {
-    const file = event.target.files[0];
-    if(!file) return;
-
-    const audio = new Audio();
-    audio.src = URL.createObjectURL(file);
-    audio.onloadedmetadata = () => {
-        if(audio.duration > 15) {
-            showToast("Warning: Audio exceeds 10s. Using first 10s.", "info");
-        }
-        customVoiceFile = file;
-        
-        // إنشاء بطاقة الصوت المرفوع
-        const grid = document.getElementById('spkGrid');
-        let temp = document.getElementById('temp_custom');
-        if(!temp) {
-            temp = document.createElement('div');
-            temp.id = 'temp_custom';
-            temp.className = 'spk-card';
-            grid.appendChild(temp);
-        }
-        temp.innerHTML = `<i class="fas fa-check-circle chk"></i><div class="spk-av" style="background:var(--mint);color:#000"><i class="fas fa-microphone"></i></div><div class="spk-nm">Uploaded</div>`;
-        temp.onclick = () => selSpk('custom_upload', temp);
-        
-        selSpk('custom_upload', temp);
-        showToast("Custom voice sample added!", "success");
-    };
-}
-
-// --- التوليد (Generate) ---
-async function generateTTS() {
-    const text = document.getElementById('txt').value.trim();
-    if(!text) return showToast("Please enter text", "error");
-    if(!activeSpeakerId) return showToast("Please select a voice", "error");
-
-    const btn = document.getElementById('speakBtn');
-    const loader = document.getElementById('loaderAnim');
-    const progBar = document.getElementById('progBar');
-    const pctTxt = document.getElementById('pctTxt');
+async function generateSpeech() {
+    const text = document.getElementById('ttsText').value;
+    const btn = document.getElementById('startBtn');
+    
+    if (!text.trim()) { showToast("Please enter some text", "#b91c1c"); return; }
 
     btn.disabled = true;
-    loader.style.display = 'flex';
-    document.getElementById('resCard').style.display = 'none';
+    btn.classList.add('loading');
 
-    let p = 0;
-    const iv = setInterval(() => {
-        p = Math.min(p + 3, 90);
-        progBar.style.width = p + '%';
-        pctTxt.innerText = p + '%';
-    }, 500);
+    const payload = {
+        text: text,
+        lang: document.getElementById('ttsLang').value,
+        speed: document.getElementById('ttsSpeed').value,
+        voice_id: selectedVoice
+    };
 
     try {
-        const payload = {
-            text: text,
-            lang: activeLang,
-            voice_mode: activeQuality === 'high' ? 'cosy' : 'xtts',
-            voice_id: activeSpeakerId === 'custom_upload' ? '' : activeSpeakerId,
-            voice_url: activeSpeakerId === 'custom_upload' ? '' : `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/samples/${activeSpeakerId}.mp3`
-        };
-
-        const res = await fetch(`${API_BASE}/api/dub`, {
+        const res = await fetch(API_BASE + '/api/tts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            credentials: 'include'
         });
-
         const data = await res.json();
-        clearInterval(iv);
-
-        if(data.success) {
-            progBar.style.width = '100%';
-            pctTxt.innerText = '100%';
-            setTimeout(() => {
-                loader.style.display = 'none';
-                document.getElementById('resCard').style.display = 'block';
-                document.getElementById('aud').src = data.audio_url;
-                document.getElementById('dl').href = data.audio_url;
-                showToast("Synthesis Complete!", "success");
-            }, 500);
+        
+        if (data.success) {
+            currentJobId = data.job_id;
+            document.getElementById('progressArea').style.display = 'block';
+            pollInterval = setInterval(() => pollTTSJob(currentJobId), 2000);
         } else {
-            throw new Error(data.error);
+            showToast(data.error || "Generation failed", "#b91c1c");
+            btn.classList.remove('loading'); btn.disabled = false;
         }
-    } catch(e) {
-        clearInterval(iv);
-        showToast(e.message, "error");
-        loader.style.display = 'none';
-    } finally {
-        btn.disabled = false;
+    } catch (e) {
+        showToast("Connection error", "#b91c1c");
+        btn.classList.remove('loading'); btn.disabled = false;
     }
 }
 
-function showToast(msg, type) {
-    let t = document.getElementById('toast');
-    if(!t) { t = document.createElement('div'); t.id='toast'; t.className='toast'; document.body.appendChild(t); }
-    t.style.background = type === 'error' ? '#ef4444' : (type === 'success' ? '#059669' : '#0f0f10');
-    t.innerText = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3500);
+async function pollTTSJob(jobId) {
+    try {
+        const res = await fetch(API_BASE + '/api/job/' + jobId, { credentials: 'include' });
+        const data = await res.json();
+        
+        if (data.status === 'processing') {
+            let bar = document.getElementById('progBar');
+            let cur = parseInt(bar.style.width) || 5;
+            cur = Math.min(95, cur + 5);
+            bar.style.width = cur + '%';
+            document.getElementById('pctTxt').innerText = cur + '%';
+        } else if (data.status === 'completed') {
+            clearInterval(pollInterval);
+            document.getElementById('progBar').style.width = '100%';
+            document.getElementById('pctTxt').innerText = '100%';
+            document.getElementById('resCard').style.display = 'block';
+            document.getElementById('dubAud').src = data.audio_url;
+            document.getElementById('dlBtn').href = data.audio_url;
+            
+            const btn = document.getElementById('startBtn');
+            btn.classList.remove('loading'); btn.disabled = false;
+            showToast("Speech generated successfully!", "#065f2c");
+            checkAuth();
+        }
+    } catch (e) { console.error(e); }
 }
-</script>
-</body>
-</html>
+
+async function checkAuth() {
+    try {
+        const res = await fetch(API_BASE + '/api/user', { credentials: 'include' });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('authSection').innerHTML = `
+                <div style="display:flex; gap:12px; align-items:center">
+                    <div style="text-align:right">
+                        <div style="font-weight:700; color:#fff">${data.user.name || 'User'}</div>
+                        <div style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:8px; font-size:0.8rem; color:#a4fec4">
+                           Balance: ${data.user.credits} 💰
+                        </div>
+                    </div>
+                    <button class="auth-btn" onclick="logout()">Logout</button>
+                </div>`;
+        }
+    } catch (e) {}
+}
+
+function showToast(msg, color) {
+    const t = document.createElement('div');
+    t.className = 'toast show';
+    t.style.background = color;
+    t.innerText = msg;
+    document.getElementById('toasts').appendChild(t);
+    setTimeout(() => { t.remove(); }, 4000); 
+}
