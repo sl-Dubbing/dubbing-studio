@@ -135,7 +135,7 @@ async function handleGoogleResponse(response) {
           credits: data.user.credits
       }));
       
-      const returnUrl = sessionStorage.getItem('returnUrl') || 'index.html';
+      const returnUrl = sessionStorage.getItem('returnUrl') || 'dubbing.html';
       sessionStorage.removeItem('returnUrl');
       window.location.href = returnUrl;
     } else {
