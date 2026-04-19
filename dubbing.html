@@ -18,40 +18,61 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: var(--bg); color: #111827; text-align: left; margin: 0; }
         
-        /* Topbar */
         .topbar { background: var(--primary); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
         .logo { font-weight: 800; font-size: 1.2rem; }
         .auth-section .auth-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         
-        /* Layout */
         .wrap { max-width: 900px; margin: 24px auto; padding: 18px; }
         .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .ttl { font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        
-        /* UI Components */
-        .btn-go { background: var(--primary); color: #fff; padding: 14px; border-radius: 10px; border: none; cursor: pointer; width: 100%; font-weight: 600; }
-        .btn-go:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .srt-zone { border: 2px dashed var(--border); padding: 30px; text-align: center; border-radius: 10px; cursor: pointer; transition: 0.3s; }
         .srt-zone:hover { background: #f9fafb; border-color: #d1d5db; }
         .srt-zone.ok { border-color: var(--green-dk); background: #f0fdf4; color: var(--green-dk); }
         
         .spk-grid, .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
-        
-        .spk-card, .lang-box { 
-            padding: 15px 10px; border-radius: 10px; border: 1px solid var(--border); 
-            text-align: center; cursor: pointer; transition: 0.2s; background: #fff;
-        }
+        .spk-card, .lang-box { padding: 15px 10px; border-radius: 10px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.2s; background: #fff; }
         .spk-card.active, .lang-box.active { background: var(--mint); border-color: var(--primary); font-weight: 700; }
 
-        /* Progress & Result */
+        /* --- Uiverse Button Styles --- */
+        .btn-wrapper { display: flex; justify-content: center; margin-top: 20px; width: 100%; }
+        .btn {
+          background-color: var(--primary);
+          color: white;
+          width: 100%;
+          height: 55px;
+          border-radius: 12px;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          position: relative;
+        }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-svg { width: 22px; fill: white; transition: all 0.3s ease; }
+        .txt-wrapper { position: relative; height: 22px; overflow: hidden; display: flex; align-items: center; }
+        .txt-1, .txt-2 {
+          display: flex;
+          gap: 2px;
+          transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        .txt-2 { position: absolute; top: 30px; }
+        .btn-letter { font-weight: 600; font-size: 1.1rem; }
+        
+        /* Loading Animation State */
+        .btn.loading .txt-1 { transform: translateY(-40px); }
+        .btn.loading .txt-2 { top: 0; }
+        .btn.loading .btn-svg { transform: rotate(360deg); }
+
         #progressArea { display: none; margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 10px; }
         .prog-bar-wrap { background: #e5e7eb; border-radius: 50px; height: 10px; overflow: hidden; margin-top: 10px; }
         .prog-bar { height: 100%; width: 0; background: var(--primary); transition: width 0.4s ease; }
-        
         .res-card { display: none; border: 2px solid var(--green-dk); }
         audio { width: 100%; margin-top: 10px; }
-
         .toast { position: fixed; bottom: 20px; left: 20px; color: #fff; padding: 12px 20px; border-radius: 10px; transform: translateY(100px); opacity: 0; transition: 0.4s; z-index: 1000; }
         .toast.show { transform: translateY(0); opacity: 1; }
     </style>
@@ -61,7 +82,7 @@
 <div class="topbar">
     <div class="logo">sl<span style="color:#a4fec4">-Dubbing</span></div>
     <div class="auth-section" id="authSection">
-        <button class="auth-btn" id="showLoginBtn" onclick="sessionStorage.setItem('returnUrl', 'dubbing.html'); location.href='login.html'">Login</button>
+        <button class="auth-btn" onclick="location.href='login.html'">Login</button>
     </div>
 </div>
 
@@ -71,7 +92,7 @@
         <input type="file" id="mediaFile" accept="video/*,audio/*" style="display:none">
         <div class="srt-zone" id="mediaZone" onclick="document.getElementById('mediaFile').click()">
             <i class="fas fa-cloud-upload-alt" style="font-size:2rem; margin-bottom:10px; color:#9ca3af; display:block;"></i>
-            Click here to upload a file from your device
+            Click here to upload a file
         </div>
     </div>
 
@@ -83,9 +104,22 @@
     <div class="card">
         <div class="ttl"><i class="fas fa-language"></i> Target Language</div>
         <div class="lang-grid" id="langGrid"></div>
-        <button class="btn-go" id="startBtn" onclick="startDubbing()">
-            <i class="fas fa-bolt"></i> Start Dubbing Process Now
-        </button>
+
+        <div class="btn-wrapper">
+          <button class="btn" id="startBtn" onclick="startDubbing()">
+            <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+            </svg>
+            <div class="txt-wrapper">
+              <div class="txt-1">
+                <span class="btn-letter">G</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">e</span><span class="btn-letter">r</span><span class="btn-letter">a</span><span class="btn-letter">t</span><span class="btn-letter">e</span>
+              </div>
+              <div class="txt-2">
+                <span class="btn-letter">G</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">e</span><span class="btn-letter">r</span><span class="btn-letter">a</span><span class="btn-letter">t</span><span class="btn-letter">i</span><span class="btn-letter">n</span><span class="btn-letter">g</span>
+              </div>
+            </div>
+          </button>
+        </div>
 
         <div id="progressArea">
             <div style="display:flex; justify-content:space-between;">
@@ -99,7 +133,7 @@
     </div>
 
     <div class="card res-card" id="resCard">
-        <div class="ttl" style="color:var(--green-dk)"><i class="fas fa-check-circle"></i> Audio File Ready!</div>
+        <div class="ttl" style="color:var(--green-dk)"><i class="fas fa-check-circle"></i> Result Ready!</div>
         <audio id="dubAud" controls></audio>
         <a id="dlBtn" class="btn-go" style="background:var(--green-dk); margin-top:15px; display:block; text-align:center; text-decoration:none" download>Download MP3</a>
     </div>
