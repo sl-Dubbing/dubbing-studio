@@ -89,8 +89,7 @@ window.startDubbing = async function() {
     btn.classList.add('loading');
     
     // 🟢 الآن سيتم توجيه الرابط للمستودع الصحيح
-    const voiceUrl = selectedVoice === 'source' ? '' : `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/samples/${selectedVoice}.mp3`;
-    const formData = new FormData();
+const voiceUrl = selectedVoice === 'source' ? '' : `https://sl-dubbing.github.io/samples/${selectedVoice}.mp3`;    const formData = new FormData();
     formData.append('lang', selectedLang);
     formData.append('voice_mode', selectedVoice === 'source' ? 'source' : 'xtts');
     formData.append('voice_url', voiceUrl);
